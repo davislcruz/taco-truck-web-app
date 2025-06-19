@@ -124,21 +124,74 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-red-600 to-red-700 text-white py-12 lg:py-20">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            ¡Bienvenidos a La Charreada!
-          </h2>
-          <p className="text-lg md:text-xl mb-8 text-red-100">
-            Authentic Mexican flavors on wheels. Order now for pickup!
-          </p>
-          <Button
-            onClick={scrollToMenu}
-            className="bg-warm-orange hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-full transform hover:scale-105 transition-all"
-          >
-            Order Now
-          </Button>
+      <section className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white py-8 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 text-6xl">🌮</div>
+          <div className="absolute top-20 right-20 text-4xl">🌶️</div>
+          <div className="absolute bottom-10 left-1/4 text-5xl">🥑</div>
+          <div className="absolute bottom-20 right-1/3 text-3xl">🫔</div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Left: Main Message */}
+            <div>
+              <div className="flex items-center mb-3">
+                <span className="text-2xl mr-2">🚚</span>
+                <span className="bg-warm-orange px-3 py-1 rounded-full text-sm font-medium">
+                  Now Open • Fresh Daily
+                </span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">
+                Authentic Mexican
+                <span className="block text-warm-orange">Food Truck</span>
+              </h2>
+              <p className="text-red-100 mb-6 text-lg">
+                Hand-crafted tacos, burritos & more. Made fresh to order with traditional recipes.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  onClick={scrollToMenu}
+                  className="bg-warm-orange hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-full"
+                >
+                  Order Now
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-white text-white hover:bg-white hover:text-red-700 py-3 px-6 rounded-full"
+                  onClick={() => window.open('tel:+1234567890')}
+                >
+                  Call (123) 456-7890
+                </Button>
+              </div>
+            </div>
+
+            {/* Right: Quick Info */}
+            <div className="space-y-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <h3 className="font-semibold mb-3 flex items-center">
+                  <span className="text-xl mr-2">📍</span>
+                  Find Us Today
+                </h3>
+                <p className="text-red-100 text-sm mb-2">Downtown Plaza</p>
+                <p className="text-red-100 text-sm">Mon-Sat: 11AM-8PM</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+                  <div className="text-2xl mb-1">⚡</div>
+                  <div className="text-xs text-red-100">Ready in</div>
+                  <div className="font-bold">10-15 min</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+                  <div className="text-2xl mb-1">🏆</div>
+                  <div className="text-xs text-red-100">Customer</div>
+                  <div className="font-bold">Favorite</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
