@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MenuItem } from "@shared/schema";
 import { CartItem } from "@/pages/home-page";
-import { Utensils, Coffee, Sandwich } from "lucide-react";
+import { Utensils, Coffee, Sandwich, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface MenuSectionProps {
   menuItems: MenuItem[];
@@ -30,9 +30,30 @@ const categoryLabels: Record<string, string> = {
 
 export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState("tacos");
+  const [currentItemIndex, setCurrentItemIndex] = useState(0);
   
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
   const filteredItems = menuItems.filter(item => item.category === selectedCategory);
+  
+  // Reset item index when category changes
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentItemIndex(0);
+  };
+  
+  const handlePrevItem = () => {
+    setCurrentItemIndex((prev) => 
+      prev === 0 ? filteredItems.length - 1 : prev - 1
+    );
+  };
+  
+  const handleNextItem = () => {
+    setCurrentItemIndex((prev) => 
+      prev === filteredItems.length - 1 ? 0 : prev + 1
+    );
+  };
+  
+  const currentItem = filteredItems[currentItemIndex];
 
   return (
     <section id="menu-section" className="py-8 lg:py-12">
@@ -52,7 +73,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   ? "bg-mexican-red hover:bg-red-600 text-white" 
                   : "bg-gray-200 hover:bg-gray-300 text-gray-700"
               }`}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => handleCategoryChange(category)}
             >
               {categoryIcons[category]}
               <span className="ml-2">{categoryLabels[category] || category}</span>
@@ -60,65 +81,115 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
           ))}
         </div>
 
-        {/* Menu Items Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map((item) => (
-            <Card 
-              key={item.id} 
-              className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => onItemSelect(item)}
-            >
-              <div className="aspect-video w-full">
-                <img 
-                  src={item.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <h4 className="font-bold text-lg dark-gray mb-1">
-                      {item.name}
-                    </h4>
-                    <p className="text-sm text-gray-600 mb-2">{item.translation}</p>
-                  </div>
-                  <Badge variant="secondary" className="mexican-red text-white">
-                    ${parseFloat(item.price).toFixed(2)}
-                  </Badge>
+        {/* Single Item Carousel */}
+        {currentItem ? (
+          <div className="max-w-2xl mx-auto">
+            <div className="relative">
+              <Card 
+                className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => onItemSelect(currentItem)}
+              >
+                <div className="aspect-video w-full">
+                  <img 
+                    src={currentItem.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
+                    alt={currentItem.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                
-                <p className="text-sm text-gray-500 mb-3 line-clamp-2">
-                  {item.description}
-                </p>
-                
-                <div className="flex justify-between items-center">
-                  <div className="flex flex-wrap gap-1">
-                    {item.meats && item.meats.slice(0, 2).map((meat) => (
-                      <Badge key={meat} variant="outline" className="text-xs">
-                        {meat}
-                      </Badge>
-                    ))}
-                    {item.sizes && item.sizes.slice(0, 2).map((size) => (
-                      <Badge key={size} variant="outline" className="text-xs">
-                        {size}
-                      </Badge>
-                    ))}
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-xl dark-gray mb-1">
+                        {currentItem.name}
+                      </h4>
+                      <p className="text-sm text-gray-600 mb-2">{currentItem.translation}</p>
+                    </div>
+                    <Badge variant="secondary" className="mexican-red text-white text-lg px-3 py-1">
+                      ${parseFloat(currentItem.price).toFixed(2)}
+                    </Badge>
                   </div>
                   
-                  <Button 
-                    size="sm"
-                    className="bg-mexican-red hover:bg-red-600 text-white"
-                  >
-                    Add +
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <p className="text-sm text-gray-500 mb-4">
+                    {currentItem.description}
+                  </p>
+                  
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-wrap gap-2">
+                      {currentItem.meats && currentItem.meats.slice(0, 3).map((meat) => (
+                        <Badge key={meat} variant="outline" className="text-xs">
+                          {meat}
+                        </Badge>
+                      ))}
+                      {currentItem.sizes && currentItem.sizes.slice(0, 3).map((size) => (
+                        <Badge key={size} variant="outline" className="text-xs">
+                          {size}
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    <Button 
+                      size="lg"
+                      className="bg-mexican-red hover:bg-red-600 text-white px-6"
+                    >
+                      Customize & Add
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-        {filteredItems.length === 0 && (
+              {/* Navigation Arrows */}
+              {filteredItems.length > 1 && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrevItem();
+                    }}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNextItem();
+                    }}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+            </div>
+
+            {/* Item Counter and Dots */}
+            {filteredItems.length > 1 && (
+              <div className="flex items-center justify-center mt-6 space-x-4">
+                <span className="text-sm text-gray-500">
+                  {currentItemIndex + 1} of {filteredItems.length}
+                </span>
+                <div className="flex space-x-2">
+                  {filteredItems.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        index === currentItemIndex 
+                          ? 'bg-mexican-red' 
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                      onClick={() => setCurrentItemIndex(index)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No items found in this category.</p>
           </div>
