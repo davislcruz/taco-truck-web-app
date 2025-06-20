@@ -107,20 +107,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       {currentItem.description}
                     </p>
                     
-                    <div className="flex justify-between items-center">
-                      <div className="flex flex-wrap gap-2">
-                        {currentItem.meats && currentItem.meats.slice(0, 3).map((meat) => (
-                          <Badge key={meat} variant="outline" className="text-xs">
-                            {meat}
-                          </Badge>
-                        ))}
-                        {currentItem.sizes && currentItem.sizes.slice(0, 3).map((size) => (
-                          <Badge key={size} variant="outline" className="text-xs">
-                            {size}
-                          </Badge>
-                        ))}
-                      </div>
-                      
+                    <div className="flex justify-end">
                       <Button 
                         size="lg"
                         className="bg-mexican-red hover:bg-red-600 text-white px-6"
