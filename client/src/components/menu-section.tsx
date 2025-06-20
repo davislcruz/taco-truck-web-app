@@ -84,6 +84,11 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         {/* Single Item Carousel */}
         {currentItem ? (
           <div className="max-w-2xl mx-auto">
+            {/* Category Title */}
+            <h2 className="text-3xl font-bold text-center mb-6 dark-gray">
+              {categoryLabels[selectedCategory] || selectedCategory}
+            </h2>
+            
             <div className="relative mx-1">
               <Card 
                 className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
