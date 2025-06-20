@@ -89,18 +89,19 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                 className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => onItemSelect(currentItem)}
               >
-                <CardContent className="p-6 flex">
+                <CardContent className="p-6 flex relative">
+                  <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-lg px-3 py-1 z-10">
+                    ${parseFloat(currentItem.price).toFixed(2)}
+                  </Badge>
+                  
                   <div className="flex-1 pr-4">
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="mb-3">
                       <div className="flex-1">
                         <h4 className="font-bold text-xl dark-gray mb-1">
                           {currentItem.name}
                         </h4>
                         <p className="text-sm text-gray-600 mb-2">{currentItem.translation}</p>
                       </div>
-                      <Badge variant="secondary" className="mexican-red text-white text-lg px-3 py-1">
-                        ${parseFloat(currentItem.price).toFixed(2)}
-                      </Badge>
                     </div>
 
                     <p className="text-sm text-gray-500 mb-4">
