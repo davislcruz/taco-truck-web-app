@@ -119,7 +119,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       <img 
                         src={currentItem.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                         alt={currentItem.name}
-                        className="w-full h-full object-cover rounded-r-lg"
+                        className="w-full min-h-48 max-h-72 object-cover rounded-r-lg"
                       />
                       <div className="absolute bottom-4 right-4">
                         <Button 
