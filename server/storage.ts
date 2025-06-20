@@ -58,7 +58,7 @@ export class MemStorage implements IStorage {
         category: "tacos",
         price: "12.99",
         description: "Three soft corn tortillas with slow-cooked pulled pork",
-        image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        image: "https://images.unsplash.com/photo-1624300629298-e9de39c13be5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
         meats: ["Carnitas", "Al Pastor", "Carne Asada", "Pollo"],
         toppings: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime"],
         sizes: null
