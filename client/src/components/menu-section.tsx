@@ -106,8 +106,15 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     <p className="text-sm text-gray-500 mb-4">
                       {currentItem.description}
                     </p>
-                    
-                    <div className="flex justify-end">
+                  </div>
+                  
+                  <div className="w-1/2 relative">
+                    <img 
+                      src={currentItem.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
+                      alt={currentItem.name}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <div className="absolute top-4 left-4">
                       <Button 
                         size="lg"
                         className="bg-mexican-red hover:bg-red-600 text-white px-6"
@@ -115,14 +122,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         Customize & Add
                       </Button>
                     </div>
-                  </div>
-                  
-                  <div className="w-1/2">
-                    <img 
-                      src={currentItem.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
-                      alt={currentItem.name}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
                   </div>
                 </CardContent>
               </Card>
