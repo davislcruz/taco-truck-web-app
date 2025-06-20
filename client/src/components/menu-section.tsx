@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { MenuItem } from "@shared/schema";
 import { CartItem } from "@/pages/home-page";
 import { Utensils, Coffee, Sandwich, ChevronLeft, ChevronRight } from "lucide-react";
@@ -115,11 +116,11 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   </div>
 
                   <div className="w-1/2 relative">
-                    <div className="absolute inset-y-0 right-0 left-0">
+                    <AspectRatio ratio={1} className="relative">
                       <img 
                         src={currentItem.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                         alt={currentItem.name}
-                        className="w-full min-h-48 max-h-72 object-cover rounded-r-lg"
+                        className="w-full h-full object-cover rounded-r-lg"
                       />
                       <div className="absolute bottom-4 right-4">
                         <Button 
@@ -129,7 +130,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                           Customize & Add
                         </Button>
                       </div>
-                    </div>
+                    </AspectRatio>
                   </div>
                 </CardContent>
               </Card>
