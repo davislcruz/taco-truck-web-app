@@ -128,20 +128,21 @@ export default function HomePage() {
         {/* Papel Picado Banner */}
         <div className="absolute top-0 left-0 w-full h-8 overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 400 32" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="papelPicadoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#ec4899" />
-                <stop offset="12%" stopColor="#ef4444" />
-                <stop offset="25%" stopColor="#facc15" />
-                <stop offset="37%" stopColor="#84cc16" />
-                <stop offset="50%" stopColor="#16a34a" />
-                <stop offset="62%" stopColor="#14b8a6" />
-                <stop offset="75%" stopColor="#3b82f6" />
-                <stop offset="87%" stopColor="#6366f1" />
-                <stop offset="100%" stopColor="#a855f7" />
-              </linearGradient>
-            </defs>
-            <path d="M0,0 L20,0 L25,8 L30,0 L50,0 L55,8 L60,0 L80,0 L85,8 L90,0 L110,0 L115,8 L120,0 L140,0 L145,8 L150,0 L170,0 L175,8 L180,0 L200,0 L205,8 L210,0 L230,0 L235,8 L240,0 L260,0 L265,8 L270,0 L290,0 L295,8 L300,0 L320,0 L325,8 L330,0 L350,0 L355,8 L360,0 L380,0 L385,8 L390,0 L400,0 L400,32 L0,32 Z" fill="url(#papelPicadoGradient)" opacity="0.9"/>
+            {/* Individual colored triangular sections */}
+            <path d="M0,0 L20,0 L25,8 L20,32 L0,32 Z" fill="#ec4899" />
+            <path d="M20,0 L50,0 L55,8 L50,32 L25,8 L20,32 Z" fill="#ef4444" />
+            <path d="M50,0 L80,0 L85,8 L80,32 L55,8 L50,32 Z" fill="#facc15" />
+            <path d="M80,0 L110,0 L115,8 L110,32 L85,8 L80,32 Z" fill="#84cc16" />
+            <path d="M110,0 L140,0 L145,8 L140,32 L115,8 L110,32 Z" fill="#16a34a" />
+            <path d="M140,0 L170,0 L175,8 L170,32 L145,8 L140,32 Z" fill="#14b8a6" />
+            <path d="M170,0 L200,0 L205,8 L200,32 L175,8 L170,32 Z" fill="#3b82f6" />
+            <path d="M200,0 L230,0 L235,8 L230,32 L205,8 L200,32 Z" fill="#10b981" />
+            <path d="M230,0 L260,0 L265,8 L260,32 L235,8 L230,32 Z" fill="#06b6d4" />
+            <path d="M260,0 L290,0 L295,8 L290,32 L265,8 L260,32 Z" fill="#6366f1" />
+            <path d="M290,0 L320,0 L325,8 L320,32 L295,8 L290,32 Z" fill="#a855f7" />
+            <path d="M320,0 L350,0 L355,8 L350,32 L325,8 L320,32 Z" fill="#f59e0b" />
+            <path d="M350,0 L380,0 L385,8 L380,32 L355,8 L350,32 Z" fill="#22c55e" />
+            <path d="M380,0 L400,0 L400,32 L385,8 L380,32 Z" fill="#e11d48" />
           </svg>
         </div>
 
