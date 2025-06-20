@@ -89,50 +89,53 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                 className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => onItemSelect(currentItem)}
               >
-                <div className="aspect-video w-full">
-                  <img 
-                    src={currentItem.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
-                    alt={currentItem.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h4 className="font-bold text-xl dark-gray mb-1">
-                        {currentItem.name}
-                      </h4>
-                      <p className="text-sm text-gray-600 mb-2">{currentItem.translation}</p>
-                    </div>
-                    <Badge variant="secondary" className="mexican-red text-white text-lg px-3 py-1">
-                      ${parseFloat(currentItem.price).toFixed(2)}
-                    </Badge>
-                  </div>
-                  
-                  <p className="text-sm text-gray-500 mb-4">
-                    {currentItem.description}
-                  </p>
-                  
-                  <div className="flex justify-between items-center">
-                    <div className="flex flex-wrap gap-2">
-                      {currentItem.meats && currentItem.meats.slice(0, 3).map((meat) => (
-                        <Badge key={meat} variant="outline" className="text-xs">
-                          {meat}
-                        </Badge>
-                      ))}
-                      {currentItem.sizes && currentItem.sizes.slice(0, 3).map((size) => (
-                        <Badge key={size} variant="outline" className="text-xs">
-                          {size}
-                        </Badge>
-                      ))}
+                <CardContent className="p-6 flex">
+                  <div className="flex-1 pr-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="font-bold text-xl dark-gray mb-1">
+                          {currentItem.name}
+                        </h4>
+                        <p className="text-sm text-gray-600 mb-2">{currentItem.translation}</p>
+                      </div>
+                      <Badge variant="secondary" className="mexican-red text-white text-lg px-3 py-1">
+                        ${parseFloat(currentItem.price).toFixed(2)}
+                      </Badge>
                     </div>
                     
-                    <Button 
-                      size="lg"
-                      className="bg-mexican-red hover:bg-red-600 text-white px-6"
-                    >
-                      Customize & Add
-                    </Button>
+                    <p className="text-sm text-gray-500 mb-4">
+                      {currentItem.description}
+                    </p>
+                    
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-wrap gap-2">
+                        {currentItem.meats && currentItem.meats.slice(0, 3).map((meat) => (
+                          <Badge key={meat} variant="outline" className="text-xs">
+                            {meat}
+                          </Badge>
+                        ))}
+                        {currentItem.sizes && currentItem.sizes.slice(0, 3).map((size) => (
+                          <Badge key={size} variant="outline" className="text-xs">
+                            {size}
+                          </Badge>
+                        ))}
+                      </div>
+                      
+                      <Button 
+                        size="lg"
+                        className="bg-mexican-red hover:bg-red-600 text-white px-6"
+                      >
+                        Customize & Add
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="w-1/2">
+                    <img 
+                      src={currentItem.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
+                      alt={currentItem.name}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
                   </div>
                 </CardContent>
               </Card>
