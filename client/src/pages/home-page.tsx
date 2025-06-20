@@ -129,24 +129,24 @@ export default function HomePage() {
         <div className="absolute top-0 left-0 w-full h-8 overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 400 32" preserveAspectRatio="none">
             {/* Top banner string */}
-            <rect x="0" y="0" width="400" height="6" fill="#8b5cf6" opacity="0.8"/>
+            <rect x="0" y="0" width="400" height="3" fill="#8b5cf6" opacity="0.8"/>
             
             {/* Individual colored triangular cut-outs */}
-            <polygon points="0,6 28,6 14,24" fill="#ec4899" />
-            <polygon points="28,6 56,6 42,24" fill="#ef4444" />
-            <polygon points="56,6 84,6 70,24" fill="#facc15" />
-            <polygon points="84,6 112,6 98,24" fill="#84cc16" />
-            <polygon points="112,6 140,6 126,24" fill="#16a34a" />
-            <polygon points="140,6 168,6 154,24" fill="#14b8a6" />
-            <polygon points="168,6 196,6 182,24" fill="#3b82f6" />
-            <polygon points="196,6 224,6 210,24" fill="#10b981" />
-            <polygon points="224,6 252,6 238,24" fill="#06b6d4" />
-            <polygon points="252,6 280,6 266,24" fill="#6366f1" />
-            <polygon points="280,6 308,6 294,24" fill="#a855f7" />
-            <polygon points="308,6 336,6 322,24" fill="#f59e0b" />
-            <polygon points="336,6 364,6 350,24" fill="#22c55e" />
-            <polygon points="364,6 392,6 378,24" fill="#e11d48" />
-            <polygon points="392,6 400,6 396,24" fill="#ec4899" />
+            <polygon points="0,3 28,3 14,24" fill="#ec4899" />
+            <polygon points="28,3 56,3 42,24" fill="#ef4444" />
+            <polygon points="56,3 84,3 70,24" fill="#facc15" />
+            <polygon points="84,3 112,3 98,24" fill="#84cc16" />
+            <polygon points="112,3 140,3 126,24" fill="#16a34a" />
+            <polygon points="140,3 168,3 154,24" fill="#14b8a6" />
+            <polygon points="168,3 196,3 182,24" fill="#3b82f6" />
+            <polygon points="196,3 224,3 210,24" fill="#10b981" />
+            <polygon points="224,3 252,3 238,24" fill="#06b6d4" />
+            <polygon points="252,3 280,3 266,24" fill="#6366f1" />
+            <polygon points="280,3 308,3 294,24" fill="#a855f7" />
+            <polygon points="308,3 336,3 322,24" fill="#f59e0b" />
+            <polygon points="336,3 364,3 350,24" fill="#22c55e" />
+            <polygon points="364,3 392,3 378,24" fill="#e11d48" />
+            <polygon points="392,3 400,3 396,24" fill="#ec4899" />
           </svg>
         </div>
 
