@@ -114,7 +114,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       alt={currentItem.name}
                       className="w-full h-full object-cover rounded-lg"
                     />
-                    <div className="absolute bottom-4 right-4">
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
                       <Button 
                         size="lg"
                         className="bg-mexican-red hover:bg-red-600 text-white px-6"
