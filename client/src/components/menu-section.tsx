@@ -31,28 +31,28 @@ const categoryLabels: Record<string, string> = {
 export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState("tacos");
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
-  
+
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
   const filteredItems = menuItems.filter(item => item.category === selectedCategory);
-  
+
   // Reset item index when category changes
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     setCurrentItemIndex(0);
   };
-  
+
   const handlePrevItem = () => {
     setCurrentItemIndex((prev) => 
       prev === 0 ? filteredItems.length - 1 : prev - 1
     );
   };
-  
+
   const handleNextItem = () => {
     setCurrentItemIndex((prev) => 
       prev === filteredItems.length - 1 ? 0 : prev + 1
     );
   };
-  
+
   const currentItem = filteredItems[currentItemIndex];
 
   return (
@@ -61,7 +61,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 dark-gray">
           Our Menu / Nuestro Menú
         </h3>
-        
+
         {/* Category Navigation */}
         <div className="flex overflow-x-auto pb-4 mb-8 space-x-2 scrollbar-hide">
           {categories.map((category) => (
@@ -102,11 +102,11 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
                     </div>
-                    
+
                     <p className="text-sm text-gray-500 mb-4">
                       {currentItem.description}
                     </p>
-                    
+
                     <div className="flex justify-end">
                       <Button 
                         size="lg"
@@ -116,13 +116,21 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       </Button>
                     </div>
                   </div>
-                  
-                  <div className="w-1/2">
+
+                  <div className="w-1/2 relative">
                     <img 
                       src={currentItem.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                       alt={currentItem.name}
                       className="w-full h-full object-cover rounded-lg"
                     />
+                    <div className="absolute bottom-4 right-4">
+                      <Button 
+                        size="lg"
+                        className="bg-mexican-red hover:bg-red-600 text-white px-6"
+                      >
+                        Customize & Add
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -141,7 +149,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     size="icon"
