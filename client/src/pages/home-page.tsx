@@ -85,7 +85,7 @@ export default function HomePage() {
   return (
     <>
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-8 z-40 border-b border-gray-100">
+      <header className="bg-white shadow-sm fixed top-0 w-full z-40 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
@@ -124,9 +124,9 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-amber-900 via-red-800 to-orange-900 text-white py-8 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-amber-900 via-red-800 to-orange-900 text-white py-8 overflow-hidden mt-24">
         {/* Papel Picado Banner */}
-        <div className="fixed top-0 left-0 w-full h-8 overflow-hidden z-50">
+        <div className="fixed top-16 left-0 w-full h-8 overflow-hidden z-30">
           <svg className="w-full h-full" viewBox="0 0 400 32" preserveAspectRatio="none">
             {/* Top banner string */}
             <rect x="0" y="0" width="400" height="3" fill="#8b5cf6" opacity="0.8"/>
