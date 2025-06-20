@@ -128,7 +128,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   <div className="w-1/2 relative">
                     <AspectRatio ratio={1} className="relative">
                       <img 
-                        src={currentItem.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
+                        src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                         alt={currentItem.name}
                         className="w-full h-full object-cover rounded-r-lg"
                       />
