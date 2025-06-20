@@ -102,7 +102,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   <div className="flex-1 pr-4">
                     <div className="mb-3">
                       <div className="flex-1">
-                        <h4 className="font-bold text-xl dark-gray mb-1">
+                        <h4 className="font-bold text-lg dark-gray mb-1">
                           {currentItem.name}
                         </h4>
                         <p className="text-sm text-gray-600 mb-2">{currentItem.translation}</p>
