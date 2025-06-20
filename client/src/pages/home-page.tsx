@@ -312,15 +312,7 @@ export default function HomePage() {
               
               
               
-              {/* Traditional Mexican Quote */}
-              <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 border border-yellow-400/20">
-                <p className="text-yellow-200 text-sm italic text-center">
-                  "La comida es el corazón de la cultura"
-                </p>
-                <p className="text-yellow-300/70 text-xs text-center mt-1">
-                  Food is the heart of culture
-                </p>
-              </div>
+              
             </div>
           </div>
         </div>
