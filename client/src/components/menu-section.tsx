@@ -106,15 +106,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     <p className="text-sm text-gray-500 mb-4">
                       {currentItem.description}
                     </p>
-
-                    <div className="flex justify-end">
-                      <Button 
-                        size="lg"
-                        className="bg-mexican-red hover:bg-red-600 text-white px-6"
-                      >
-                        Customize & Add
-                      </Button>
-                    </div>
                   </div>
 
                   <div className="w-1/2 relative">
