@@ -128,21 +128,25 @@ export default function HomePage() {
         {/* Papel Picado Banner */}
         <div className="absolute top-0 left-0 w-full h-8 overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 400 32" preserveAspectRatio="none">
-            {/* Individual colored triangular sections */}
-            <path d="M0,0 L20,0 L25,8 L20,32 L0,32 Z" fill="#ec4899" />
-            <path d="M20,0 L50,0 L55,8 L50,32 L25,8 L20,32 Z" fill="#ef4444" />
-            <path d="M50,0 L80,0 L85,8 L80,32 L55,8 L50,32 Z" fill="#facc15" />
-            <path d="M80,0 L110,0 L115,8 L110,32 L85,8 L80,32 Z" fill="#84cc16" />
-            <path d="M110,0 L140,0 L145,8 L140,32 L115,8 L110,32 Z" fill="#16a34a" />
-            <path d="M140,0 L170,0 L175,8 L170,32 L145,8 L140,32 Z" fill="#14b8a6" />
-            <path d="M170,0 L200,0 L205,8 L200,32 L175,8 L170,32 Z" fill="#3b82f6" />
-            <path d="M200,0 L230,0 L235,8 L230,32 L205,8 L200,32 Z" fill="#10b981" />
-            <path d="M230,0 L260,0 L265,8 L260,32 L235,8 L230,32 Z" fill="#06b6d4" />
-            <path d="M260,0 L290,0 L295,8 L290,32 L265,8 L260,32 Z" fill="#6366f1" />
-            <path d="M290,0 L320,0 L325,8 L320,32 L295,8 L290,32 Z" fill="#a855f7" />
-            <path d="M320,0 L350,0 L355,8 L350,32 L325,8 L320,32 Z" fill="#f59e0b" />
-            <path d="M350,0 L380,0 L385,8 L380,32 L355,8 L350,32 Z" fill="#22c55e" />
-            <path d="M380,0 L400,0 L400,32 L385,8 L380,32 Z" fill="#e11d48" />
+            {/* Top banner string */}
+            <rect x="0" y="0" width="400" height="6" fill="#8b5cf6" opacity="0.8"/>
+            
+            {/* Individual colored triangular cut-outs */}
+            <polygon points="0,6 28,6 14,24" fill="#ec4899" />
+            <polygon points="28,6 56,6 42,24" fill="#ef4444" />
+            <polygon points="56,6 84,6 70,24" fill="#facc15" />
+            <polygon points="84,6 112,6 98,24" fill="#84cc16" />
+            <polygon points="112,6 140,6 126,24" fill="#16a34a" />
+            <polygon points="140,6 168,6 154,24" fill="#14b8a6" />
+            <polygon points="168,6 196,6 182,24" fill="#3b82f6" />
+            <polygon points="196,6 224,6 210,24" fill="#10b981" />
+            <polygon points="224,6 252,6 238,24" fill="#06b6d4" />
+            <polygon points="252,6 280,6 266,24" fill="#6366f1" />
+            <polygon points="280,6 308,6 294,24" fill="#a855f7" />
+            <polygon points="308,6 336,6 322,24" fill="#f59e0b" />
+            <polygon points="336,6 364,6 350,24" fill="#22c55e" />
+            <polygon points="364,6 392,6 378,24" fill="#e11d48" />
+            <polygon points="392,6 400,6 396,24" fill="#ec4899" />
           </svg>
         </div>
 
