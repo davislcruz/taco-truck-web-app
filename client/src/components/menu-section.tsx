@@ -106,23 +106,20 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         <h4 className="font-bold text-lg dark-gray mb-1">
                           {currentItem.name}
                         </h4>
-                        <p className="text-sm text-gray-600 mb-2">{currentItem.translation}</p>
+                        <div className="text-sm text-gray-600 mb-2">{currentItem.translation}</div>
                       </div>
                     </div>
 
-                    <p className="text-sm text-gray-500 mb-4">
+                    <div className="text-sm text-gray-500 mb-4">
                       {currentItem.description}
-                    </p>
+                    </div>
 
-                    {/* Move button here */}
-                    
-                      <Button 
-                        size="lg"
-                        className="bg-mexican-red hover:bg-red-600 text-white px-6"
-                      >
-                        Customize & Add
-                      </Button>
-                    
+                    <Button 
+                      size="lg"
+                      className="bg-mexican-red hover:bg-red-600 text-white px-6"
+                    >
+                      Customize & Add
+                    </Button>
                   </div>
 
                   <div className="w-1/2 relative">
