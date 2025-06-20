@@ -310,25 +310,7 @@ export default function HomePage() {
                 <p className="text-amber-200 text-sm">Lun-Sáb: 11AM-8PM</p>
               </div>
               
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gradient-to-br from-green-800/40 to-green-900/40 backdrop-blur-sm rounded-lg p-4 text-center border border-green-400/30 relative">
-                  <div className="text-3xl mb-2">🌮</div>
-                  <div className="text-xs text-green-200">Listo en</div>
-                  <div className="font-bold text-green-100">10-15 min</div>
-                  {/* Small decorative dots */}
-                  <div className="absolute top-1 left-1 w-2 h-2 bg-green-400 rounded-full"></div>
-                  <div className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full"></div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-purple-800/40 to-pink-900/40 backdrop-blur-sm rounded-lg p-4 text-center border border-pink-400/30 relative">
-                  <div className="text-3xl mb-2">🏆</div>
-                  <div className="text-xs text-pink-200">Favorito</div>
-                  <div className="font-bold text-pink-100">Local</div>
-                  {/* Small decorative dots */}
-                  <div className="absolute top-1 left-1 w-2 h-2 bg-pink-400 rounded-full"></div>
-                  <div className="absolute top-1 right-1 w-2 h-2 bg-pink-400 rounded-full"></div>
-                </div>
-              </div>
+              
               
               {/* Traditional Mexican Quote */}
               <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 border border-yellow-400/20">
