@@ -132,21 +132,35 @@ export default function HomePage() {
             <rect x="0" y="0" width="400" height="3" fill="#8b5cf6" opacity="0.8"/>
             
             {/* Individual colored triangular cut-outs */}
-            <polygon points="0,3 28,3 14,24" fill="#ec4899" />
-            <polygon points="28,3 56,3 42,24" fill="#ef4444" />
-            <polygon points="56,3 84,3 70,24" fill="#facc15" />
-            <polygon points="84,3 112,3 98,24" fill="#84cc16" />
-            <polygon points="112,3 140,3 126,24" fill="#16a34a" />
-            <polygon points="140,3 168,3 154,24" fill="#14b8a6" />
-            <polygon points="168,3 196,3 182,24" fill="#3b82f6" />
-            <polygon points="196,3 224,3 210,24" fill="#10b981" />
-            <polygon points="224,3 252,3 238,24" fill="#06b6d4" />
-            <polygon points="252,3 280,3 266,24" fill="#6366f1" />
-            <polygon points="280,3 308,3 294,24" fill="#a855f7" />
-            <polygon points="308,3 336,3 322,24" fill="#f59e0b" />
-            <polygon points="336,3 364,3 350,24" fill="#22c55e" />
-            <polygon points="364,3 392,3 378,24" fill="#e11d48" />
-            <polygon points="392,3 400,3 396,24" fill="#ec4899" />
+            <polygon points="0,3 14,3 7,15" fill="#ec4899" />
+            <polygon points="14,3 28,3 21,15" fill="#ef4444" />
+            <polygon points="28,3 42,3 35,15" fill="#facc15" />
+            <polygon points="42,3 56,3 49,15" fill="#84cc16" />
+            <polygon points="56,3 70,3 63,15" fill="#16a34a" />
+            <polygon points="70,3 84,3 77,15" fill="#14b8a6" />
+            <polygon points="84,3 98,3 91,15" fill="#3b82f6" />
+            <polygon points="98,3 112,3 105,15" fill="#10b981" />
+            <polygon points="112,3 126,3 119,15" fill="#06b6d4" />
+            <polygon points="126,3 140,3 133,15" fill="#6366f1" />
+            <polygon points="140,3 154,3 147,15" fill="#a855f7" />
+            <polygon points="154,3 168,3 161,15" fill="#f59e0b" />
+            <polygon points="168,3 182,3 175,15" fill="#22c55e" />
+            <polygon points="182,3 196,3 189,15" fill="#e11d48" />
+            <polygon points="196,3 210,3 203,15" fill="#ec4899" />
+            <polygon points="210,3 224,3 217,15" fill="#ef4444" />
+            <polygon points="224,3 238,3 231,15" fill="#facc15" />
+            <polygon points="238,3 252,3 245,15" fill="#84cc16" />
+            <polygon points="252,3 266,3 259,15" fill="#16a34a" />
+            <polygon points="266,3 280,3 273,15" fill="#14b8a6" />
+            <polygon points="280,3 294,3 287,15" fill="#3b82f6" />
+            <polygon points="294,3 308,3 301,15" fill="#10b981" />
+            <polygon points="308,3 322,3 315,15" fill="#06b6d4" />
+            <polygon points="322,3 336,3 329,15" fill="#6366f1" />
+            <polygon points="336,3 350,3 343,15" fill="#a855f7" />
+            <polygon points="350,3 364,3 357,15" fill="#f59e0b" />
+            <polygon points="364,3 378,3 371,15" fill="#22c55e" />
+            <polygon points="378,3 392,3 385,15" fill="#e11d48" />
+            <polygon points="392,3 400,3 396,15" fill="#ec4899" />
           </svg>
         </div>
 
