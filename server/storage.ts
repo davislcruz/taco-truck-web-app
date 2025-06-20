@@ -53,7 +53,7 @@ export class MemStorage implements IStorage {
   private initializeMenuItems() {
     const defaultMenuItems: Omit<MenuItem, 'id'>[] = [
       {
-        name: "Tacos de Carnitas",
+        name: "De Carnitas",
         translation: "Pulled Pork Tacos",
         category: "tacos",
         price: "12.99",
@@ -64,7 +64,7 @@ export class MemStorage implements IStorage {
         sizes: null
       },
       {
-        name: "Tacos de Carne Asada",
+        name: "De Carne Asada",
         translation: "Grilled Beef Tacos",
         category: "tacos",
         price: "13.99",
@@ -75,7 +75,7 @@ export class MemStorage implements IStorage {
         sizes: null
       },
       {
-        name: "Burrito de Pollo",
+        name: "De Pollo",
         translation: "Chicken Burrito",
         category: "burritos",
         price: "11.99",
