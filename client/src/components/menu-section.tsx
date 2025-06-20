@@ -86,9 +86,15 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         {currentItem ? (
           <div className="max-w-2xl mx-auto">
             {/* Category Title */}
-            <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
+            <h2 className="text-3xl font-bold text-center my-0 text-gray-800">
               {categoryLabels[selectedCategory] || selectedCategory}
             </h2>
+
+            {selectedCategory === "tacos" && (
+              <div className="text-xs text-gray-400 text-center my-0">
+                CON CEBOLLA Y CILANTRO / WITH ONIONS & CILANTRO
+              </div>
+            )}
             
             <div className="relative mx-1">
               <Card 
