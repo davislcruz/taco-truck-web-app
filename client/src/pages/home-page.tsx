@@ -263,13 +263,7 @@ export default function HomePage() {
                 </span>
               </div>
               
-              {/* Decorative Border */}
-              <div className="border-l-4 border-yellow-400 pl-4 mb-4">
-                <h2 className="text-3xl md:text-4xl font-bold mb-2 font-serif">
-                  La Charreada
-                  <span className="block text-yellow-300 text-2xl md:text-3xl">Comida Auténtica</span>
-                </h2>
-              </div>
+              
               
               <p className="text-amber-100 mb-6 text-lg leading-relaxed">
                 Traditional Mexican street food made with authentic recipes passed down through generations. 
