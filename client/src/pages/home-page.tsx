@@ -257,7 +257,6 @@ export default function HomePage() {
             {/* Left: Main Message */}
             <div>
               <div className="flex items-center mb-4">
-                <span className="text-2xl mr-3">🚚</span>
                 <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                   ¡Abierto Ahora! • Fresh Daily
                 </span>
