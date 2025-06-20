@@ -96,7 +96,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                 onClick={() => onItemSelect(currentItem)}
               >
                 <CardContent className="p-6 flex relative">
-                  <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-lg px-3 py-1 z-10">
+                  <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
                     ${parseFloat(currentItem.price).toFixed(2)}
                   </Badge>
                   
@@ -113,6 +113,16 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     <p className="text-sm text-gray-500 mb-4">
                       {currentItem.description}
                     </p>
+
+                    {/* Move button here */}
+                    
+                      <Button 
+                        size="lg"
+                        className="bg-mexican-red hover:bg-red-600 text-white px-6"
+                      >
+                        Customize & Add
+                      </Button>
+                    
                   </div>
 
                   <div className="w-1/2 relative">
@@ -122,14 +132,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         alt={currentItem.name}
                         className="w-full h-full object-cover rounded-r-lg"
                       />
-                      <div className="absolute bottom-4 right-4">
-                        <Button 
-                          size="lg"
-                          className="bg-mexican-red hover:bg-red-600 text-white px-6"
-                        >
-                          Customize & Add
-                        </Button>
-                      </div>
                     </AspectRatio>
                   </div>
                 </CardContent>
