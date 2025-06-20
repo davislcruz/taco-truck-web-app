@@ -85,7 +85,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         {currentItem ? (
           <div className="max-w-2xl mx-auto">
             {/* Category Title */}
-            <h2 className="text-3xl font-bold text-center mb-6 dark-gray">
+            <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
               {categoryLabels[selectedCategory] || selectedCategory}
             </h2>
             
