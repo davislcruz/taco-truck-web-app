@@ -84,7 +84,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         {/* Single Item Carousel */}
         {currentItem ? (
           <div className="max-w-2xl mx-auto">
-            <div className="relative ml-5">
+            <div className="relative ml-2">
               <Card 
                 className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => onItemSelect(currentItem)}
