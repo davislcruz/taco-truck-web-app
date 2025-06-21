@@ -137,13 +137,15 @@ export default function HomePage() {
               {/* Location Card with Aztec Border */}
               <div className="bg-gradient-to-br from-amber-800/40 to-red-900/40 backdrop-blur-sm rounded-lg p-5 border-2 border-yellow-400/30 relative overflow-hidden text-center">
                 
-                <p className="">
-                  <span className="text-xl mr-1.5">📍</span>
-                  <span className="text-amber-100 text-sm font-medium"> 
-                    <span className="text-base font-bold text-yellow-300">Location: </span>Philadelphia, 4133 G St,
-                    <span className="text-amber-200 block">Mon-Sat: 11AM-8PM</span>
-                  </span>
-                </p>
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center mb-2">
+                    <span className="text-xl mr-1.5">📍</span>
+                    <span className="text-amber-100 text-sm font-medium"> 
+                      <span className="text-base font-bold text-yellow-300">Location: </span>Philadelphia, 4133 G St
+                    </span>
+                  </div>
+                  <span className="text-amber-200 text-sm">Mon-Sat: 11AM-8PM</span>
+                </div>
                 
                 <div className="flex flex-row gap-3 mt-4 justify-center">
                   <Button
