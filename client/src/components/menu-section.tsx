@@ -95,7 +95,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   </div>
                 )}
                 <div className="relative mx-1">
-                  <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-white/20 shadow-lg">
+                  <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-white/30 shadow-lg">
                     ${parseFloat(currentItem.price).toFixed(2)}
                   </Badge>
                   <Card 
