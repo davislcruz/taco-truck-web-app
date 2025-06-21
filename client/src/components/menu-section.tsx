@@ -90,7 +90,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   {categoryLabels[category] || category}
                 </h2>
                 {categoryTaglines[category] && (
-                  <div className="text-xs text-green-600 text-center my-0 mb-4">
+                  <div className="text-xs text-green-600 text-center my-0 mb-0">
                     {categoryTaglines[category]}
                   </div>
                 )}
