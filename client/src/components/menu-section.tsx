@@ -106,7 +106,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       
                       {/* Image section - shows on top for mobile, left side for larger screens */}
                       <div className="w-full xxs:w-1/2 xxs:order-1 relative">
-                        <div className="aspect-[3/2] xxs:aspect-square relative">
+                        <div className="aspect-[3/2] xxs:aspect-[4/3] relative">
                           <img 
                             src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                             alt={currentItem.name}
