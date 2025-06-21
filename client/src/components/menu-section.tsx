@@ -101,12 +101,24 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => onItemSelect(currentItem)}
                   >
-                    <CardContent className="p-0 flex relative">
+                    <CardContent className="p-0 flex flex-col sm:flex-row relative">
                       <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
                       
-                      <div className="flex-1 p-6 pr-4 flex flex-col">
+                      {/* Image section - shows on top for mobile, right side for larger screens */}
+                      <div className="w-full sm:w-1/2 sm:order-2 relative">
+                        <AspectRatio ratio={16/9} className="sm:aspect-square relative">
+                          <img 
+                            src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
+                            alt={currentItem.name}
+                            className="w-full h-full object-cover rounded-t-lg sm:rounded-t-none sm:rounded-r-lg"
+                          />
+                        </AspectRatio>
+                      </div>
+
+                      {/* Content section - shows below image on mobile, left side for larger screens */}
+                      <div className="flex-1 sm:order-1 p-6 sm:pr-4 flex flex-col">
                         <div className="mb-3">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg dark-gray mb-1">
@@ -126,16 +138,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         >
                           Customize & Add
                         </Button>
-                      </div>
-
-                      <div className="w-1/2 relative">
-                        <AspectRatio ratio={1} className="relative">
-                          <img 
-                            src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
-                            alt={currentItem.name}
-                            className="w-full h-full object-cover rounded-r-lg"
-                          />
-                        </AspectRatio>
                       </div>
                     </CardContent>
                   </Card>
