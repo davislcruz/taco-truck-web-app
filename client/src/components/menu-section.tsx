@@ -106,13 +106,13 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
                       
-                      {/* Image section - shows on top for mobile, right side for larger screens */}
-                      <div className="w-full xxs:w-1/2 xxs:order-2 relative">
+                      {/* Image section - shows on top for mobile, left side for larger screens */}
+                      <div className="w-full xxs:w-1/2 xxs:order-1 relative">
                         <div className="aspect-[4/3] xxs:aspect-square relative">
                           <img 
                             src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                             alt={currentItem.name}
-                            className="w-full h-full object-cover rounded-t-lg xxs:rounded-t-none xxs:rounded-r-lg"
+                            className="w-full h-full object-cover rounded-t-lg xxs:rounded-t-none xxs:rounded-l-lg"
                           />
                           {/* Badge-style Add button - visible on xxs and xs screens */}
                           <Button 
@@ -128,8 +128,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         </div>
                       </div>
 
-                      {/* Content section - shows below image on mobile, left side for larger screens */}
-                      <div className="flex-1 xxs:order-1 p-6 xxs:pr-4 flex flex-col">
+                      {/* Content section - shows below image on mobile, right side for larger screens */}
+                      <div className="flex-1 xxs:order-2 p-6 xxs:pl-4 flex flex-col">
                         <div className="mb-3">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg dark-gray mb-1">
