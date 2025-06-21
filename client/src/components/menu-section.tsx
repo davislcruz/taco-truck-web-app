@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,51 +14,39 @@ interface MenuSectionProps {
   cart: CartItem[];
 }
 
-const categories = ["tacos", "burritos", "tortas", "semitas", "drinks"];
+const categoryIcons: Record<string, React.ReactNode> = {
+  tacos: <Utensils className="h-4 w-4" />,
+  burritos: <Utensils className="h-4 w-4" />,
+  tortas: <Sandwich className="h-4 w-4" />,
+  semitas: <Sandwich className="h-4 w-4" />,
+  drinks: <Coffee className="h-4 w-4" />,
+};
 
 const categoryLabels: Record<string, string> = {
   tacos: "Tacos",
-  burritos: "Burritos",
+  burritos: "Burritos", 
   tortas: "Tortas",
   semitas: "Semitas",
-  drinks: "Bebidas / Drinks"
+  drinks: "Bebidas",
 };
 
 const categoryTaglines: Record<string, string> = {
-  tacos: "Authentic Mexican street tacos made fresh daily",
-  burritos: "Hearty burritos packed with flavor",
-  tortas: "Traditional Mexican sandwiches on crusty bread",
-  semitas: "Puebla-style sandwiches with avocado and chipotle",
-  drinks: "Refreshing beverages to complement your meal"
-};
-
-const getCategoryIcon = (category: string) => {
-  switch (category) {
-    case "tacos":
-      return <Utensils className="w-5 h-5" />;
-    case "burritos":
-      return <Sandwich className="w-5 h-5" />;
-    case "tortas":
-      return <Sandwich className="w-5 h-5" />;
-    case "semitas":
-      return <Sandwich className="w-5 h-5" />;
-    case "drinks":
-      return <Coffee className="w-5 h-5" />;
-    default:
-      return <Utensils className="w-5 h-5" />;
-  }
+  tacos: "CON CEBOLLA Y CILANTRO / WITH ONIONS & CILANTRO",
+  burritos: "CON FRIJOLES, ARROS, LECHUGA, QUESO, PICO DE GALLO Y CREMA",
 };
 
 export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSectionProps) {
   const [currentItemIndexes, setCurrentItemIndexes] = useState<Record<string, number>>({});
 
+  const categories = Array.from(new Set(menuItems.map(item => item.category)));
+
   const handlePrevItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     setCurrentItemIndexes(prev => ({
       ...prev,
-      [category]: prev[category] === 0 || prev[category] === undefined
-        ? filteredItems.length - 1
-        : (prev[category] || 0) - 1
+      [category]: prev[category] === 0 || prev[category] === undefined 
+        ? filteredItems.length - 1 
+        : prev[category] - 1
     }));
   };
 
@@ -112,47 +101,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => onItemSelect(currentItem)}
                   >
-                    {/* Mobile Layout (xs screens - 475px and below) - Image on top */}
-                    <CardContent className="p-0 block relative xs:hidden">
-                      <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
-                        ${parseFloat(currentItem.price).toFixed(2)}
-                      </Badge>
-                      
-                      {/* Image at top */}
-                      <div className="relative">
-                        <AspectRatio ratio={16/9} className="relative">
-                          <img 
-                            src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
-                            alt={currentItem.name}
-                            className="w-full h-full object-cover rounded-t-lg"
-                          />
-                        </AspectRatio>
-                      </div>
-
-                      {/* Content below */}
-                      <div className="p-4">
-                        <div className="mb-3">
-                          <h4 className="font-bold text-lg dark-gray mb-1">
-                            {currentItem.name}
-                          </h4>
-                          <div className="text-sm text-gray-600 mb-2">{currentItem.translation}</div>
-                        </div>
-
-                        <div className="text-sm text-gray-500 mb-4">
-                          {currentItem.description}
-                        </div>
-
-                        <Button 
-                          size="lg"
-                          className="bg-mexican-red hover:bg-red-600 text-white px-6 w-full"
-                        >
-                          Customize & Add
-                        </Button>
-                      </div>
-                    </CardContent>
-
-                    {/* Desktop Layout (larger than xs - 476px+) - Image on side */}
-                    <CardContent className="p-0 flex relative hidden xs:flex">
+                    <CardContent className="p-0 flex relative">
                       <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>

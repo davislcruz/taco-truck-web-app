@@ -109,7 +109,6 @@ The application uses three main tables:
 ```
 Changelog:
 - June 18, 2025. Initial setup
-- June 20, 2025. Added responsive design with xs breakpoint (475px) for menu cards, mobile layout uses vertical stacking while desktop uses horizontal layout
 ```
 
 ## User Preferences
