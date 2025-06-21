@@ -135,17 +135,17 @@ export default function HomePage() {
             {/* Right: Traditional Info Cards */}
             <div className="space-y-4">
               {/* Location Card with Aztec Border */}
-              <div className="bg-gradient-to-br from-amber-800/40 to-red-900/40 backdrop-blur-sm rounded-lg p-5 border-2 border-yellow-400/30 relative overflow-hidden">
+              <div className="bg-gradient-to-br from-amber-800/40 to-red-900/40 backdrop-blur-sm rounded-lg p-5 border-2 border-yellow-400/30 relative overflow-hidden text-center">
                 
                 <p className="">
                   <span className="text-xl mr-1.5">📍</span>
                   <span className="text-amber-100 text-sm font-medium"> 
                     <span className="text-base font-bold text-yellow-300">Location: </span>Philadelphia, 4133 G St,
-                    <span className="text-amber-200 block ml-8">Mon-Sat: 11AM-8PM</span>
+                    <span className="text-amber-200 block">Mon-Sat: 11AM-8PM</span>
                   </span>
                 </p>
                 
-                <div className="flex flex-row gap-3 mt-4">
+                <div className="flex flex-row gap-3 mt-4 justify-center">
                   <Button
                     onClick={scrollToMenu}
                     className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-xl transform hover:scale-105 transition-all border-2 border-yellow-400"
