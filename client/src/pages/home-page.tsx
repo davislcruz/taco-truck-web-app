@@ -127,13 +127,13 @@ export default function HomePage() {
       <section className="relative bg-gradient-to-br from-amber-900 via-red-800 to-orange-900 text-white py-8 overflow-hidden mt-14">
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="grid md:grid-cols-2 gap-8 items-center justify-center">
             {/* Left: Main Message */}
             <div>
             </div>
 
             {/* Right: Traditional Info Cards */}
-            <div className="space-y-4 flex flex-col items-center">
+            <div className="space-y-4 flex flex-col items-center justify-center">
               {/* Location Card with Aztec Border */}
               <div className="bg-gradient-to-br from-amber-800/40 to-red-900/40 backdrop-blur-sm rounded-lg p-5 border-2 border-yellow-400/30 relative overflow-hidden text-center max-w-md w-full">
                 
