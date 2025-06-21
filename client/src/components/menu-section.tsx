@@ -112,7 +112,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     ${parseFloat(currentItem.price).toFixed(2)}
                   </Badge>
                   
-                  <div className="flex-1 pr-4">
+                  <div className="flex-1 pr-4 flex flex-col">
                     <div className="mb-3">
                       <div className="flex-1">
                         <h4 className="font-bold text-lg dark-gray mb-1">
@@ -122,13 +122,13 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       </div>
                     </div>
 
-                    <div className="text-sm text-gray-500 mb-4">
+                    <div className="text-sm text-gray-500 mb-4 flex-grow">
                       {currentItem.description}
                     </div>
 
                     <Button 
                       size="lg"
-                      className="bg-mexican-red hover:bg-red-600 text-white px-6"
+                      className="bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto"
                     >
                       Customize & Add
                     </Button>
