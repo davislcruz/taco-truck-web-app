@@ -126,7 +126,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                           </div>
                         </div>
 
-                        <div className="text-sm text-gray-500 mb-4 flex-grow">
+                        <div className="text-xs text-gray-500 mb-4 flex-grow">
                           {currentItem.description}
                         </div>
 
