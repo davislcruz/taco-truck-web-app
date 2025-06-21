@@ -114,22 +114,11 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                             alt={currentItem.name}
                             className="w-full h-full object-cover rounded-t-lg xxs:rounded-t-none xxs:rounded-l-lg"
                           />
-                          {/* Badge-style Add button - visible on xxs and xs screens */}
-                          <Button 
-                            size="sm"
-                            className="hidden xxs:block sm:hidden absolute bottom-2 right-2 bg-mexican-red hover:bg-red-600 text-white text-sm px-3 py-1 z-10 h-auto rounded-md"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onItemSelect(currentItem);
-                            }}
-                          >
-                            Add
-                          </Button>
                         </div>
                       </div>
 
                       {/* Content section - shows below image on mobile, right side for larger screens */}
-                      <div className="flex-1 xxs:order-2 p-6 xxs:pl-4 flex flex-col">
+                      <div className="flex-1 xxs:order-2 p-6 xxs:pl-4 flex flex-col relative">
                         <div className="mb-3">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg dark-gray mb-1">
@@ -142,6 +131,18 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         <div className="text-sm text-gray-500 mb-4 flex-grow">
                           {currentItem.description}
                         </div>
+
+                        {/* Badge-style Add button - visible on xxs and xs screens */}
+                        <Button 
+                          size="sm"
+                          className="hidden xxs:block sm:hidden absolute top-2 right-2 bg-mexican-red hover:bg-red-600 text-white text-sm px-3 py-1 z-10 h-auto rounded-md"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onItemSelect(currentItem);
+                          }}
+                        >
+                          Add
+                        </Button>
 
                         <Button 
                           size="lg"
