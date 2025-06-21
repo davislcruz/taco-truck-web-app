@@ -101,7 +101,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => onItemSelect(currentItem)}
                   >
-                    <CardContent className="p-0 flex relative">
+                    {/* Desktop Layout (576px and up) */}
+                    <CardContent className="p-0 flex relative hidden sm:flex">
                       <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
@@ -136,6 +137,45 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                             className="w-full h-full object-cover rounded-r-lg"
                           />
                         </AspectRatio>
+                      </div>
+                    </CardContent>
+
+                    {/* Mobile Layout (below 576px) */}
+                    <CardContent className="p-0 block relative sm:hidden">
+                      <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
+                        ${parseFloat(currentItem.price).toFixed(2)}
+                      </Badge>
+                      
+                      {/* Image at top */}
+                      <div className="relative">
+                        <AspectRatio ratio={16/9} className="relative">
+                          <img 
+                            src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
+                            alt={currentItem.name}
+                            className="w-full h-full object-cover rounded-t-lg"
+                          />
+                        </AspectRatio>
+                      </div>
+
+                      {/* Content below */}
+                      <div className="p-4">
+                        <div className="mb-3">
+                          <h4 className="font-bold text-lg dark-gray mb-1">
+                            {currentItem.name}
+                          </h4>
+                          <div className="text-sm text-gray-600 mb-2">{currentItem.translation}</div>
+                        </div>
+
+                        <div className="text-sm text-gray-500 mb-4">
+                          {currentItem.description}
+                        </div>
+
+                        <Button 
+                          size="lg"
+                          className="bg-mexican-red hover:bg-red-600 text-white px-6 w-full"
+                        >
+                          Customize & Add
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
