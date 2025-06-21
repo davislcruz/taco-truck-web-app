@@ -145,7 +145,7 @@ export default function HomePage() {
                   </span>
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <div className="flex flex-row gap-3 mt-4">
                   <Button
                     onClick={scrollToMenu}
                     className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-xl transform hover:scale-105 transition-all border-2 border-yellow-400"
