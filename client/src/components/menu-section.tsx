@@ -158,7 +158,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       <Button
                         variant="outline"
                         size="icon"
-                        className="absolute -left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg"
+                        className="absolute -left-4 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
                           handlePrevItem(category);
