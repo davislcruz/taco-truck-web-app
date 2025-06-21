@@ -95,6 +95,12 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                 CON CEBOLLA Y CILANTRO / WITH ONIONS & CILANTRO
               </div>
             )}
+
+            {selectedCategory === "burritos" && (
+              <div className="text-xs text-green-600 text-center my-0">
+                CON FRIJOLES, ARROS, LECHUGA, QUESO, PICO DE GALLO Y CREMA
+              </div>
+            )}
             
             <div className="relative mx-1">
               <Card 
