@@ -116,7 +116,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       </div>
 
                       {/* Content section - shows below image on mobile, right side for larger screens */}
-                      <div className="flex-1 xxs:order-2 p-6 xxs:pl-4 flex flex-col relative px-2.5">
+                      <div className="flex-1 xxs:order-2 py-6 px-2.5 xxs:pl-4 flex flex-col relative">
                         <div className="mb-0">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg dark-gray mb-1">
