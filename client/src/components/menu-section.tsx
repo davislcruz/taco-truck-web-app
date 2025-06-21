@@ -101,8 +101,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => onItemSelect(currentItem)}
                   >
-                    {/* Desktop Layout (576px and up) */}
-                    <CardContent className="p-0 flex relative hidden sm:flex">
+                    {/* Desktop Layout (475px and up) */}
+                    <CardContent className="p-0 flex relative hidden xs:flex">
                       <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
@@ -140,8 +140,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       </div>
                     </CardContent>
 
-                    {/* Mobile Layout (below 576px) */}
-                    <CardContent className="p-0 block relative sm:hidden">
+                    {/* Mobile Layout (below 475px) */}
+                    <CardContent className="p-0 block relative xs:hidden">
                       <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
