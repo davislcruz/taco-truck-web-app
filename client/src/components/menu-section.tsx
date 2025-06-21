@@ -133,7 +133,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         {/* Badge-style Add button - visible only on xxs screens (480-539px) */}
                         <Button 
                           size="sm"
-                          className="hidden xxs:block xs:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-mexican-red hover:bg-red-600 text-white text-xs pl-[24px] pr-[24px] pt-[12px] pb-[12px] text-center font-semibold z-10 h-auto rounded-md"
+                          className="hidden xxs:block xs:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-mexican-red hover:bg-red-600 text-white text-xs px-6 py-1 text-center font-semibold z-10 h-auto rounded-md"
                           onClick={(e) => {
                             e.stopPropagation();
                             onItemSelect(currentItem);
