@@ -114,6 +114,17 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                             alt={currentItem.name}
                             className="w-full h-full object-cover rounded-t-lg xxs:rounded-t-none xxs:rounded-r-lg"
                           />
+                          {/* Badge-style Add button - only visible on xs screens and up */}
+                          <Button 
+                            size="sm"
+                            className="hidden xs:block absolute bottom-2 right-2 bg-mexican-red hover:bg-red-600 text-white text-sm px-3 py-1 z-10 h-auto rounded-md"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onItemSelect(currentItem);
+                            }}
+                          >
+                            Add
+                          </Button>
                         </div>
                       </div>
 
@@ -134,7 +145,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
                         <Button 
                           size="lg"
-                          className="bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto"
+                          className="xs:hidden bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto"
                         >
                           Customize & Add
                         </Button>
