@@ -139,7 +139,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                             onItemSelect(currentItem);
                           }}
                         >
-                          Customize & Add
+                          Add +
                         </Button>
 
                         <Button 
