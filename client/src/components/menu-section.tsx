@@ -145,8 +145,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
                         <Button 
                           size="lg"
-                          className="xs:hidden bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto"
-                          onClick={() => onItemSelect(currentItem)}
+                          className="xs:hidden sm:block bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto"
                         >
                           Customize & Add
                         </Button>
