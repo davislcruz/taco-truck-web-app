@@ -95,14 +95,14 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   </div>
                 )}
                 <div className="relative mx-1">
+                  <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20">
+                    ${parseFloat(currentItem.price).toFixed(2)}
+                  </Badge>
                   <Card 
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => onItemSelect(currentItem)}
                   >
                     <CardContent className="p-0 flex flex-col xxs:flex-row relative">
-                      <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
-                        ${parseFloat(currentItem.price).toFixed(2)}
-                      </Badge>
                       
                       {/* Image section - shows on top for mobile, left side for larger screens */}
                       <div className="w-full xxs:w-1/2 xxs:order-1 relative">
