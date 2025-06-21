@@ -89,13 +89,11 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                 <h2 className="text-3xl font-bold text-center my-0 text-red-600">
                   {categoryLabels[category] || category}
                 </h2>
-
                 {categoryTaglines[category] && (
                   <div className="text-xs text-green-600 text-center my-0 mb-4">
                     {categoryTaglines[category]}
                   </div>
                 )}
-                
                 <div className="relative mx-1">
                   <Card 
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
@@ -118,7 +116,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       </div>
 
                       {/* Content section - shows below image on mobile, right side for larger screens */}
-                      <div className="flex-1 xxs:order-2 p-6 xxs:pl-4 flex flex-col relative">
+                      <div className="flex-1 xxs:order-2 p-6 xxs:pl-4 flex flex-col relative pl-[22px] pr-[22px]">
                         <div className="mb-3">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg dark-gray mb-1">
@@ -183,7 +181,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     </>
                   )}
                 </div>
-
                 {/* Item Counter and Dots */}
                 {filteredItems.length > 1 && (
                   <div className="flex items-center justify-center mt-6 space-x-4">
