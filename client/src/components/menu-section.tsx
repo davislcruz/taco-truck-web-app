@@ -141,7 +141,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                             onItemSelect(currentItem);
                           }}
                         >
-                          Add
+                          Customize & Add
                         </Button>
 
                         <Button 
