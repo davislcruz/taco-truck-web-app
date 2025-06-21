@@ -135,22 +135,6 @@ export default function HomePage() {
                   ¡Abierto Ahora! • Fresh Daily
                 </span>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  onClick={scrollToMenu}
-                  className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-xl transform hover:scale-105 transition-all border-2 border-yellow-400"
-                >
-                  Ver Menú
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-2 border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black py-3 px-6 rounded-lg font-semibold transition-all"
-                  onClick={() => window.open('tel:+1234567890')}
-                >
-                  📞 (123) 456-7890
-                </Button>
-              </div>
             </div>
 
             {/* Right: Traditional Info Cards */}
@@ -162,10 +146,25 @@ export default function HomePage() {
                   <span className="text-xl mr-1.5">📍</span>
                   <span className="text-amber-100 text-sm font-medium"> 
                     <span className="text-base font-bold text-yellow-300">Location: </span>Philadelphia, 4133 G St,
-                    <p className="text-amber-200 ml-8">Mon-Sat: 11AM-8PM</p>
+                    <span className="text-amber-200 block ml-8">Mon-Sat: 11AM-8PM</span>
                   </span>
                 </p>
                 
+                <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                  <Button
+                    onClick={scrollToMenu}
+                    className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-xl transform hover:scale-105 transition-all border-2 border-yellow-400"
+                  >
+                    Ver Menú
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-2 border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black py-2 px-4 rounded-lg font-semibold transition-all"
+                    onClick={() => window.open('tel:+1234567890')}
+                  >
+                    📞 (123) 456-7890
+                  </Button>
+                </div>
                 
               </div>
               
