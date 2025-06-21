@@ -133,9 +133,9 @@ export default function HomePage() {
             </div>
 
             {/* Right: Traditional Info Cards */}
-            <div className="space-y-4">
+            <div className="space-y-4 flex flex-col items-center">
               {/* Location Card with Aztec Border */}
-              <div className="bg-gradient-to-br from-amber-800/40 to-red-900/40 backdrop-blur-sm rounded-lg p-5 border-2 border-yellow-400/30 relative overflow-hidden text-center">
+              <div className="bg-gradient-to-br from-amber-800/40 to-red-900/40 backdrop-blur-sm rounded-lg p-5 border-2 border-yellow-400/30 relative overflow-hidden text-center max-w-md w-full">
                 
                 <div className="flex flex-col items-center">
                   <div className="flex items-center mb-2">
