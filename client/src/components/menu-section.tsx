@@ -119,7 +119,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       <div className="flex-1 xxs:order-2 py-2.5 px-2.5 xxs:pl-4 flex flex-col relative">
                         <div className="mb-0">
                           <div className="flex-1">
-                            <h4 className="font-bold text-lg dark-gray mb-1">
+                            <h4 className="font-bold text-lg dark-gray mb-0">
                               {currentItem.name}
                             </h4>
                             <div className="text-sm text-gray-600 mb-2">{currentItem.translation}</div>
