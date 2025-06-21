@@ -101,12 +101,12 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => onItemSelect(currentItem)}
                   >
-                    <CardContent className="p-6 flex relative">
+                    <CardContent className="p-0 flex relative">
                       <Badge variant="secondary" className="absolute top-2 right-2 mexican-red text-white text-sm px-3 py-1 z-10">
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
                       
-                      <div className="flex-1 pr-4 flex flex-col">
+                      <div className="flex-1 p-6 pr-4 flex flex-col">
                         <div className="mb-3">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg dark-gray mb-1">
