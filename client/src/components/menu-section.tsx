@@ -108,13 +108,13 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       
                       {/* Image section - shows on top for mobile, right side for larger screens */}
                       <div className="w-full xxs:w-1/2 xxs:order-2 relative">
-                        <AspectRatio ratio={4/3} className="xxs:aspect-square relative">
+                        <div className="aspect-[4/3] xxs:aspect-square relative">
                           <img 
                             src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                             alt={currentItem.name}
                             className="w-full h-full object-cover rounded-t-lg xxs:rounded-t-none xxs:rounded-r-lg"
                           />
-                        </AspectRatio>
+                        </div>
                       </div>
 
                       {/* Content section - shows below image on mobile, left side for larger screens */}

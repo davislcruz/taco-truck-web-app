@@ -108,6 +108,7 @@ The application uses three main tables:
 
 ```
 Changelog:
+- June 20, 2025. Added responsive card layouts with custom breakpoints (xxs: 480px, xs: 540px), implemented dynamic aspect ratios (4:3 mobile, 1:1 desktop), optimized image positioning
 - June 18, 2025. Initial setup
 ```
 
