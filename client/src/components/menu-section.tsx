@@ -75,7 +75,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         </h3>
 
         {/* All Category Carousels */}
-        <div className="space-y-12">
+        <div className="space-y-6">
           {categories.map((category) => {
             const filteredItems = menuItems.filter(item => item.category === category);
             const currentItemIndex = currentItemIndexes[category] || 0;
