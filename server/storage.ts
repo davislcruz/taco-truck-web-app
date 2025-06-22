@@ -9,12 +9,15 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Menu methods
   getAllMenuItems(): Promise<MenuItem[]>;
   getMenuItemsByCategory(category: string): Promise<MenuItem[]>;
   getMenuItemById(id: number): Promise<MenuItem | undefined>;
-  
+  createMenuItem(data: InsertMenuItem): Promise<MenuItem>;
+  updateMenuItem(id: number, data: InsertMenuItem): Promise<MenuItem | null>;
+  deleteMenuItem(id: number): Promise<boolean>;
+
   // Order methods
   createOrder(order: InsertOrder): Promise<Order>;
   getAllOrders(): Promise<Order[]>;
@@ -22,7 +25,7 @@ export interface IStorage {
   getOrderByOrderId(orderId: string): Promise<Order | undefined>;
   updateOrderStatus(orderId: string, status: string): Promise<Order | undefined>;
   searchOrdersByPhone(phone: string): Promise<Order[]>;
-  
+
   sessionStore: session.SessionStore;
 }
 
@@ -45,7 +48,7 @@ export class MemStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
-    
+
     // Initialize with default menu items
     this.initializeMenuItems();
   }
@@ -180,6 +183,24 @@ export class MemStorage implements IStorage {
 
   async getMenuItemById(id: number): Promise<MenuItem | undefined> {
     return this.menuItems.get(id);
+  }
+
+  async createMenuItem(data: InsertMenuItem): Promise<MenuItem> {
+    const newItem = { id: this.currentMenuItemId++, ...data };
+    this.menuItems.set(newItem.id, newItem);
+    return newItem;
+  }
+
+  async updateMenuItem(id: number, data: InsertMenuItem): Promise<MenuItem | null> {
+    const menuItem = this.menuItems.get(id);
+    if (!menuItem) return null;
+    const updatedMenuItem = { ...menuItem, ...data };
+    this.menuItems.set(id, updatedMenuItem);
+    return updatedMenuItem;
+  }
+
+  async deleteMenuItem(id: number): Promise<boolean> {
+    return this.menuItems.delete(id);
   }
 
   async createOrder(insertOrder: InsertOrder): Promise<Order> {

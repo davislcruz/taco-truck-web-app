@@ -5,11 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { X, Search, LogOut, Clock, Phone, FileText } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { X, Search, LogOut, Clock, Phone, FileText, Menu } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Order } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import MenuManagement from "@/components/menu-management";
 
 interface OwnerDashboardProps {
   onClose: () => void;
@@ -206,43 +208,62 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
           </div>
         </div>
 
-        {/* Orders */}
+        {/* Main Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Current Orders */}
-            <div>
-              <h2 className="text-lg font-semibold mb-4 mexican-red flex items-center">
-                <Clock className="h-5 w-5 mr-2" />
-                Current Orders ({currentOrders.length})
-              </h2>
-              <div className="space-y-4">
-                {currentOrders.length > 0 ? (
-                  currentOrders.map(renderOrderCard)
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">No current orders</p>
-                  </div>
-                )}
-              </div>
-            </div>
+          <Tabs defaultValue="orders" className="h-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="orders" className="flex items-center space-x-2">
+                <Clock className="h-4 w-4" />
+                <span>Orders</span>
+              </TabsTrigger>
+              <TabsTrigger value="menu" className="flex items-center space-x-2">
+                <Menu className="h-4 w-4" />
+                <span>Menu Management</span>
+              </TabsTrigger>
+            </TabsList>
 
-            {/* Completed Orders */}
-            <div>
-              <h2 className="text-lg font-semibold mb-4 mexican-green flex items-center">
-                <FileText className="h-5 w-5 mr-2" />
-                Recent Completed ({completedOrders.slice(0, 10).length})
-              </h2>
-              <div className="space-y-4">
-                {completedOrders.slice(0, 10).length > 0 ? (
-                  completedOrders.slice(0, 10).map(renderOrderCard)
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">No completed orders</p>
+            <TabsContent value="orders" className="mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Current Orders */}
+                <div>
+                  <h2 className="text-lg font-semibold mb-4 mexican-red flex items-center">
+                    <Clock className="h-5 w-5 mr-2" />
+                    Current Orders ({currentOrders.length})
+                  </h2>
+                  <div className="space-y-4">
+                    {currentOrders.length > 0 ? (
+                      currentOrders.map(renderOrderCard)
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500">No current orders</p>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+
+                {/* Completed Orders */}
+                <div>
+                  <h2 className="text-lg font-semibold mb-4 mexican-green flex items-center">
+                    <FileText className="h-5 w-5 mr-2" />
+                    Recent Completed ({completedOrders.slice(0, 10).length})
+                  </h2>
+                  <div className="space-y-4">
+                    {completedOrders.slice(0, 10).length > 0 ? (
+                      completedOrders.slice(0, 10).map(renderOrderCard)
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500">No completed orders</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
+
+            <TabsContent value="menu" className="mt-6">
+              <MenuManagement />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
