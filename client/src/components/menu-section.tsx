@@ -101,7 +101,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       <Button
                         variant="outline"
                         size="icon"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -mt-7 xxs:-mt-2.5 bg-white/70 hover:bg-white/90 shadow-lg"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -mt-2.5 bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
                           handlePrevItem(category);
@@ -113,7 +113,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       <Button
                         variant="outline"
                         size="icon"
-                        className="absolute right-0 top-1/2 -translate-y-1/2 -mt-7 xxs:-mt-2.5 bg-white/70 hover:bg-white/90 shadow-lg"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 -mt-2.5 bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleNextItem(category);
@@ -132,21 +132,21 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => onItemSelect(currentItem)}
                   >
-                    <CardContent className="p-0 flex flex-col xxs:flex-row relative">
+                    <CardContent className="p-0 flex flex-col sm:flex-row relative">
 
                       {/* Image section - shows on top for mobile, left side for larger screens */}
-                      <div className="w-full xxs:w-1/2 xxs:order-1 relative">
-                        <div className="aspect-[3/2] xxs:aspect-[4/3] relative">
+                      <div className="w-full sm:w-1/2 sm:order-1 relative">
+                        <div className="aspect-[3/2] sm:aspect-[4/3] relative">
                           <img 
                             src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                             alt={currentItem.name}
-                            className="w-full h-full object-cover rounded-t-lg xxs:rounded-t-none xxs:rounded-l-lg"
+                            className="w-full h-full object-cover rounded-t-lg sm:rounded-t-none sm:rounded-l-lg"
                           />
                         </div>
                       </div>
 
                       {/* Content section - shows below image on mobile, right side for larger screens */}
-                      <div className="flex-1 xxs:order-2 py-2.5 px-2.5 xxs:pl-4 flex flex-col relative">
+                      <div className="flex-1 sm:order-2 py-2.5 px-2.5 sm:pl-4 flex flex-col relative">
                         <div className="mb-0">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg dark-gray mb-0">
@@ -156,25 +156,13 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                           </div>
                         </div>
 
-                        <div className="text-sm xxs:text-xs xs:text-sm text-gray-500 mb-4 flex-grow">
+                        <div className="text-sm sm:text-xs text-gray-500 mb-4 flex-grow">
                           {currentItem.description}
                         </div>
 
-                        {/* Badge-style Add button - visible only on xxs screens (480-539px) */}
-                        <Button 
-                          size="sm"
-                          className="hidden xxs:block xs:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-mexican-red hover:bg-red-600 text-white text-xs px-6 py-2 text-center font-semibold z-10 h-auto rounded-md"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onItemSelect(currentItem);
-                          }}
-                        >
-                          Add +
-                        </Button>
-
                         <Button 
                           size="lg"
-                          className="xxs:hidden xs:block bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto font-bold"
+                          className="bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto font-bold"
                         >
                           Customize & Add
                         </Button>
