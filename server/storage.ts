@@ -1,6 +1,8 @@
 import { users, menuItems, orders, type User, type InsertUser, type MenuItem, type InsertMenuItem, type Order, type InsertOrder } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { scrypt, randomBytes } from "crypto";
+import { promisify } from "util";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -49,8 +51,9 @@ export class MemStorage implements IStorage {
       checkPeriod: 86400000,
     });
 
-    // Initialize with default menu items
+    // Initialize with default menu items and admin user
     this.initializeMenuItems();
+    this.initializeDefaultAdmin();
   }
 
   private initializeMenuItems() {
@@ -152,6 +155,21 @@ export class MemStorage implements IStorage {
       };
       this.menuItems.set(menuItem.id, menuItem);
     });
+  }
+
+  private async initializeDefaultAdmin() {
+    // Create default admin user: admin/admin123
+    const scryptAsync = promisify(scrypt);
+    const salt = randomBytes(16).toString("hex");
+    const buf = (await scryptAsync("admin123", salt, 64)) as Buffer;
+    const hashedPassword = `${buf.toString("hex")}.${salt}`;
+    
+    const defaultAdmin = {
+      id: this.currentUserId++,
+      username: "admin",
+      password: hashedPassword
+    };
+    this.users.set(defaultAdmin.id, defaultAdmin);
   }
 
   async getUser(id: number): Promise<User | undefined> {
