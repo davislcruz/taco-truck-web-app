@@ -47,18 +47,6 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   timestamp: true,
 });
 
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
-export type MenuItem = typeof menuItems.$inferSelect;
-export type InsertMenuItem = typeof menuItems.$inferInsert;
-export type Order = typeof orders.$inferSelect;
-export type InsertOrder = typeof orders.$inferInsert;
-
-export const insertOrderSchema = createInsertSchema(orders).omit({
-  id: true,
-  timestamp: true,
-});
-
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
