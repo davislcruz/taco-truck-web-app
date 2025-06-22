@@ -85,15 +85,46 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
             return (
               <div key={category} className="max-w-2xl mx-auto">
-                {/* Category Title */}
-                <h2 className="text-3xl font-bold text-center my-0 text-red-600">
-                  {categoryLabels[category] || category}
-                </h2>
-                {categoryTaglines[category] && (
-                  <div className="text-xs text-green-600 text-center my-0 mb-0">
-                    {categoryTaglines[category]}
-                  </div>
-                )}
+                {/* Category Title with Navigation */}
+                <div className="relative">
+                  <h2 className="text-3xl font-bold text-center my-0 text-red-600">
+                    {categoryLabels[category] || category}
+                  </h2>
+                  {categoryTaglines[category] && (
+                    <div className="text-xs text-green-600 text-center my-0 mb-0">
+                      {categoryTaglines[category]}
+                    </div>
+                  )}
+                  
+                  {/* Navigation Arrows at Title Level */}
+                  {filteredItems.length > 1 && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 shadow-lg"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePrevItem(category);
+                        }}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 shadow-lg"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNextItem(category);
+                        }}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
                 <div className="relative mx-1">
                   <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
                     ${parseFloat(currentItem.price).toFixed(2)}
@@ -151,35 +182,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       </div>
                     </CardContent>
                   </Card>
-
-                  {/* Navigation Arrows */}
-                  {filteredItems.length > 1 && (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute -left-4 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 shadow-lg"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handlePrevItem(category);
-                        }}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute -right-4 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 shadow-lg"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleNextItem(category);
-                        }}
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </>
-                  )}
                 </div>
                 {/* Navigation Dots */}
                 {filteredItems.length > 1 && (
