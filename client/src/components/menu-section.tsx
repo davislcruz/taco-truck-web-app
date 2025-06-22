@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -95,14 +94,14 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       {categoryTaglines[category]}
                     </div>
                   )}
-                  
+
                   {/* Navigation Arrows at Title Level */}
                   {filteredItems.length > 1 && (
                     <>
                       <Button
                         variant="outline"
                         size="icon"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -mt-2.5 xxs:-mt-8 xs:-mt-2.5 bg-white/70 hover:bg-white/90 shadow-lg"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -mt-2.5 xxs:-mt-6 bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
                           handlePrevItem(category);
@@ -134,7 +133,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     onClick={() => onItemSelect(currentItem)}
                   >
                     <CardContent className="p-0 flex flex-col xxs:flex-row relative">
-                      
+
                       {/* Image section - shows on top for mobile, left side for larger screens */}
                       <div className="w-full xxs:w-1/2 xxs:order-1 relative">
                         <div className="aspect-[3/2] xxs:aspect-[4/3] relative">
