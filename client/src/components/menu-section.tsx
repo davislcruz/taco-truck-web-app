@@ -86,7 +86,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
               <div key={category} className="max-w-2xl mx-auto">
                 {/* Category Title with Navigation */}
                 <div className="relative">
-                  <h2 className="text-xl font-bold text-center my-0 text-red-600">
+                  <h2 className="text-2xl font-bold text-center my-0 text-red-600">
                     {categoryLabels[category] || category}
                   </h2>
                   {categoryTaglines[category] && (
