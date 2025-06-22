@@ -7,7 +7,7 @@ export default {
     extend: {
       screens: {
         'xxs': '480px',
-        'xs': '540px',
+        'xs': '491px',
       },
       borderRadius: {
         lg: "var(--radius)",
