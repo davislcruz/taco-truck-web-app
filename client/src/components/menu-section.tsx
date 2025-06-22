@@ -132,21 +132,21 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => onItemSelect(currentItem)}
                   >
-                    <CardContent className="p-0 flex flex-col sm:flex-row relative">
+                    <CardContent className="p-0 flex flex-col xs:flex-row relative">
 
                       {/* Image section - shows on top for mobile, left side for larger screens */}
-                      <div className="w-full sm:w-1/2 sm:order-1 relative">
-                        <div className="aspect-[3/2] sm:aspect-[4/3] relative">
+                      <div className="w-full xs:w-1/2 xs:order-1 relative">
+                        <div className="aspect-[3/2] xs:aspect-[4/3] relative">
                           <img 
                             src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                             alt={currentItem.name}
-                            className="w-full h-full object-cover rounded-t-lg sm:rounded-t-none sm:rounded-l-lg"
+                            className="w-full h-full object-cover rounded-t-lg xs:rounded-t-none xs:rounded-l-lg"
                           />
                         </div>
                       </div>
 
                       {/* Content section - shows below image on mobile, right side for larger screens */}
-                      <div className="flex-1 sm:order-2 py-2.5 px-2.5 sm:pl-4 flex flex-col relative">
+                      <div className="flex-1 xs:order-2 py-2.5 px-2.5 xs:pl-4 flex flex-col relative">
                         <div className="mb-0">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg dark-gray mb-0">
@@ -156,7 +156,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                           </div>
                         </div>
 
-                        <div className="text-sm sm:text-xs text-gray-500 mb-4 flex-grow">
+                        <div className="text-sm xs:text-xs text-gray-500 mb-4 flex-grow">
                           {currentItem.description}
                         </div>
 
