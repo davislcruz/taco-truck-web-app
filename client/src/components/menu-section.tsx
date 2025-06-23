@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,8 +37,35 @@ const categoryTaglines: Record<string, string> = {
 
 export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSectionProps) {
   const [currentItemIndexes, setCurrentItemIndexes] = useState<Record<string, number>>({});
+  const [bodyWidth, setBodyWidth] = useState<number>(0);
 
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
+
+  // Calculate body/html width on mount and resize
+  React.useEffect(() => {
+    const calculateDimensions = () => {
+      const bodyWidth = document.body.offsetWidth;
+      const htmlWidth = document.documentElement.offsetWidth;
+      const viewportWidth = window.innerWidth;
+      const documentWidth = document.documentElement.scrollWidth;
+      
+      setBodyWidth(bodyWidth);
+      
+      console.log('=== BODY/HTML WIDTH CALCULATIONS ===');
+      console.log('Body width:', bodyWidth + 'px');
+      console.log('HTML element width:', htmlWidth + 'px');
+      console.log('Viewport width:', viewportWidth + 'px');
+      console.log('Document scroll width:', documentWidth + 'px');
+      console.log('Section element width at line 70:', document.getElementById('menu-section')?.offsetWidth + 'px' || 'Not found');
+    };
+
+    calculateDimensions();
+    
+    // Recalculate on window resize
+    window.addEventListener('resize', calculateDimensions);
+    
+    return () => window.removeEventListener('resize', calculateDimensions);
+  }, []);
 
   const handlePrevItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
@@ -71,6 +99,9 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 dark-gray">
           Our Menu / Nuestro Menú
+          <div className="text-sm text-gray-500 mt-2">
+            Body Width: {bodyWidth}px
+          </div>
         </h3>
 
         {/* All Category Carousels */}
