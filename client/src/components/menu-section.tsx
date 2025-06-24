@@ -122,7 +122,13 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   </h2>
                   {categoryTaglines[category] && (
                     <div className="text-xs text-green-600 text-center my-0 mb-0">
-                      {categoryTaglines[category]}
+                      {categoryTaglines[category].includes('/') ? (
+                        <>
+                          {categoryTaglines[category].split(' / ')[0]} / <span className="whitespace-nowrap">{categoryTaglines[category].split(' / ')[1]}</span>
+                        </>
+                      ) : (
+                        categoryTaglines[category]
+                      )}
                     </div>
                   )}
 
