@@ -104,7 +104,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         currentX: 0,
         isTransitioning: true
       }));
-    }, 10);
+    }, 50);
     
     // Reset drag state after animation
     setTimeout(() => {
@@ -116,7 +116,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 310);
+    }, 550);
   };
 
   const handleNextItem = (category: string) => {
@@ -148,7 +148,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         currentX: 0,
         isTransitioning: true
       }));
-    }, 10);
+    }, 50);
     
     // Reset drag state after animation
     setTimeout(() => {
@@ -160,7 +160,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 310);
+    }, 550);
   };
 
   const setItemIndex = (category: string, index: number) => {
@@ -195,7 +195,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         currentX: 0,
         isTransitioning: true
       }));
-    }, 10);
+    }, 50);
     
     // Reset drag state after animation
     setTimeout(() => {
@@ -207,7 +207,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 310);
+    }, 550);
   };
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent, category: string) => {
@@ -348,7 +348,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
             
             const getTransitionClass = () => {
               if (dragInfo.isDragging && !dragState.isTransitioning) return '';
-              return dragState.isTransitioning ? 'transition-transform duration-300 ease-out' : '';
+              return dragState.isTransitioning ? 'transition-transform duration-500 ease-in-out' : '';
             };
 
             return (
