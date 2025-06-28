@@ -75,46 +75,36 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     return () => window.removeEventListener('resize', calculateDimensions);
   }, []);
 
-  // ARROW BUTTON FUNCTIONS - Continuous sliding effect
-  const handleButtonPrevItem = (category: string) => {
+  const handlePrevItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Start continuous sliding animation - current item slides out to left
+    // Update the index first
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: prev[category] === 0 || prev[category] === undefined 
+        ? filteredItems.length - 1 
+        : prev[category] - 1
+    }));
+    
+    // Trigger sliding animation from right
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: -452, // Current item slides out to left
+      currentX: 452, // Slide from right to left
       category,
       isTransitioning: true
     }));
     
-    // Update index and start new item sliding in from right
-    setTimeout(() => {
-      setCurrentItemIndexes(prev => ({
-        ...prev,
-        [category]: prev[category] === 0 || prev[category] === undefined 
-          ? filteredItems.length - 1 
-          : prev[category] - 1
-      }));
-      
-      // New item starts from right and slides to center
-      setDragState(prev => ({
-        ...prev,
-        currentX: 452, // New item starts from right
-        isTransitioning: false // Disable transition for instant positioning
-      }));
-    }, 250); // Halfway through the animation
-    
-    // Complete the slide-in animation
+    // Animate to final position
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0, // Slide to center
+        currentX: 0,
         isTransitioning: true
       }));
-    }, 260);
+    }, 50);
     
     // Reset drag state after animation
     setTimeout(() => {
@@ -129,45 +119,36 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     }, 550);
   };
 
-  const handleButtonNextItem = (category: string) => {
+  const handleNextItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Start continuous sliding animation - current item slides out to right
+    // Update the index first
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
+        ? 0 
+        : (prev[category] || 0) + 1
+    }));
+    
+    // Trigger sliding animation from left
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: 452, // Current item slides out to right
+      currentX: -452, // Slide from left to right
       category,
       isTransitioning: true
     }));
     
-    // Update index and start new item sliding in from left
-    setTimeout(() => {
-      setCurrentItemIndexes(prev => ({
-        ...prev,
-        [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
-          ? 0 
-          : (prev[category] || 0) + 1
-      }));
-      
-      // New item starts from left and slides to center
-      setDragState(prev => ({
-        ...prev,
-        currentX: -452, // New item starts from left
-        isTransitioning: false // Disable transition for instant positioning
-      }));
-    }, 250); // Halfway through the animation
-    
-    // Complete the slide-in animation
+    // Animate to final position
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0, // Slide to center
+        currentX: 0,
         isTransitioning: true
       }));
-    }, 260);
+    }, 50);
     
     // Reset drag state after animation
     setTimeout(() => {
@@ -182,51 +163,39 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     }, 550);
   };
 
-  // DOT NAVIGATION FUNCTION - Continuous sliding effect
-  const handleDotNavigation = (category: string, index: number) => {
+  const setItemIndex = (category: string, index: number) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     const currentIndex = currentItemIndexes[category] || 0;
     
     if (index === currentIndex || filteredItems.length <= 1) return;
     
-    // Determine slide direction - if going forward slide right, if going back slide left
-    const isGoingForward = index > currentIndex;
-    const slideOutDirection = isGoingForward ? 452 : -452;
-    const slideInDirection = isGoingForward ? -452 : 452;
+    // Update the index first
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: index
+    }));
     
-    // Start continuous sliding animation - current item slides out
+    // Determine slide direction
+    const slideDirection = index > currentIndex ? -452 : 452;
+    
+    // Trigger sliding animation
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: slideOutDirection, // Current item slides out
+      currentX: slideDirection,
       category,
       isTransitioning: true
     }));
     
-    // Update index and start new item sliding in from opposite side
-    setTimeout(() => {
-      setCurrentItemIndexes(prev => ({
-        ...prev,
-        [category]: index
-      }));
-      
-      // New item starts from opposite side and slides to center
-      setDragState(prev => ({
-        ...prev,
-        currentX: slideInDirection, // New item starts from opposite side
-        isTransitioning: false // Disable transition for instant positioning
-      }));
-    }, 250); // Halfway through the animation
-    
-    // Complete the slide-in animation
+    // Animate to final position
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0, // Slide to center
+        currentX: 0,
         isTransitioning: true
       }));
-    }, 260);
+    }, 50);
     
     // Reset drag state after animation
     setTimeout(() => {
@@ -262,75 +231,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     }));
   };
 
-  // Simple manual drag functions that preserve original behavior
-  const handleManualPrevItem = (category: string) => {
-    const filteredItems = menuItems.filter(item => item.category === category);
-    if (filteredItems.length <= 1) return;
-    
-    // Update the index first
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: prev[category] === 0 || prev[category] === undefined 
-        ? filteredItems.length - 1 
-        : prev[category] - 1
-    }));
-    
-    // Simple slide animation to final position
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        currentX: 0,
-        isTransitioning: true
-      }));
-    }, 50);
-    
-    // Reset drag state after animation
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        isDragging: false,
-        startX: 0,
-        currentX: 0,
-        category: null,
-        isTransitioning: false
-      }));
-    }, 550);
-  };
-
-  const handleManualNextItem = (category: string) => {
-    const filteredItems = menuItems.filter(item => item.category === category);
-    if (filteredItems.length <= 1) return;
-    
-    // Update the index first
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
-        ? 0 
-        : (prev[category] || 0) + 1
-    }));
-    
-    // Simple slide animation to final position
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        currentX: 0,
-        isTransitioning: true
-      }));
-    }, 50);
-    
-    // Reset drag state after animation
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        isDragging: false,
-        startX: 0,
-        currentX: 0,
-        category: null,
-        isTransitioning: false
-      }));
-    }, 550);
-  };
-
   const handleDragEnd = () => {
     if (!dragState.isDragging || !dragState.category) return;
     
@@ -338,44 +238,22 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     const threshold = 50; // Minimum distance to trigger swipe
     
     if (Math.abs(deltaX) > threshold) {
-      const filteredItems = menuItems.filter(item => item.category === dragState.category);
-      if (filteredItems.length > 1) {
-        if (deltaX > 0) {
-          // Swiped right, go to previous item
-          setCurrentItemIndexes(prev => ({
-            ...prev,
-            [dragState.category!]: prev[dragState.category!] === 0 || prev[dragState.category!] === undefined 
-              ? filteredItems.length - 1 
-              : prev[dragState.category!] - 1
-          }));
-        } else {
-          // Swiped left, go to next item
-          setCurrentItemIndexes(prev => ({
-            ...prev,
-            [dragState.category!]: prev[dragState.category!] === filteredItems.length - 1 || prev[dragState.category!] === undefined
-              ? 0 
-              : (prev[dragState.category!] || 0) + 1
-          }));
-        }
+      if (deltaX > 0) {
+        // Swiped right, go to previous item
+        handlePrevItem(dragState.category);
+      } else {
+        // Swiped left, go to next item
+        handleNextItem(dragState.category);
       }
     }
     
-    // Simple reset animation for manual drag
-    setDragState(prev => ({
-      ...prev,
+    setDragState({
+      isDragging: false,
+      startX: 0,
       currentX: 0,
-      isTransitioning: true
-    }));
-    
-    setTimeout(() => {
-      setDragState({
-        isDragging: false,
-        startX: 0,
-        currentX: 0,
-        category: null,
-        isTransitioning: false
-      });
-    }, 500);
+      category: null,
+      isTransitioning: false
+    });
   };
 
   // Function to render card content to avoid repetition
@@ -501,7 +379,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         className="absolute left-0 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleButtonPrevItem(category);
+                          handlePrevItem(category);
                         }}
                       >
                         <ChevronLeft className="h-4 w-4" />
@@ -513,7 +391,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         className="absolute right-0 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleButtonNextItem(category);
+                          handleNextItem(category);
                         }}
                       >
                         <ChevronRight className="h-4 w-4" />
@@ -583,7 +461,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                               ? 'bg-mexican-red' 
                               : 'bg-gray-300 hover:bg-gray-400'
                           }`}
-                          onClick={() => handleDotNavigation(category, index)}
+                          onClick={() => setItemIndex(category, index)}
                         />
                       ))}
                     </div>
