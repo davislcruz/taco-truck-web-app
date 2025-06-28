@@ -258,16 +258,18 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     if (!dragState.isDragging || !dragState.category) return;
     
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const deltaX = clientX - dragState.startX;
+    
     setDragState(prev => ({
       ...prev,
-      currentX: clientX
+      currentX: deltaX // Use the delta from start position, not absolute position
     }));
   };
 
   const handleDragEnd = () => {
     if (!dragState.isDragging || !dragState.category) return;
     
-    const deltaX = dragState.currentX - dragState.startX;
+    const deltaX = dragState.currentX; // currentX now already contains the delta
     const threshold = 100; // Minimum distance to trigger swipe
     const category = dragState.category;
     
