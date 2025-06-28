@@ -113,7 +113,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       isDragging: true,
       startX: clientX,
       currentX: clientX,
-      category
+      category,
+      isTransitioning: false
     });
   };
 
@@ -133,11 +134,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     const deltaX = dragState.currentX - dragState.startX;
     const threshold = 50; // Minimum distance to trigger swipe
     
-    setDragState(prev => ({
-      ...prev,
-      isTransitioning: true
-    }));
-    
     if (Math.abs(deltaX) > threshold) {
       if (deltaX > 0) {
         // Swiped right, go to previous item
@@ -148,16 +144,13 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       }
     }
     
-    // Reset drag state after transition
-    setTimeout(() => {
-      setDragState({
-        isDragging: false,
-        startX: 0,
-        currentX: 0,
-        category: null,
-        isTransitioning: false
-      });
-    }, 300); // Match transition duration
+    setDragState({
+      isDragging: false,
+      startX: 0,
+      currentX: 0,
+      category: null,
+      isTransitioning: false
+    });
   };
 
   return (
