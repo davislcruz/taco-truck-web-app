@@ -444,54 +444,52 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     </>
                   )}
                 </div>
-                <div className="relative mx-1 max-w-[452px] overflow-hidden">
-                  <div 
-                    className={`flex ${getTransitionClass()}`}
-                    style={{
-                      transform: `translateX(${filteredItems.length === 1 ? '0px' : -452 + (dragInfo.isDragging ? dragInfo.deltaX : 0)}px)`,
-                      width: filteredItems.length === 1 ? '452px' : '1356px' // Single item vs three cards
-                    }}
-                    onMouseDown={(e) => handleDragStart(e, category)}
-                    onMouseMove={handleDragMove}
-                    onMouseUp={handleDragEnd}
-                    onMouseLeave={handleDragEnd}
-                    onTouchStart={(e) => handleDragStart(e, category)}
-                    onTouchMove={handleDragMove}
-                    onTouchEnd={handleDragEnd}
-                  >
-                    {/* Previous Item */}
-                    {dragInfo.prevItem && (
+                <div className="relative mx-1 max-w-[452px]">
+                  {/* Price Badge - positioned outside overflow container */}
+                  <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-sm px-3 py-1 z-30 border border-gray-300 shadow-lg">
+                    ${parseFloat(currentItem.price).toFixed(2)}
+                  </Badge>
+                  
+                  <div className="overflow-hidden">
+                    <div 
+                      className={`flex ${getTransitionClass()}`}
+                      style={{
+                        transform: `translateX(${filteredItems.length === 1 ? '0px' : -452 + (dragInfo.isDragging ? dragInfo.deltaX : 0)}px)`,
+                        width: filteredItems.length === 1 ? '452px' : '1356px' // Single item vs three cards
+                      }}
+                      onMouseDown={(e) => handleDragStart(e, category)}
+                      onMouseMove={handleDragMove}
+                      onMouseUp={handleDragEnd}
+                      onMouseLeave={handleDragEnd}
+                      onTouchStart={(e) => handleDragStart(e, category)}
+                      onTouchMove={handleDragMove}
+                      onTouchEnd={handleDragEnd}
+                    >
+                      {/* Previous Item */}
+                      {dragInfo.prevItem && (
+                        <div className="w-[452px] flex-shrink-0 relative">
+                          <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
+                            {renderCardContent(dragInfo.prevItem, category)}
+                          </Card>
+                        </div>
+                      )}
+                      
+                      {/* Current Item */}
                       <div className="w-[452px] flex-shrink-0 relative">
-                        <Badge variant="secondary" className="absolute -top-3 -right-3 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
-                          ${parseFloat(dragInfo.prevItem.price).toFixed(2)}
-                        </Badge>
                         <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
-                          {renderCardContent(dragInfo.prevItem, category)}
+                          {renderCardContent(currentItem, category)}
                         </Card>
                       </div>
-                    )}
-                    
-                    {/* Current Item */}
-                    <div className="w-[452px] flex-shrink-0 relative">
-                      <Badge variant="secondary" className="absolute -top-3 -right-3 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
-                        ${parseFloat(currentItem.price).toFixed(2)}
-                      </Badge>
-                      <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
-                        {renderCardContent(currentItem, category)}
-                      </Card>
+                      
+                      {/* Next Item */}
+                      {dragInfo.nextItem && (
+                        <div className="w-[452px] flex-shrink-0 relative">
+                          <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
+                            {renderCardContent(dragInfo.nextItem, category)}
+                          </Card>
+                        </div>
+                      )}
                     </div>
-                    
-                    {/* Next Item */}
-                    {dragInfo.nextItem && (
-                      <div className="w-[452px] flex-shrink-0 relative">
-                        <Badge variant="secondary" className="absolute -top-3 -right-3 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
-                          ${parseFloat(dragInfo.nextItem.price).toFixed(2)}
-                        </Badge>
-                        <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
-                          {renderCardContent(dragInfo.nextItem, category)}
-                        </Card>
-                      </div>
-                    )}
                   </div>
                 </div>
                 {/* Navigation Dots */}
