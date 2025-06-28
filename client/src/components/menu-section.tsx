@@ -53,6 +53,10 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
   });
 
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
+  
+  // Debug logging
+  console.log('MenuSection - menuItems:', menuItems);
+  console.log('MenuSection - categories:', categories);
 
   // Calculate body/html width on mount and resize
   React.useEffect(() => {
@@ -215,6 +219,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
             const currentItemIndex = currentItemIndexes[category] || 0;
             const currentItem = filteredItems[currentItemIndex];
 
+            console.log(`Category ${category}: ${filteredItems.length} items, currentItem:`, currentItem);
+
             if (!currentItem) return null;
 
             // Calculate which items to show during drag
@@ -292,8 +298,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   <div 
                     className={`flex ${getTransitionClass()}`}
                     style={{
-                      transform: `translateX(${dragInfo.isDragging ? dragInfo.deltaX - 452 : -452}px)`,
-                      width: '1356px' // 3 * 452px for three cards side by side
+                      transform: `translateX(${dragInfo.isDragging ? dragInfo.deltaX : 0}px)`,
+                      width: '452px' // Single card width since we're showing one at a time
                     }}
                     onMouseDown={(e) => handleDragStart(e, category)}
                     onMouseMove={handleDragMove}
@@ -303,20 +309,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     onTouchMove={handleDragMove}
                     onTouchEnd={handleDragEnd}
                   >
-                    {/* Previous Item */}
-                    {dragInfo.prevItem && (
-                      <div className="w-[452px] flex-shrink-0">
-                        <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
-                          ${parseFloat(dragInfo.prevItem.price).toFixed(2)}
-                        </Badge>
-                        <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
-                          {renderCardContent(dragInfo.prevItem, category)}
-                        </Card>
-                      </div>
-                    )}
-                    
                     {/* Current Item */}
-                    <div className="w-[452px] flex-shrink-0">
+                    <div className="w-[452px] flex-shrink-0 relative">
                       <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
@@ -324,18 +318,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         {renderCardContent(currentItem, category)}
                       </Card>
                     </div>
-                    
-                    {/* Next Item */}
-                    {dragInfo.nextItem && (
-                      <div className="w-[452px] flex-shrink-0">
-                        <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
-                          ${parseFloat(dragInfo.nextItem.price).toFixed(2)}
-                        </Badge>
-                        <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
-                          {renderCardContent(dragInfo.nextItem, category)}
-                        </Card>
-                      </div>
-                    )}
                   </div>
                 </div>
                 {/* Navigation Dots */}
