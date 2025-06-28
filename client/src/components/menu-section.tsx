@@ -166,7 +166,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     ${parseFloat(currentItem.price).toFixed(2)}
                   </Badge>
                   <Card 
-                    className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                    className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow max-w-[452px]"
                     onClick={() => onItemSelect(currentItem)}
                   >
                     <CardContent className="p-0 flex flex-col xs:flex-row relative">
