@@ -53,10 +53,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
   });
 
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
-  
-  // Debug logging
-  console.log('MenuSection - menuItems:', menuItems);
-  console.log('MenuSection - categories:', categories);
 
   // Calculate body/html width on mount and resize
   React.useEffect(() => {
@@ -68,12 +64,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       
       setBodyWidth(bodyWidth);
       
-      console.log('=== BODY/HTML WIDTH CALCULATIONS ===');
-      console.log('Body width:', bodyWidth + 'px');
-      console.log('HTML element width:', htmlWidth + 'px');
-      console.log('Viewport width:', viewportWidth + 'px');
-      console.log('Document scroll width:', documentWidth + 'px');
-      console.log('Section element width at line 70:', document.getElementById('menu-section')?.offsetWidth + 'px' || 'Not found');
+
     };
 
     calculateDimensions();
@@ -207,9 +198,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 dark-gray">
           Our Menu / Nuestro Menú
-          <div className="text-sm text-gray-500 mt-2">
-            Body Width: {bodyWidth}px
-          </div>
         </h3>
 
         {/* All Category Carousels */}
@@ -219,7 +207,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
             const currentItemIndex = currentItemIndexes[category] || 0;
             const currentItem = filteredItems[currentItemIndex];
 
-            console.log(`Category ${category}: ${filteredItems.length} items, currentItem:`, currentItem);
+
 
             if (!currentItem) return null;
 
