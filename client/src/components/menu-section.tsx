@@ -75,7 +75,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     return () => window.removeEventListener('resize', calculateDimensions);
   }, []);
 
-  const handlePrevItem = (category: string) => {
+  // Button navigation functions - separate from drag
+  const handleButtonPrevItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
@@ -87,7 +88,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         : prev[category] - 1
     }));
     
-    // Trigger sliding animation from right
+    // Trigger continuous sliding animation from right
     setDragState(prev => ({
       ...prev,
       isDragging: true,
@@ -97,7 +98,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       isTransitioning: true
     }));
     
-    // Animate to final position
+    // Animate to final position with continuous effect
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
@@ -106,7 +107,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       }));
     }, 50);
     
-    // Reset drag state after animation
+    // Reset state after continuous animation
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
@@ -119,7 +120,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     }, 550);
   };
 
-  const handleNextItem = (category: string) => {
+  const handleButtonNextItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
@@ -131,7 +132,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         : (prev[category] || 0) + 1
     }));
     
-    // Trigger sliding animation from left
+    // Trigger continuous sliding animation from left
     setDragState(prev => ({
       ...prev,
       isDragging: true,
@@ -141,7 +142,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       isTransitioning: true
     }));
     
-    // Animate to final position
+    // Animate to final position with continuous effect
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
@@ -150,7 +151,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       }));
     }, 50);
     
-    // Reset drag state after animation
+    // Reset state after continuous animation
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
@@ -163,7 +164,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     }, 550);
   };
 
-  const setItemIndex = (category: string, index: number) => {
+  const handleDotNavigation = (category: string, index: number) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     const currentIndex = currentItemIndexes[category] || 0;
     
@@ -175,10 +176,10 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       [category]: index
     }));
     
-    // Determine slide direction
+    // Determine slide direction for continuous effect
     const slideDirection = index > currentIndex ? -452 : 452;
     
-    // Trigger sliding animation
+    // Trigger continuous sliding animation
     setDragState(prev => ({
       ...prev,
       isDragging: true,
@@ -188,7 +189,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       isTransitioning: true
     }));
     
-    // Animate to final position
+    // Animate to final position with continuous effect
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
@@ -197,7 +198,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       }));
     }, 50);
     
-    // Reset drag state after animation
+    // Reset state after continuous animation
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
