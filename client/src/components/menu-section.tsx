@@ -79,36 +79,34 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Start with sliding animation to the right (showing previous item sliding in from left)
+    // Update the index first so the new item is ready
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: prev[category] === 0 || prev[category] === undefined 
+        ? filteredItems.length - 1 
+        : prev[category] - 1
+    }));
+    
+    // Start animation from fully slid right position
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: 452, // Start by sliding right to reveal left item
+      currentX: 452, // Start completely to the right
       category,
       isTransitioning: true
     }));
     
-    // Update the index while sliding
-    setTimeout(() => {
-      setCurrentItemIndexes(prev => ({
-        ...prev,
-        [category]: prev[category] === 0 || prev[category] === undefined 
-          ? filteredItems.length - 1 
-          : prev[category] - 1
-      }));
-    }, 100);
-    
-    // Complete the slide back to center
+    // Immediately begin sliding all the way to center
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0,
+        currentX: 0, // Slide all the way to center
         isTransitioning: true
       }));
-    }, 150);
+    }, 50);
     
-    // Reset drag state after animation
+    // Reset drag state after animation completes
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
@@ -118,43 +116,41 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 650);
+    }, 550);
   };
 
   const handleNextItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Start with sliding animation to the left (showing next item sliding in from right)
+    // Update the index first so the new item is ready
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
+        ? 0 
+        : (prev[category] || 0) + 1
+    }));
+    
+    // Start animation from fully slid left position
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: -452, // Start by sliding left to reveal right item
+      currentX: -452, // Start completely to the left
       category,
       isTransitioning: true
     }));
     
-    // Update the index while sliding
-    setTimeout(() => {
-      setCurrentItemIndexes(prev => ({
-        ...prev,
-        [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
-          ? 0 
-          : (prev[category] || 0) + 1
-      }));
-    }, 100);
-    
-    // Complete the slide back to center
+    // Immediately begin sliding all the way to center
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0,
+        currentX: 0, // Slide all the way to center
         isTransitioning: true
       }));
-    }, 150);
+    }, 50);
     
-    // Reset drag state after animation
+    // Reset drag state after animation completes
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
@@ -164,7 +160,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 650);
+    }, 550);
   };
 
   const setItemIndex = (category: string, index: number) => {
@@ -173,37 +169,35 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     
     if (index === currentIndex || filteredItems.length <= 1) return;
     
+    // Update the index first so the new item is ready
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: index
+    }));
+    
     // Determine slide direction based on index change
     const slideDirection = index > currentIndex ? -452 : 452;
     
-    // Start sliding animation to reveal the target item
+    // Start animation from fully offset position
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: slideDirection,
+      currentX: slideDirection, // Start completely offset
       category,
       isTransitioning: true
     }));
     
-    // Update the index while sliding
-    setTimeout(() => {
-      setCurrentItemIndexes(prev => ({
-        ...prev,
-        [category]: index
-      }));
-    }, 100);
-    
-    // Complete the slide back to center
+    // Immediately begin sliding all the way to center
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0,
+        currentX: 0, // Slide all the way to center
         isTransitioning: true
       }));
-    }, 150);
+    }, 50);
     
-    // Reset drag state after animation
+    // Reset drag state after animation completes
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
@@ -213,7 +207,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 650);
+    }, 550);
   };
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent, category: string) => {
