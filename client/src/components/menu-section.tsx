@@ -415,13 +415,16 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     </div>
                   )}
 
-                  {/* Navigation Arrows at Title Level */}
+
+                </div>
+                <div className="relative mx-auto max-w-[452px]">
+                  {/* Navigation Arrows positioned above card corners */}
                   {filteredItems.length > 1 && (
                     <>
                       <Button
                         variant="outline"
                         size="icon"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
+                        className="absolute left-0 top-0 -translate-y-1/2 bg-white/70 hover:bg-white/90 shadow-lg z-30"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleButtonPrevItem(category);
@@ -433,7 +436,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       <Button
                         variant="outline"
                         size="icon"
-                        className="absolute right-0 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
+                        className="absolute right-0 top-0 -translate-y-1/2 bg-white/70 hover:bg-white/90 shadow-lg z-30"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleButtonNextItem(category);
@@ -443,8 +446,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       </Button>
                     </>
                   )}
-                </div>
-                <div className="relative mx-auto max-w-[452px]">
+                  
                   {/* Price Badge - positioned outside overflow container */}
                   <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-sm px-3 py-1 z-30 border border-gray-300 shadow-lg mt-[-14px] mb-[-14px] ml-[-22px] mr-[-22px]">
                     ${parseFloat(currentItem.price).toFixed(2)}
