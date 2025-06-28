@@ -268,25 +268,102 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     if (!dragState.isDragging || !dragState.category) return;
     
     const deltaX = dragState.currentX - dragState.startX;
-    const threshold = 50; // Minimum distance to trigger swipe
+    const threshold = 100; // Minimum distance to trigger swipe
+    const category = dragState.category;
     
     if (Math.abs(deltaX) > threshold) {
+      const filteredItems = menuItems.filter(item => item.category === category);
+      
+      // Continue the sliding animation to completion
+      setDragState(prev => ({
+        ...prev,
+        isTransitioning: true
+      }));
+      
       if (deltaX > 0) {
-        // Swiped right, go to previous item
-        handlePrevItem(dragState.category);
+        // Swiped right, complete slide to show previous item
+        setDragState(prev => ({
+          ...prev,
+          currentX: 452,
+          isTransitioning: true
+        }));
+        
+        // Update to previous item
+        setTimeout(() => {
+          setCurrentItemIndexes(prev => ({
+            ...prev,
+            [category]: prev[category] === 0 || prev[category] === undefined 
+              ? filteredItems.length - 1 
+              : prev[category] - 1
+          }));
+        }, 250);
+        
+        // Slide back to center
+        setTimeout(() => {
+          setDragState(prev => ({
+            ...prev,
+            currentX: 0,
+            isTransitioning: true
+          }));
+        }, 300);
+        
       } else {
-        // Swiped left, go to next item
-        handleNextItem(dragState.category);
+        // Swiped left, complete slide to show next item
+        setDragState(prev => ({
+          ...prev,
+          currentX: -452,
+          isTransitioning: true
+        }));
+        
+        // Update to next item
+        setTimeout(() => {
+          setCurrentItemIndexes(prev => ({
+            ...prev,
+            [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
+              ? 0 
+              : (prev[category] || 0) + 1
+          }));
+        }, 250);
+        
+        // Slide back to center
+        setTimeout(() => {
+          setDragState(prev => ({
+            ...prev,
+            currentX: 0,
+            isTransitioning: true
+          }));
+        }, 300);
       }
+      
+      // Reset drag state after animation completes
+      setTimeout(() => {
+        setDragState({
+          isDragging: false,
+          startX: 0,
+          currentX: 0,
+          category: null,
+          isTransitioning: false
+        });
+      }, 800);
+      
+    } else {
+      // Snap back to center if threshold not met
+      setDragState(prev => ({
+        ...prev,
+        currentX: 0,
+        isTransitioning: true
+      }));
+      
+      setTimeout(() => {
+        setDragState({
+          isDragging: false,
+          startX: 0,
+          currentX: 0,
+          category: null,
+          isTransitioning: false
+        });
+      }, 300);
     }
-    
-    setDragState({
-      isDragging: false,
-      startX: 0,
-      currentX: 0,
-      category: null,
-      isTransitioning: false
-    });
   };
 
   // Function to render card content to avoid repetition
