@@ -244,8 +244,9 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       return;
     }
 
-    const dragDistance = dragState.currentX;
-    const threshold = 100;
+    // Calculate drag distance correctly
+    const dragDistance = dragState.currentX; // This is already the delta from handleManualDragMove
+    const threshold = 50;
     
     if (Math.abs(dragDistance) > threshold) {
       if (dragDistance > 0) {
@@ -364,7 +365,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
               const nextIndex = currentItemIndex === filteredItems.length - 1 ? 0 : currentItemIndex + 1;
               
               if (dragState.isDragging && dragState.category === category) {
-                const deltaX = dragState.currentX - dragState.startX;
+                // Use the stored deltaX directly from manual drag functions
+                const deltaX = dragState.currentX;
                 
                 return {
                   deltaX,
