@@ -43,11 +43,13 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     startX: number;
     currentX: number;
     category: string | null;
+    isTransitioning: boolean;
   }>({
     isDragging: false,
     startX: 0,
     currentX: 0,
-    category: null
+    category: null,
+    isTransitioning: false
   });
 
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
@@ -131,6 +133,11 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     const deltaX = dragState.currentX - dragState.startX;
     const threshold = 50; // Minimum distance to trigger swipe
     
+    setDragState(prev => ({
+      ...prev,
+      isTransitioning: true
+    }));
+    
     if (Math.abs(deltaX) > threshold) {
       if (deltaX > 0) {
         // Swiped right, go to previous item
@@ -141,12 +148,16 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       }
     }
     
-    setDragState({
-      isDragging: false,
-      startX: 0,
-      currentX: 0,
-      category: null
-    });
+    // Reset drag state after transition
+    setTimeout(() => {
+      setDragState({
+        isDragging: false,
+        startX: 0,
+        currentX: 0,
+        category: null,
+        isTransitioning: false
+      });
+    }, 300); // Match transition duration
   };
 
   return (
@@ -167,6 +178,22 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
             const currentItem = filteredItems[currentItemIndex];
 
             if (!currentItem) return null;
+
+            // Calculate transform for smooth dragging
+            const getDragTransform = () => {
+              if (dragState.isDragging && dragState.category === category) {
+                const deltaX = dragState.currentX - dragState.startX;
+                return `translateX(${deltaX}px)`;
+              }
+              return 'translateX(0px)';
+            };
+
+            const getTransitionClass = () => {
+              if (dragState.isDragging && dragState.category === category) {
+                return '';
+              }
+              return 'transition-transform duration-300 ease-out';
+            };
 
             return (
               <div key={category} className="max-w-2xl mx-auto">
@@ -221,7 +248,10 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     ${parseFloat(currentItem.price).toFixed(2)}
                   </Badge>
                   <Card 
-                    className="overflow-hidden hover:shadow-lg transition-shadow max-w-[452px] select-none cursor-grab active:cursor-grabbing"
+                    className={`overflow-hidden hover:shadow-lg transition-shadow max-w-[452px] select-none cursor-grab active:cursor-grabbing ${getTransitionClass()}`}
+                    style={{
+                      transform: getDragTransform()
+                    }}
                     onMouseDown={(e) => handleDragStart(e, category)}
                     onMouseMove={handleDragMove}
                     onMouseUp={handleDragEnd}
