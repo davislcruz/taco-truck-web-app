@@ -53,6 +53,16 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
   });
 
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
+  
+  // Debug: Log categories and items to see what's loaded
+  React.useEffect(() => {
+    console.log('Menu items loaded:', menuItems.length);
+    console.log('Categories found:', categories);
+    console.log('Items per category:', categories.map(cat => ({
+      category: cat,
+      count: menuItems.filter(item => item.category === cat).length
+    })));
+  }, [menuItems, categories]);
 
   // Calculate body/html width on mount and resize
   React.useEffect(() => {
