@@ -461,8 +461,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   >
                     {/* Previous Item */}
                     {dragInfo.prevItem && (
-                      <div className="w-[452px] flex-shrink-0 relative p-3">
-                        <Badge variant="secondary" className="absolute -top-1 -right-1 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
+                      <div className="w-[452px] flex-shrink-0 relative">
+                        <Badge variant="secondary" className="absolute -top-3 -right-3 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
                           ${parseFloat(dragInfo.prevItem.price).toFixed(2)}
                         </Badge>
                         <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
@@ -472,19 +472,19 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     )}
                     
                     {/* Current Item */}
-                    <div className="w-[452px] flex-shrink-0 relative p-3">
-                      <Badge variant="secondary" className="absolute -top-1 -right-1 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
+                    <div className="w-[452px] flex-shrink-0 relative">
+                      <Badge variant="secondary" className="absolute -top-3 -right-3 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
-                      <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing min-h-[200px]">
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
                         {renderCardContent(currentItem, category)}
                       </Card>
                     </div>
                     
                     {/* Next Item */}
                     {dragInfo.nextItem && (
-                      <div className="w-[452px] flex-shrink-0 relative p-3">
-                        <Badge variant="secondary" className="absolute -top-1 -right-1 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
+                      <div className="w-[452px] flex-shrink-0 relative">
+                        <Badge variant="secondary" className="absolute -top-3 -right-3 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
                           ${parseFloat(dragInfo.nextItem.price).toFixed(2)}
                         </Badge>
                         <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
