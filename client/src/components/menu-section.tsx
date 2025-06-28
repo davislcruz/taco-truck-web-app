@@ -79,26 +79,35 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Trigger a brief animation to show transition
+    // Update the index first
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: prev[category] === 0 || prev[category] === undefined 
+        ? filteredItems.length - 1 
+        : prev[category] - 1
+    }));
+    
+    // Trigger sliding animation from right
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: 150, // Positive value to show sliding from left
+      currentX: 452, // Slide from right to left
       category,
       isTransitioning: true
     }));
     
-    // Update the index after a brief delay
+    // Animate to final position
     setTimeout(() => {
-      setCurrentItemIndexes(prev => ({
+      setDragState(prev => ({
         ...prev,
-        [category]: prev[category] === 0 || prev[category] === undefined 
-          ? filteredItems.length - 1 
-          : prev[category] - 1
+        currentX: 0,
+        isTransitioning: true
       }));
-      
-      // Reset drag state
+    }, 10);
+    
+    // Reset drag state after animation
+    setTimeout(() => {
       setDragState(prev => ({
         ...prev,
         isDragging: false,
@@ -107,33 +116,42 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 250);
+    }, 310);
   };
 
   const handleNextItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Trigger a brief animation to show transition
+    // Update the index first
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
+        ? 0 
+        : (prev[category] || 0) + 1
+    }));
+    
+    // Trigger sliding animation from left
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: -150, // Negative value to show sliding from right
+      currentX: -452, // Slide from left to right
       category,
       isTransitioning: true
     }));
     
-    // Update the index after a brief delay
+    // Animate to final position
     setTimeout(() => {
-      setCurrentItemIndexes(prev => ({
+      setDragState(prev => ({
         ...prev,
-        [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
-          ? 0 
-          : (prev[category] || 0) + 1
+        currentX: 0,
+        isTransitioning: true
       }));
-      
-      // Reset drag state
+    }, 10);
+    
+    // Reset drag state after animation
+    setTimeout(() => {
       setDragState(prev => ({
         ...prev,
         isDragging: false,
@@ -142,7 +160,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 250);
+    }, 310);
   };
 
   const setItemIndex = (category: string, index: number) => {
@@ -151,8 +169,14 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     
     if (index === currentIndex || filteredItems.length <= 1) return;
     
+    // Update the index first
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: index
+    }));
+    
     // Determine slide direction
-    const slideDirection = index > currentIndex ? -150 : 150;
+    const slideDirection = index > currentIndex ? -452 : 452;
     
     // Trigger sliding animation
     setDragState(prev => ({
@@ -164,14 +188,17 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       isTransitioning: true
     }));
     
-    // Update the index after animation starts
+    // Animate to final position
     setTimeout(() => {
-      setCurrentItemIndexes(prev => ({
+      setDragState(prev => ({
         ...prev,
-        [category]: index
+        currentX: 0,
+        isTransitioning: true
       }));
-      
-      // Reset drag state
+    }, 10);
+    
+    // Reset drag state after animation
+    setTimeout(() => {
       setDragState(prev => ({
         ...prev,
         isDragging: false,
@@ -180,7 +207,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 250);
+    }, 310);
   };
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent, category: string) => {
@@ -320,7 +347,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
             const dragInfo = getDragInfo();
             
             const getTransitionClass = () => {
-              return dragInfo.isDragging && !dragState.isTransitioning ? '' : 'transition-transform duration-300 ease-out';
+              if (dragInfo.isDragging && !dragState.isTransitioning) return '';
+              return dragState.isTransitioning ? 'transition-transform duration-300 ease-out' : '';
             };
 
             return (
@@ -375,7 +403,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   <div 
                     className={`flex ${getTransitionClass()}`}
                     style={{
-                      transform: `translateX(${dragInfo.isDragging ? dragInfo.deltaX - 452 : -452}px)`,
+                      transform: `translateX(${-452 + (dragInfo.isDragging ? dragInfo.deltaX : 0)}px)`,
                       width: '1356px' // 3 * 452px for three cards side by side
                     }}
                     onMouseDown={(e) => handleDragStart(e, category)}
