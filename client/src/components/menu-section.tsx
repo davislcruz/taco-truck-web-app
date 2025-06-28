@@ -142,7 +142,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 150);
+    }, 250);
   };
 
   const setItemIndex = (category: string, index: number) => {
@@ -180,7 +180,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 150);
+    }, 250);
   };
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent, category: string) => {
