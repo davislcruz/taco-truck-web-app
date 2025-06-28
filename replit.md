@@ -108,6 +108,7 @@ The application uses three main tables:
 
 ```
 Changelog:
+- June 28, 2025. Restored original card design with working carousel - maintained user's existing card layout with images and styling while implementing reliable fade transitions, arrow navigation, and navigation dots
 - June 28, 2025. Fixed carousel drag direction mismatch - drag movements now correctly follow finger direction (drag right slides right, drag left slides left) with consistent two-phase sliding animations across all navigation methods
 - June 28, 2025. Implemented proper sliding carousel transitions for menu items - cards now slide in from appropriate directions during drag/navigation, with smooth animations for arrow buttons, navigation dots, and manual swipe gestures
 - June 20, 2025. Added responsive card layouts with custom breakpoints (xxs: 480px, xs: 540px), implemented dynamic aspect ratios (4:3 mobile, 1:1 desktop), optimized image positioning
