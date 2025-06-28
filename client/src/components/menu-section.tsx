@@ -153,6 +153,51 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     });
   };
 
+  // Function to render card content to avoid repetition
+  const renderCardContent = (item: MenuItem, category: string) => (
+    <CardContent className="p-0 flex flex-col xs:flex-row relative">
+      {/* Image section */}
+      <div className="w-full xs:w-1/2 xs:order-1 relative cursor-grab active:cursor-grabbing select-none">
+        <div className="aspect-[3/2] xs:aspect-[4/3] relative">
+          <img 
+            src={item.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
+            alt={item.name}
+            className="w-full h-full object-cover rounded-t-lg xs:rounded-t-none xs:rounded-l-lg pointer-events-none"
+          />
+        </div>
+      </div>
+
+      {/* Content section */}
+      <div className="flex-1 xs:order-2 py-2.5 px-2.5 xs:pl-4 flex flex-col relative cursor-grab active:cursor-grabbing select-none">
+        <div className="mb-0">
+          <div className="flex-1">
+            <h4 className="font-bold text-lg dark-gray mb-0">
+              {item.name}
+            </h4>
+            <div className="text-sm text-gray-600 mb-2 mt-0">{item.translation}</div>
+          </div>
+        </div>
+
+        <div className="text-sm xs:text-xs text-gray-500 mb-4 flex-grow">
+          {item.description}
+        </div>
+
+        <Button 
+          size="lg"
+          className="bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto font-bold"
+          onClick={(e) => {
+            e.stopPropagation();
+            onItemSelect(item);
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
+          Customize & Add
+        </Button>
+      </div>
+    </CardContent>
+  );
+
   return (
     <section id="menu-section" className="py-8 lg:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -172,20 +217,27 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
             if (!currentItem) return null;
 
-            // Calculate transform for smooth dragging
-            const getDragTransform = () => {
+            // Calculate which items to show during drag
+            const getDragInfo = () => {
               if (dragState.isDragging && dragState.category === category) {
                 const deltaX = dragState.currentX - dragState.startX;
-                return `translateX(${deltaX}px)`;
+                const prevIndex = currentItemIndex === 0 ? filteredItems.length - 1 : currentItemIndex - 1;
+                const nextIndex = currentItemIndex === filteredItems.length - 1 ? 0 : currentItemIndex + 1;
+                
+                return {
+                  deltaX,
+                  prevItem: filteredItems[prevIndex],
+                  nextItem: filteredItems[nextIndex],
+                  isDragging: true
+                };
               }
-              return 'translateX(0px)';
+              return { deltaX: 0, prevItem: null, nextItem: null, isDragging: false };
             };
 
+            const dragInfo = getDragInfo();
+            
             const getTransitionClass = () => {
-              if (dragState.isDragging && dragState.category === category) {
-                return '';
-              }
-              return 'transition-transform duration-300 ease-out';
+              return dragInfo.isDragging ? '' : 'transition-transform duration-300 ease-out';
             };
 
             return (
@@ -236,14 +288,12 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     </>
                   )}
                 </div>
-                <div className="relative mx-1">
-                  <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
-                    ${parseFloat(currentItem.price).toFixed(2)}
-                  </Badge>
-                  <Card 
-                    className={`overflow-hidden hover:shadow-lg transition-shadow max-w-[452px] select-none cursor-grab active:cursor-grabbing ${getTransitionClass()}`}
+                <div className="relative mx-1 max-w-[452px] overflow-hidden">
+                  <div 
+                    className={`flex ${getTransitionClass()}`}
                     style={{
-                      transform: getDragTransform()
+                      transform: `translateX(${dragInfo.isDragging ? dragInfo.deltaX - 452 : -452}px)`,
+                      width: '1356px' // 3 * 452px for three cards side by side
                     }}
                     onMouseDown={(e) => handleDragStart(e, category)}
                     onMouseMove={handleDragMove}
@@ -253,67 +303,42 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     onTouchMove={handleDragMove}
                     onTouchEnd={handleDragEnd}
                   >
-                    <CardContent className="p-0 flex flex-col xs:flex-row relative">
-
-                      {/* Image section - shows on top for mobile, left side for larger screens */}
-                      <div 
-                        className="w-full xs:w-1/2 xs:order-1 relative cursor-grab active:cursor-grabbing select-none"
-                        onMouseDown={(e) => handleDragStart(e, category)}
-                        onMouseMove={handleDragMove}
-                        onMouseUp={handleDragEnd}
-                        onMouseLeave={handleDragEnd}
-                        onTouchStart={(e) => handleDragStart(e, category)}
-                        onTouchMove={handleDragMove}
-                        onTouchEnd={handleDragEnd}
-                      >
-                        <div className="aspect-[3/2] xs:aspect-[4/3] relative">
-                          <img 
-                            src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
-                            alt={currentItem.name}
-                            className="w-full h-full object-cover rounded-t-lg xs:rounded-t-none xs:rounded-l-lg pointer-events-none"
-                          />
-                        </div>
+                    {/* Previous Item */}
+                    {dragInfo.prevItem && (
+                      <div className="w-[452px] flex-shrink-0">
+                        <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
+                          ${parseFloat(dragInfo.prevItem.price).toFixed(2)}
+                        </Badge>
+                        <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
+                          {renderCardContent(dragInfo.prevItem, category)}
+                        </Card>
                       </div>
-
-                      {/* Content section - shows below image on mobile, right side for larger screens */}
-                      <div 
-                        className="flex-1 xs:order-2 py-2.5 px-2.5 xs:pl-4 flex flex-col relative cursor-grab active:cursor-grabbing select-none"
-                        onMouseDown={(e) => handleDragStart(e, category)}
-                        onMouseMove={handleDragMove}
-                        onMouseUp={handleDragEnd}
-                        onMouseLeave={handleDragEnd}
-                        onTouchStart={(e) => handleDragStart(e, category)}
-                        onTouchMove={handleDragMove}
-                        onTouchEnd={handleDragEnd}
-                      >
-                        <div className="mb-0">
-                          <div className="flex-1">
-                            <h4 className="font-bold text-lg dark-gray mb-0">
-                              {currentItem.name}
-                            </h4>
-                            <div className="text-sm text-gray-600 mb-2 mt-0">{currentItem.translation}</div>
-                          </div>
-                        </div>
-
-                        <div className="text-sm xs:text-xs text-gray-500 mb-4 flex-grow">
-                          {currentItem.description}
-                        </div>
-
-                        <Button 
-                          size="lg"
-                          className="bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto font-bold"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onItemSelect(currentItem);
-                          }}
-                          onMouseDown={(e) => e.stopPropagation()}
-                          onTouchStart={(e) => e.stopPropagation()}
-                        >
-                          Customize & Add
-                        </Button>
+                    )}
+                    
+                    {/* Current Item */}
+                    <div className="w-[452px] flex-shrink-0">
+                      <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
+                        ${parseFloat(currentItem.price).toFixed(2)}
+                      </Badge>
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
+                        {renderCardContent(currentItem, category)}
+                      </Card>
+                    </div>
+                    
+                    {/* Next Item */}
+                    {dragInfo.nextItem && (
+                      <div className="w-[452px] flex-shrink-0">
+                        <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
+                          ${parseFloat(dragInfo.nextItem.price).toFixed(2)}
+                        </Badge>
+                        <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
+                          {renderCardContent(dragInfo.nextItem, category)}
+                        </Card>
                       </div>
-                    </CardContent>
-                  </Card>
+                    )}
+                  </div>
+                </div>
+                    
                 </div>
                 {/* Navigation Dots */}
                 {filteredItems.length > 1 && (
