@@ -260,6 +260,75 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     }));
   };
 
+  // Simple manual drag functions that preserve original behavior
+  const handleManualPrevItem = (category: string) => {
+    const filteredItems = menuItems.filter(item => item.category === category);
+    if (filteredItems.length <= 1) return;
+    
+    // Update the index first
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: prev[category] === 0 || prev[category] === undefined 
+        ? filteredItems.length - 1 
+        : prev[category] - 1
+    }));
+    
+    // Simple slide animation to final position
+    setTimeout(() => {
+      setDragState(prev => ({
+        ...prev,
+        currentX: 0,
+        isTransitioning: true
+      }));
+    }, 50);
+    
+    // Reset drag state after animation
+    setTimeout(() => {
+      setDragState(prev => ({
+        ...prev,
+        isDragging: false,
+        startX: 0,
+        currentX: 0,
+        category: null,
+        isTransitioning: false
+      }));
+    }, 550);
+  };
+
+  const handleManualNextItem = (category: string) => {
+    const filteredItems = menuItems.filter(item => item.category === category);
+    if (filteredItems.length <= 1) return;
+    
+    // Update the index first
+    setCurrentItemIndexes(prev => ({
+      ...prev,
+      [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
+        ? 0 
+        : (prev[category] || 0) + 1
+    }));
+    
+    // Simple slide animation to final position
+    setTimeout(() => {
+      setDragState(prev => ({
+        ...prev,
+        currentX: 0,
+        isTransitioning: true
+      }));
+    }, 50);
+    
+    // Reset drag state after animation
+    setTimeout(() => {
+      setDragState(prev => ({
+        ...prev,
+        isDragging: false,
+        startX: 0,
+        currentX: 0,
+        category: null,
+        isTransitioning: false
+      }));
+    }, 550);
+  };
+
   const handleDragEnd = () => {
     if (!dragState.isDragging || !dragState.category) return;
     
@@ -267,22 +336,44 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     const threshold = 50; // Minimum distance to trigger swipe
     
     if (Math.abs(deltaX) > threshold) {
-      if (deltaX > 0) {
-        // Swiped right, go to previous item
-        handlePrevItem(dragState.category);
-      } else {
-        // Swiped left, go to next item
-        handleNextItem(dragState.category);
+      const filteredItems = menuItems.filter(item => item.category === dragState.category);
+      if (filteredItems.length > 1) {
+        if (deltaX > 0) {
+          // Swiped right, go to previous item
+          setCurrentItemIndexes(prev => ({
+            ...prev,
+            [dragState.category!]: prev[dragState.category!] === 0 || prev[dragState.category!] === undefined 
+              ? filteredItems.length - 1 
+              : prev[dragState.category!] - 1
+          }));
+        } else {
+          // Swiped left, go to next item
+          setCurrentItemIndexes(prev => ({
+            ...prev,
+            [dragState.category!]: prev[dragState.category!] === filteredItems.length - 1 || prev[dragState.category!] === undefined
+              ? 0 
+              : (prev[dragState.category!] || 0) + 1
+          }));
+        }
       }
     }
     
-    setDragState({
-      isDragging: false,
-      startX: 0,
+    // Simple reset animation for manual drag
+    setDragState(prev => ({
+      ...prev,
       currentX: 0,
-      category: null,
-      isTransitioning: false
-    });
+      isTransitioning: true
+    }));
+    
+    setTimeout(() => {
+      setDragState({
+        isDragging: false,
+        startX: 0,
+        currentX: 0,
+        category: null,
+        isTransitioning: false
+      });
+    }, 500);
   };
 
   // Function to render card content to avoid repetition
