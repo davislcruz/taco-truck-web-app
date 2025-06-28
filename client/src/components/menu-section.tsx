@@ -38,6 +38,17 @@ const categoryTaglines: Record<string, string> = {
 export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSectionProps) {
   const [currentItemIndexes, setCurrentItemIndexes] = useState<Record<string, number>>({});
   const [bodyWidth, setBodyWidth] = useState<number>(0);
+  const [dragState, setDragState] = useState<{
+    isDragging: boolean;
+    startX: number;
+    currentX: number;
+    category: string | null;
+  }>({
+    isDragging: false,
+    startX: 0,
+    currentX: 0,
+    category: null
+  });
 
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
 
@@ -92,6 +103,50 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       ...prev,
       [category]: index
     }));
+  };
+
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent, category: string) => {
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    setDragState({
+      isDragging: true,
+      startX: clientX,
+      currentX: clientX,
+      category
+    });
+  };
+
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!dragState.isDragging || !dragState.category) return;
+    
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    setDragState(prev => ({
+      ...prev,
+      currentX: clientX
+    }));
+  };
+
+  const handleDragEnd = () => {
+    if (!dragState.isDragging || !dragState.category) return;
+    
+    const deltaX = dragState.currentX - dragState.startX;
+    const threshold = 50; // Minimum distance to trigger swipe
+    
+    if (Math.abs(deltaX) > threshold) {
+      if (deltaX > 0) {
+        // Swiped right, go to previous item
+        handlePrevItem(dragState.category);
+      } else {
+        // Swiped left, go to next item
+        handleNextItem(dragState.category);
+      }
+    }
+    
+    setDragState({
+      isDragging: false,
+      startX: 0,
+      currentX: 0,
+      category: null
+    });
   };
 
   return (
@@ -166,7 +221,14 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     ${parseFloat(currentItem.price).toFixed(2)}
                   </Badge>
                   <Card 
-                    className="overflow-hidden hover:shadow-lg transition-shadow max-w-[452px]"
+                    className="overflow-hidden hover:shadow-lg transition-shadow max-w-[452px] select-none cursor-grab active:cursor-grabbing"
+                    onMouseDown={(e) => handleDragStart(e, category)}
+                    onMouseMove={handleDragMove}
+                    onMouseUp={handleDragEnd}
+                    onMouseLeave={handleDragEnd}
+                    onTouchStart={(e) => handleDragStart(e, category)}
+                    onTouchMove={handleDragMove}
+                    onTouchEnd={handleDragEnd}
                   >
                     <CardContent className="p-0 flex flex-col xs:flex-row relative">
 
@@ -199,7 +261,12 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         <Button 
                           size="lg"
                           className="bg-mexican-red hover:bg-red-600 text-white px-6 mt-auto font-bold"
-                          onClick={() => onItemSelect(currentItem)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onItemSelect(currentItem);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          onTouchStart={(e) => e.stopPropagation()}
                         >
                           Customize & Add
                         </Button>
