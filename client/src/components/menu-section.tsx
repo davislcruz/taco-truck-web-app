@@ -75,7 +75,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     return () => window.removeEventListener('resize', calculateDimensions);
   }, []);
 
-  const handlePrevItem = (category: string) => {
+  // ARROW BUTTON FUNCTIONS - Continuous sliding effect
+  const handleButtonPrevItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
@@ -128,7 +129,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     }, 550);
   };
 
-  const handleNextItem = (category: string) => {
+  const handleButtonNextItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
@@ -181,7 +182,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     }, 550);
   };
 
-  const setItemIndex = (category: string, index: number) => {
+  // DOT NAVIGATION FUNCTION - Continuous sliding effect
+  const handleDotNavigation = (category: string, index: number) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     const currentIndex = currentItemIndexes[category] || 0;
     
@@ -499,7 +501,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         className="absolute left-0 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handlePrevItem(category);
+                          handleButtonPrevItem(category);
                         }}
                       >
                         <ChevronLeft className="h-4 w-4" />
@@ -511,7 +513,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         className="absolute right-0 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleNextItem(category);
+                          handleButtonNextItem(category);
                         }}
                       >
                         <ChevronRight className="h-4 w-4" />
@@ -581,7 +583,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                               ? 'bg-mexican-red' 
                               : 'bg-gray-300 hover:bg-gray-400'
                           }`}
-                          onClick={() => setItemIndex(category, index)}
+                          onClick={() => handleDotNavigation(category, index)}
                         />
                       ))}
                     </div>
