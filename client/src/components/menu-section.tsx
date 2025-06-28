@@ -54,15 +54,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
   
-  // Debug: Log categories and items to see what's loaded
-  React.useEffect(() => {
-    console.log('Menu items loaded:', menuItems.length);
-    console.log('Categories found:', categories);
-    console.log('Items per category:', categories.map(cat => ({
-      category: cat,
-      count: menuItems.filter(item => item.category === cat).length
-    })));
-  }, [menuItems, categories]);
+
 
   // Calculate body/html width on mount and resize
   React.useEffect(() => {
@@ -365,8 +357,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
             const currentItemIndex = currentItemIndexes[category] || 0;
             const currentItem = filteredItems[currentItemIndex];
 
-
-
             if (!currentItem) return null;
 
             // Calculate which items to show for sliding animation
@@ -454,8 +444,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   <div 
                     className={`flex ${getTransitionClass()}`}
                     style={{
-                      transform: `translateX(${-452 + (dragInfo.isDragging ? dragInfo.deltaX : 0)}px)`,
-                      width: '1356px' // 3 * 452px for three cards side by side
+                      transform: `translateX(${filteredItems.length === 1 ? '0px' : -452 + (dragInfo.isDragging ? dragInfo.deltaX : 0)}px)`,
+                      width: filteredItems.length === 1 ? '452px' : '1356px' // Single item vs three cards
                     }}
                     onMouseDown={(e) => handleDragStart(e, category)}
                     onMouseMove={handleDragMove}
@@ -482,7 +472,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
                         ${parseFloat(currentItem.price).toFixed(2)}
                       </Badge>
-                      <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing min-h-[200px]">
                         {renderCardContent(currentItem, category)}
                       </Card>
                     </div>
