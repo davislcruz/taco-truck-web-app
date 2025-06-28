@@ -79,32 +79,43 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Update the index first so the new item is ready
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: prev[category] === 0 || prev[category] === undefined 
-        ? filteredItems.length - 1 
-        : prev[category] - 1
-    }));
-    
-    // Start animation from fully slid right position
+    // Start sliding to the right to reveal the previous item
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: 452, // Start completely to the right
+      currentX: 0, // Start at center
       category,
       isTransitioning: true
     }));
     
-    // Immediately begin sliding all the way to center
+    // Slide the entire carousel to the right (452px = one card width)
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0, // Slide all the way to center
+        currentX: 452, // Slide right to show previous item
         isTransitioning: true
       }));
     }, 50);
+    
+    // Update the index when the slide is halfway complete
+    setTimeout(() => {
+      setCurrentItemIndexes(prev => ({
+        ...prev,
+        [category]: prev[category] === 0 || prev[category] === undefined 
+          ? filteredItems.length - 1 
+          : prev[category] - 1
+      }));
+    }, 250);
+    
+    // Slide back to center with the new item now in place
+    setTimeout(() => {
+      setDragState(prev => ({
+        ...prev,
+        currentX: 0, // Return to center
+        isTransitioning: true
+      }));
+    }, 300);
     
     // Reset drag state after animation completes
     setTimeout(() => {
@@ -116,39 +127,50 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 550);
+    }, 800);
   };
 
   const handleNextItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Update the index first so the new item is ready
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
-        ? 0 
-        : (prev[category] || 0) + 1
-    }));
-    
-    // Start animation from fully slid left position
+    // Start sliding to the left to reveal the next item
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: -452, // Start completely to the left
+      currentX: 0, // Start at center
       category,
       isTransitioning: true
     }));
     
-    // Immediately begin sliding all the way to center
+    // Slide the entire carousel to the left (452px = one card width)
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0, // Slide all the way to center
+        currentX: -452, // Slide left to show next item
         isTransitioning: true
       }));
     }, 50);
+    
+    // Update the index when the slide is halfway complete
+    setTimeout(() => {
+      setCurrentItemIndexes(prev => ({
+        ...prev,
+        [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
+          ? 0 
+          : (prev[category] || 0) + 1
+      }));
+    }, 250);
+    
+    // Slide back to center with the new item now in place
+    setTimeout(() => {
+      setDragState(prev => ({
+        ...prev,
+        currentX: 0, // Return to center
+        isTransitioning: true
+      }));
+    }, 300);
     
     // Reset drag state after animation completes
     setTimeout(() => {
@@ -160,7 +182,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 550);
+    }, 800);
   };
 
   const setItemIndex = (category: string, index: number) => {
@@ -169,33 +191,44 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     
     if (index === currentIndex || filteredItems.length <= 1) return;
     
-    // Update the index first so the new item is ready
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: index
-    }));
-    
     // Determine slide direction based on index change
     const slideDirection = index > currentIndex ? -452 : 452;
     
-    // Start animation from fully offset position
+    // Start sliding to reveal the target item
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: slideDirection, // Start completely offset
+      currentX: 0, // Start at center
       category,
       isTransitioning: true
     }));
     
-    // Immediately begin sliding all the way to center
+    // Slide the entire carousel in the appropriate direction
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0, // Slide all the way to center
+        currentX: slideDirection, // Slide to show target item
         isTransitioning: true
       }));
     }, 50);
+    
+    // Update the index when the slide is halfway complete
+    setTimeout(() => {
+      setCurrentItemIndexes(prev => ({
+        ...prev,
+        [category]: index
+      }));
+    }, 250);
+    
+    // Slide back to center with the new item now in place
+    setTimeout(() => {
+      setDragState(prev => ({
+        ...prev,
+        currentX: 0, // Return to center
+        isTransitioning: true
+      }));
+    }, 300);
     
     // Reset drag state after animation completes
     setTimeout(() => {
@@ -207,7 +240,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         category: null,
         isTransitioning: false
       }));
-    }, 550);
+    }, 800);
   };
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent, category: string) => {
