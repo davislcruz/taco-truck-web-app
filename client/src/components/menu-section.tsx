@@ -77,29 +77,110 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
   const handlePrevItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
-    setCurrentItemIndexes(prev => ({
+    if (filteredItems.length <= 1) return;
+    
+    // Trigger a brief animation to show transition
+    setDragState(prev => ({
       ...prev,
-      [category]: prev[category] === 0 || prev[category] === undefined 
-        ? filteredItems.length - 1 
-        : prev[category] - 1
+      isDragging: true,
+      startX: 0,
+      currentX: 150, // Positive value to show sliding from left
+      category,
+      isTransitioning: true
     }));
+    
+    // Update the index after a brief delay
+    setTimeout(() => {
+      setCurrentItemIndexes(prev => ({
+        ...prev,
+        [category]: prev[category] === 0 || prev[category] === undefined 
+          ? filteredItems.length - 1 
+          : prev[category] - 1
+      }));
+      
+      // Reset drag state
+      setDragState(prev => ({
+        ...prev,
+        isDragging: false,
+        startX: 0,
+        currentX: 0,
+        category: null,
+        isTransitioning: false
+      }));
+    }, 250);
   };
 
   const handleNextItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
-    setCurrentItemIndexes(prev => ({
+    if (filteredItems.length <= 1) return;
+    
+    // Trigger a brief animation to show transition
+    setDragState(prev => ({
       ...prev,
-      [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
-        ? 0 
-        : (prev[category] || 0) + 1
+      isDragging: true,
+      startX: 0,
+      currentX: -150, // Negative value to show sliding from right
+      category,
+      isTransitioning: true
     }));
+    
+    // Update the index after a brief delay
+    setTimeout(() => {
+      setCurrentItemIndexes(prev => ({
+        ...prev,
+        [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
+          ? 0 
+          : (prev[category] || 0) + 1
+      }));
+      
+      // Reset drag state
+      setDragState(prev => ({
+        ...prev,
+        isDragging: false,
+        startX: 0,
+        currentX: 0,
+        category: null,
+        isTransitioning: false
+      }));
+    }, 150);
   };
 
   const setItemIndex = (category: string, index: number) => {
-    setCurrentItemIndexes(prev => ({
+    const filteredItems = menuItems.filter(item => item.category === category);
+    const currentIndex = currentItemIndexes[category] || 0;
+    
+    if (index === currentIndex || filteredItems.length <= 1) return;
+    
+    // Determine slide direction
+    const slideDirection = index > currentIndex ? -150 : 150;
+    
+    // Trigger sliding animation
+    setDragState(prev => ({
       ...prev,
-      [category]: index
+      isDragging: true,
+      startX: 0,
+      currentX: slideDirection,
+      category,
+      isTransitioning: true
     }));
+    
+    // Update the index after animation starts
+    setTimeout(() => {
+      setCurrentItemIndexes(prev => ({
+        ...prev,
+        [category]: index
+      }));
+      
+      // Reset drag state
+      setDragState(prev => ({
+        ...prev,
+        isDragging: false,
+        startX: 0,
+        currentX: 0,
+        category: null,
+        isTransitioning: false
+      }));
+    }, 150);
   };
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent, category: string) => {
@@ -211,27 +292,35 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
             if (!currentItem) return null;
 
-            // Calculate which items to show during drag
+            // Calculate which items to show for sliding animation
             const getDragInfo = () => {
+              const prevIndex = currentItemIndex === 0 ? filteredItems.length - 1 : currentItemIndex - 1;
+              const nextIndex = currentItemIndex === filteredItems.length - 1 ? 0 : currentItemIndex + 1;
+              
               if (dragState.isDragging && dragState.category === category) {
                 const deltaX = dragState.currentX - dragState.startX;
-                const prevIndex = currentItemIndex === 0 ? filteredItems.length - 1 : currentItemIndex - 1;
-                const nextIndex = currentItemIndex === filteredItems.length - 1 ? 0 : currentItemIndex + 1;
                 
                 return {
                   deltaX,
-                  prevItem: filteredItems[prevIndex],
-                  nextItem: filteredItems[nextIndex],
+                  prevItem: filteredItems.length > 1 ? filteredItems[prevIndex] : null,
+                  nextItem: filteredItems.length > 1 ? filteredItems[nextIndex] : null,
                   isDragging: true
                 };
               }
-              return { deltaX: 0, prevItem: null, nextItem: null, isDragging: false };
+              
+              // Always show prev/next items for smooth transitions
+              return { 
+                deltaX: 0, 
+                prevItem: filteredItems.length > 1 ? filteredItems[prevIndex] : null,
+                nextItem: filteredItems.length > 1 ? filteredItems[nextIndex] : null,
+                isDragging: false 
+              };
             };
 
             const dragInfo = getDragInfo();
             
             const getTransitionClass = () => {
-              return dragInfo.isDragging ? '' : 'transition-transform duration-300 ease-out';
+              return dragInfo.isDragging && !dragState.isTransitioning ? '' : 'transition-transform duration-300 ease-out';
             };
 
             return (
@@ -286,8 +375,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                   <div 
                     className={`flex ${getTransitionClass()}`}
                     style={{
-                      transform: `translateX(${dragInfo.isDragging ? dragInfo.deltaX : 0}px)`,
-                      width: '452px' // Single card width since we're showing one at a time
+                      transform: `translateX(${dragInfo.isDragging ? dragInfo.deltaX - 452 : -452}px)`,
+                      width: '1356px' // 3 * 452px for three cards side by side
                     }}
                     onMouseDown={(e) => handleDragStart(e, category)}
                     onMouseMove={handleDragMove}
@@ -297,6 +386,18 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     onTouchMove={handleDragMove}
                     onTouchEnd={handleDragEnd}
                   >
+                    {/* Previous Item */}
+                    {dragInfo.prevItem && (
+                      <div className="w-[452px] flex-shrink-0 relative">
+                        <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
+                          ${parseFloat(dragInfo.prevItem.price).toFixed(2)}
+                        </Badge>
+                        <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
+                          {renderCardContent(dragInfo.prevItem, category)}
+                        </Card>
+                      </div>
+                    )}
+                    
                     {/* Current Item */}
                     <div className="w-[452px] flex-shrink-0 relative">
                       <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
@@ -306,6 +407,18 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         {renderCardContent(currentItem, category)}
                       </Card>
                     </div>
+                    
+                    {/* Next Item */}
+                    {dragInfo.nextItem && (
+                      <div className="w-[452px] flex-shrink-0 relative">
+                        <Badge variant="secondary" className="absolute -top-2 -right-2 mexican-red text-white text-sm px-3 py-1 z-20 border border-gray-300 shadow-lg">
+                          ${parseFloat(dragInfo.nextItem.price).toFixed(2)}
+                        </Badge>
+                        <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
+                          {renderCardContent(dragInfo.nextItem, category)}
+                        </Card>
+                      </div>
+                    )}
                   </div>
                 </div>
                 {/* Navigation Dots */}
