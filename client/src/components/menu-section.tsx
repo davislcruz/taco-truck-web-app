@@ -233,18 +233,36 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     <CardContent className="p-0 flex flex-col xs:flex-row relative">
 
                       {/* Image section - shows on top for mobile, left side for larger screens */}
-                      <div className="w-full xs:w-1/2 xs:order-1 relative">
+                      <div 
+                        className="w-full xs:w-1/2 xs:order-1 relative cursor-grab active:cursor-grabbing select-none"
+                        onMouseDown={(e) => handleDragStart(e, category)}
+                        onMouseMove={handleDragMove}
+                        onMouseUp={handleDragEnd}
+                        onMouseLeave={handleDragEnd}
+                        onTouchStart={(e) => handleDragStart(e, category)}
+                        onTouchMove={handleDragMove}
+                        onTouchEnd={handleDragEnd}
+                      >
                         <div className="aspect-[3/2] xs:aspect-[4/3] relative">
                           <img 
                             src={currentItem.image || "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"} 
                             alt={currentItem.name}
-                            className="w-full h-full object-cover rounded-t-lg xs:rounded-t-none xs:rounded-l-lg"
+                            className="w-full h-full object-cover rounded-t-lg xs:rounded-t-none xs:rounded-l-lg pointer-events-none"
                           />
                         </div>
                       </div>
 
                       {/* Content section - shows below image on mobile, right side for larger screens */}
-                      <div className="flex-1 xs:order-2 py-2.5 px-2.5 xs:pl-4 flex flex-col relative">
+                      <div 
+                        className="flex-1 xs:order-2 py-2.5 px-2.5 xs:pl-4 flex flex-col relative cursor-grab active:cursor-grabbing select-none"
+                        onMouseDown={(e) => handleDragStart(e, category)}
+                        onMouseMove={handleDragMove}
+                        onMouseUp={handleDragEnd}
+                        onMouseLeave={handleDragEnd}
+                        onTouchStart={(e) => handleDragStart(e, category)}
+                        onTouchMove={handleDragMove}
+                        onTouchEnd={handleDragEnd}
+                      >
                         <div className="mb-0">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg dark-gray mb-0">
