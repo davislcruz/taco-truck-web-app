@@ -211,50 +211,88 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     }, 550);
   };
 
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent, category: string) => {
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    setDragState({
+  // Manual drag functions - completely separate from button navigation
+  const handleManualDragStart = (category: string, startX: number) => {
+    setDragState(prev => ({
+      ...prev,
       isDragging: true,
-      startX: clientX,
-      currentX: clientX,
+      startX,
+      currentX: 0,
       category,
       isTransitioning: false
-    });
+    }));
+  };
+
+  const handleManualDragMove = (currentX: number) => {
+    setDragState(prev => ({
+      ...prev,
+      currentX: currentX - prev.startX
+    }));
+  };
+
+  const handleManualDragEnd = (category: string) => {
+    const filteredItems = menuItems.filter(item => item.category === category);
+    if (filteredItems.length <= 1) {
+      setDragState(prev => ({
+        ...prev,
+        isDragging: false,
+        startX: 0,
+        currentX: 0,
+        category: null,
+        isTransitioning: false
+      }));
+      return;
+    }
+
+    const dragDistance = dragState.currentX;
+    const threshold = 100;
+    
+    if (Math.abs(dragDistance) > threshold) {
+      if (dragDistance > 0) {
+        // Dragged right - go to previous item
+        setCurrentItemIndexes(prev => ({
+          ...prev,
+          [category]: prev[category] === 0 || prev[category] === undefined 
+            ? filteredItems.length - 1 
+            : prev[category] - 1
+        }));
+      } else {
+        // Dragged left - go to next item
+        setCurrentItemIndexes(prev => ({
+          ...prev,
+          [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
+            ? 0 
+            : (prev[category] || 0) + 1
+        }));
+      }
+    }
+    
+    // Simple reset for manual drag - no fancy animation
+    setDragState(prev => ({
+      ...prev,
+      isDragging: false,
+      startX: 0,
+      currentX: 0,
+      category: null,
+      isTransitioning: false
+    }));
+  };
+
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent, category: string) => {
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    handleManualDragStart(category, clientX);
   };
 
   const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!dragState.isDragging || !dragState.category) return;
     
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    setDragState(prev => ({
-      ...prev,
-      currentX: clientX
-    }));
+    handleManualDragMove(clientX);
   };
 
   const handleDragEnd = () => {
     if (!dragState.isDragging || !dragState.category) return;
-    
-    const deltaX = dragState.currentX - dragState.startX;
-    const threshold = 50; // Minimum distance to trigger swipe
-    
-    if (Math.abs(deltaX) > threshold) {
-      if (deltaX > 0) {
-        // Swiped right, go to previous item
-        handlePrevItem(dragState.category);
-      } else {
-        // Swiped left, go to next item
-        handleNextItem(dragState.category);
-      }
-    }
-    
-    setDragState({
-      isDragging: false,
-      startX: 0,
-      currentX: 0,
-      category: null,
-      isTransitioning: false
-    });
+    handleManualDragEnd(dragState.category);
   };
 
   // Function to render card content to avoid repetition
@@ -380,7 +418,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         className="absolute left-0 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handlePrevItem(category);
+                          handleButtonPrevItem(category);
                         }}
                       >
                         <ChevronLeft className="h-4 w-4" />
@@ -392,7 +430,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                         className="absolute right-0 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleNextItem(category);
+                          handleButtonNextItem(category);
                         }}
                       >
                         <ChevronRight className="h-4 w-4" />
@@ -462,7 +500,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                               ? 'bg-mexican-red' 
                               : 'bg-gray-300 hover:bg-gray-400'
                           }`}
-                          onClick={() => setItemIndex(category, index)}
+                          onClick={() => handleDotNavigation(category, index)}
                         />
                       ))}
                     </div>
