@@ -338,8 +338,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     )}
                   </div>
                 </div>
-                    
-                </div>
                 {/* Navigation Dots */}
                 {filteredItems.length > 1 && (
                   <div className="flex items-center justify-center mt-6">
