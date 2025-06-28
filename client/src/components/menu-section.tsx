@@ -83,12 +83,13 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     if (filteredItems.length <= 1) return;
     
     // Update the index first
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: prev[category] === 0 || prev[category] === undefined 
-        ? filteredItems.length - 1 
-        : prev[category] - 1
-    }));
+    setCurrentItemIndexes(prev => {
+      const currentIndex = prev[category] ?? 0; // Use nullish coalescing for proper initialization
+      return {
+        ...prev,
+        [category]: currentIndex === 0 ? filteredItems.length - 1 : currentIndex - 1
+      };
+    });
     
     // Trigger continuous sliding animation from right
     setDragState(prev => ({
@@ -127,12 +128,13 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     if (filteredItems.length <= 1) return;
     
     // Update the index first
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
-        ? 0 
-        : (prev[category] || 0) + 1
-    }));
+    setCurrentItemIndexes(prev => {
+      const currentIndex = prev[category] ?? 0; // Use nullish coalescing for proper initialization
+      return {
+        ...prev,
+        [category]: currentIndex === filteredItems.length - 1 ? 0 : currentIndex + 1
+      };
+    });
     
     // Trigger continuous sliding animation from left
     setDragState(prev => ({
@@ -168,7 +170,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
   const handleDotNavigation = (category: string, index: number) => {
     const filteredItems = menuItems.filter(item => item.category === category);
-    const currentIndex = currentItemIndexes[category] || 0;
+    const currentIndex = currentItemIndexes[category] ?? 0; // Use nullish coalescing for proper initialization
     
     if (index === currentIndex || filteredItems.length <= 1) return;
     
@@ -253,20 +255,22 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     if (Math.abs(dragDistance) > threshold) {
       if (dragDistance > 0) {
         // Dragged right - go to previous item
-        setCurrentItemIndexes(prev => ({
-          ...prev,
-          [category]: prev[category] === 0 || prev[category] === undefined 
-            ? filteredItems.length - 1 
-            : prev[category] - 1
-        }));
+        setCurrentItemIndexes(prev => {
+          const currentIndex = prev[category] ?? 0;
+          return {
+            ...prev,
+            [category]: currentIndex === 0 ? filteredItems.length - 1 : currentIndex - 1
+          };
+        });
       } else {
         // Dragged left - go to next item
-        setCurrentItemIndexes(prev => ({
-          ...prev,
-          [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
-            ? 0 
-            : (prev[category] || 0) + 1
-        }));
+        setCurrentItemIndexes(prev => {
+          const currentIndex = prev[category] ?? 0;
+          return {
+            ...prev,
+            [category]: currentIndex === filteredItems.length - 1 ? 0 : currentIndex + 1
+          };
+        });
       }
     }
     
