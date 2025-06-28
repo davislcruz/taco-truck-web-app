@@ -79,32 +79,41 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Update the index first
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: prev[category] === 0 || prev[category] === undefined 
-        ? filteredItems.length - 1 
-        : prev[category] - 1
-    }));
-    
-    // Trigger sliding animation from right
+    // Start continuous sliding animation - current item slides out to left
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: 452, // Slide from right to left
+      currentX: -452, // Current item slides out to left
       category,
       isTransitioning: true
     }));
     
-    // Animate to final position
+    // Update index and start new item sliding in from right
+    setTimeout(() => {
+      setCurrentItemIndexes(prev => ({
+        ...prev,
+        [category]: prev[category] === 0 || prev[category] === undefined 
+          ? filteredItems.length - 1 
+          : prev[category] - 1
+      }));
+      
+      // New item starts from right and slides to center
+      setDragState(prev => ({
+        ...prev,
+        currentX: 452, // New item starts from right
+        isTransitioning: false // Disable transition for instant positioning
+      }));
+    }, 250); // Halfway through the animation
+    
+    // Complete the slide-in animation
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0,
+        currentX: 0, // Slide to center
         isTransitioning: true
       }));
-    }, 50);
+    }, 260);
     
     // Reset drag state after animation
     setTimeout(() => {
@@ -123,32 +132,41 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Update the index first
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
-        ? 0 
-        : (prev[category] || 0) + 1
-    }));
-    
-    // Trigger sliding animation from left
+    // Start continuous sliding animation - current item slides out to right
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: -452, // Slide from left to right
+      currentX: 452, // Current item slides out to right
       category,
       isTransitioning: true
     }));
     
-    // Animate to final position
+    // Update index and start new item sliding in from left
+    setTimeout(() => {
+      setCurrentItemIndexes(prev => ({
+        ...prev,
+        [category]: prev[category] === filteredItems.length - 1 || prev[category] === undefined
+          ? 0 
+          : (prev[category] || 0) + 1
+      }));
+      
+      // New item starts from left and slides to center
+      setDragState(prev => ({
+        ...prev,
+        currentX: -452, // New item starts from left
+        isTransitioning: false // Disable transition for instant positioning
+      }));
+    }, 250); // Halfway through the animation
+    
+    // Complete the slide-in animation
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0,
+        currentX: 0, // Slide to center
         isTransitioning: true
       }));
-    }, 50);
+    }, 260);
     
     // Reset drag state after animation
     setTimeout(() => {
@@ -169,33 +187,44 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     
     if (index === currentIndex || filteredItems.length <= 1) return;
     
-    // Update the index first
-    setCurrentItemIndexes(prev => ({
-      ...prev,
-      [category]: index
-    }));
+    // Determine slide direction - if going forward slide right, if going back slide left
+    const isGoingForward = index > currentIndex;
+    const slideOutDirection = isGoingForward ? 452 : -452;
+    const slideInDirection = isGoingForward ? -452 : 452;
     
-    // Determine slide direction
-    const slideDirection = index > currentIndex ? -452 : 452;
-    
-    // Trigger sliding animation
+    // Start continuous sliding animation - current item slides out
     setDragState(prev => ({
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: slideDirection,
+      currentX: slideOutDirection, // Current item slides out
       category,
       isTransitioning: true
     }));
     
-    // Animate to final position
+    // Update index and start new item sliding in from opposite side
+    setTimeout(() => {
+      setCurrentItemIndexes(prev => ({
+        ...prev,
+        [category]: index
+      }));
+      
+      // New item starts from opposite side and slides to center
+      setDragState(prev => ({
+        ...prev,
+        currentX: slideInDirection, // New item starts from opposite side
+        isTransitioning: false // Disable transition for instant positioning
+      }));
+    }, 250); // Halfway through the animation
+    
+    // Complete the slide-in animation
     setTimeout(() => {
       setDragState(prev => ({
         ...prev,
-        currentX: 0,
+        currentX: 0, // Slide to center
         isTransitioning: true
       }));
-    }, 50);
+    }, 260);
     
     // Reset drag state after animation
     setTimeout(() => {
