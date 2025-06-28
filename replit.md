@@ -108,6 +108,8 @@ The application uses three main tables:
 
 ```
 Changelog:
+- June 28, 2025. Repositioned navigation buttons inward (left-16/right-16) from card edges while maintaining vertical alignment, centered card container with mx-auto for better layout balance
+- June 28, 2025. Fixed price badge clipping by moving outside overflow container with absolute positioning and custom margin classes (mt-[-14px] mb-[-14px] ml-[-22px] mr-[-22px]) for proper sticker appearance
 - June 28, 2025. Fixed tortas and semitas cards appearing blank by adjusting carousel positioning for single-item categories - single items now use proper centering (translateX: 0px) while multi-item categories maintain carousel behavior
 - June 28, 2025. Separated navigation methods completely - arrow buttons and dots use continuous sliding effects (500ms duration), manual drag uses simple snap-back behavior with independent coordinate systems for smooth bidirectional dragging
 - June 28, 2025. Implemented proper sliding carousel transitions for menu items - cards now slide in from appropriate directions during drag/navigation, with smooth animations for arrow buttons, navigation dots, and manual swipe gestures
