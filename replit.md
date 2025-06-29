@@ -108,6 +108,7 @@ The application uses three main tables:
 
 ```
 Changelog:
+- June 29, 2025. Updated all navigation containers to match card width (280px small screens, 452px large screens) with restructured title/button layout using flex siblings and separated tagline containers
 - June 28, 2025. Implemented responsive card width system - cards now adapt to screen size below 491px (viewport-32px padding, min 280px) while maintaining 452px fixed width above 491px, with proportional drag thresholds and dynamic carousel dimensions
 - June 28, 2025. Repositioned navigation buttons inward (left-16/right-16) from card edges while maintaining vertical alignment, centered card container with mx-auto for better layout balance
 - June 28, 2025. Fixed price badge clipping by moving outside overflow container with absolute positioning and custom margin classes (mt-[-14px] mb-[-14px] ml-[-22px] mr-[-22px]) for proper sticker appearance

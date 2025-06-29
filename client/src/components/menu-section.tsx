@@ -409,7 +409,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
             return (
               <div key={category} className="max-w-2xl mx-auto">
                 {/* Category Title with Navigation - Flex Container */}
-                <div className="flex items-center justify-between mx-auto px-4" style={{ maxWidth: `${cardWidth}px` }}>
+                <div className="flex items-center justify-between mx-auto" style={{ width: `${cardWidth}px` }}>
                   {/* Left Arrow Button */}
                   {filteredItems.length > 1 ? (
                     <Button
@@ -464,7 +464,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     )}
                   </div>
                 )}
-                <div className="relative mx-auto" style={{ maxWidth: `${cardWidth}px` }}>
+                <div className="relative mx-auto" style={{ width: `${cardWidth}px` }}>
                   {/* Price Badge - positioned outside overflow container */}
                   <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-sm px-3 py-1 z-30 border border-gray-300 shadow-lg mt-[-14px] mb-[-14px] ml-[-14px] mr-[-14px]">
                     ${parseFloat(currentItem.price).toFixed(2)}
