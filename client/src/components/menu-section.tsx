@@ -409,7 +409,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
             return (
               <div key={category} className="max-w-2xl mx-auto">
                 {/* Category Title with Navigation - Flex Container */}
-                <div className="flex items-center justify-between max-w-lg mx-auto px-4">
+                <div className="flex items-center justify-between mx-auto px-4" style={{ maxWidth: `${cardWidth}px` }}>
                   {/* Left Arrow Button */}
                   {filteredItems.length > 1 ? (
                     <Button
