@@ -108,6 +108,7 @@ The application uses three main tables:
 
 ```
 Changelog:
+- June 28, 2025. Implemented responsive card width system - cards now adapt to screen size below 491px (viewport-32px padding, min 280px) while maintaining 452px fixed width above 491px, with proportional drag thresholds and dynamic carousel dimensions
 - June 28, 2025. Repositioned navigation buttons inward (left-16/right-16) from card edges while maintaining vertical alignment, centered card container with mx-auto for better layout balance
 - June 28, 2025. Fixed price badge clipping by moving outside overflow container with absolute positioning and custom margin classes (mt-[-14px] mb-[-14px] ml-[-22px] mr-[-22px]) for proper sticker appearance
 - June 28, 2025. Fixed tortas and semitas cards appearing blank by adjusting carousel positioning for single-item categories - single items now use proper centering (translateX: 0px) while multi-item categories maintain carousel behavior
