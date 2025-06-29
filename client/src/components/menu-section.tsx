@@ -38,6 +38,7 @@ const categoryTaglines: Record<string, string> = {
 export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSectionProps) {
   const [currentItemIndexes, setCurrentItemIndexes] = useState<Record<string, number>>({});
   const [bodyWidth, setBodyWidth] = useState<number>(0);
+  const [cardWidth, setCardWidth] = useState<number>(452);
   const [dragState, setDragState] = useState<{
     isDragging: boolean;
     startX: number;
@@ -67,9 +68,14 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       
       setBodyWidth(bodyWidth);
       
+      // Set responsive card width
+      const newCardWidth = viewportWidth < 491 ? Math.max(viewportWidth - 32, 280) : 452; // 16px padding on each side, min 280px
+      setCardWidth(newCardWidth);
+      
       // Log screen size to console
       console.log(`Screen Size: ${viewportWidth}x${viewportHeight}`);
       console.log(`Body Width: ${bodyWidth}px, HTML Width: ${htmlWidth}px, Document Width: ${documentWidth}px`);
+      console.log(`Card Width: ${newCardWidth}px`);
 
     };
 
@@ -100,7 +106,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: 452, // Slide from right to left
+      currentX: cardWidth, // Slide from right to left
       category,
       isTransitioning: true
     }));
@@ -145,7 +151,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       ...prev,
       isDragging: true,
       startX: 0,
-      currentX: -452, // Slide from left to right
+      currentX: -cardWidth, // Slide from left to right
       category,
       isTransitioning: true
     }));
@@ -254,7 +260,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
     // Calculate drag distance correctly
     const dragDistance = dragState.currentX; // This is already the delta from handleManualDragMove
-    const threshold = 50;
+    const threshold = Math.max(cardWidth * 0.15, 50); // 15% of card width, minimum 50px
     
     if (Math.abs(dragDistance) > threshold) {
       if (dragDistance > 0) {
@@ -448,7 +454,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     </>
                   )}
                 </div>
-                <div className="relative mx-auto xs:max-w-[452px]">
+                <div className="relative mx-auto" style={{ maxWidth: cardWidth >= 452 ? '452px' : 'none' }}>
                   {/* Price Badge - positioned outside overflow container */}
                   <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-sm px-3 py-1 z-30 border border-gray-300 shadow-lg mt-[-14px] mb-[-14px] ml-[-22px] mr-[-22px]">
                     ${parseFloat(currentItem.price).toFixed(2)}
@@ -458,8 +464,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     <div 
                       className={`flex ${getTransitionClass()}`}
                       style={{
-                        transform: `translateX(${filteredItems.length === 1 ? '0px' : -452 + (dragInfo.isDragging ? dragInfo.deltaX : 0)}px)`,
-                        width: filteredItems.length === 1 ? '452px' : '1356px' // Single item vs three cards
+                        transform: `translateX(${filteredItems.length === 1 ? '0px' : -cardWidth + (dragInfo.isDragging ? dragInfo.deltaX : 0)}px)`,
+                        width: filteredItems.length === 1 ? `${cardWidth}px` : `${cardWidth * 3}px` // Single item vs three cards
                       }}
                       onMouseDown={(e) => handleDragStart(e, category)}
                       onMouseMove={handleDragMove}
@@ -471,7 +477,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     >
                       {/* Previous Item */}
                       {dragInfo.prevItem && (
-                        <div className="w-[452px] flex-shrink-0 relative">
+                        <div className="flex-shrink-0 relative" style={{ width: `${cardWidth}px` }}>
                           <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
                             {renderCardContent(dragInfo.prevItem, category)}
                           </Card>
@@ -479,7 +485,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       )}
                       
                       {/* Current Item */}
-                      <div className="w-[452px] flex-shrink-0 relative">
+                      <div className="flex-shrink-0 relative" style={{ width: `${cardWidth}px` }}>
                         <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
                           {renderCardContent(currentItem, category)}
                         </Card>
@@ -487,7 +493,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       
                       {/* Next Item */}
                       {dragInfo.nextItem && (
-                        <div className="w-[452px] flex-shrink-0 relative">
+                        <div className="flex-shrink-0 relative" style={{ width: `${cardWidth}px` }}>
                           <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
                             {renderCardContent(dragInfo.nextItem, category)}
                           </Card>
