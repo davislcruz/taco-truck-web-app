@@ -454,7 +454,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     </>
                   )}
                 </div>
-                <div className="relative mx-auto" style={{ maxWidth: cardWidth >= 452 ? '452px' : 'none' }}>
+                <div className="relative mx-auto" style={{ maxWidth: `${cardWidth}px` }}>
                   {/* Price Badge - positioned outside overflow container */}
                   <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-sm px-3 py-1 z-30 border border-gray-300 shadow-lg mt-[-14px] mb-[-14px] ml-[-22px] mr-[-22px]">
                     ${parseFloat(currentItem.price).toFixed(2)}
