@@ -408,14 +408,14 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
             return (
               <div key={category} className="max-w-2xl mx-auto">
-                {/* Category Title with Navigation - Combined Container */}
-                <div className="relative flex items-center justify-center">
-                  {/* Navigation Arrows */}
-                  {filteredItems.length > 1 && (
+                {/* Category Title with Navigation - Flex Container */}
+                <div className="flex items-center justify-between max-w-lg mx-auto px-4">
+                  {/* Left Arrow Button */}
+                  {filteredItems.length > 1 ? (
                     <Button
                       variant="outline"
                       size="icon"
-                      className="absolute left-16 bg-white/70 hover:bg-white/90 shadow-lg"
+                      className="bg-white/70 hover:bg-white/90 shadow-lg"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleButtonPrevItem(category);
@@ -423,10 +423,12 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
+                  ) : (
+                    <div className="w-10 h-10" /> // Spacer to maintain layout balance
                   )}
 
                   {/* Title and Tagline Container */}
-                  <div className="text-center">
+                  <div className="text-center flex-1 mx-4">
                     <h2 className="text-2xl font-bold my-0 text-red-600">
                       {categoryLabels[category] || category}
                     </h2>
@@ -443,11 +445,12 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     )}
                   </div>
 
-                  {filteredItems.length > 1 && (
+                  {/* Right Arrow Button */}
+                  {filteredItems.length > 1 ? (
                     <Button
                       variant="outline"
                       size="icon"
-                      className="absolute right-16 bg-white/70 hover:bg-white/90 shadow-lg"
+                      className="bg-white/70 hover:bg-white/90 shadow-lg"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleButtonNextItem(category);
@@ -455,6 +458,8 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     >
                       <ChevronRight className="h-4 w-4" />
                     </Button>
+                  ) : (
+                    <div className="w-10 h-10" /> // Spacer to maintain layout balance
                   )}
                 </div>
                 <div className="relative mx-auto" style={{ maxWidth: `${cardWidth}px` }}>
