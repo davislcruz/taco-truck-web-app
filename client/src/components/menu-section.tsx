@@ -494,7 +494,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                 </div>
                 {/* Navigation Dots */}
                 {filteredItems.length > 1 && (
-                  <div className="flex items-center justify-center mt-6">
+                  <div className="flex items-center justify-center mt-[5px] mb-[5px]">
                     <div className="flex space-x-2">
                       {filteredItems.map((_, index) => (
                         <button
