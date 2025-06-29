@@ -69,7 +69,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       setBodyWidth(bodyWidth);
       
       // Set responsive card width
-      const newCardWidth = viewportWidth < 491 ? Math.max(viewportWidth - 32, 280) : 452; // 16px padding on each side, min 280px
+      const newCardWidth = viewportWidth < 491 ? 280 : 452; // Fixed 280px for small screens, 452px for larger
       setCardWidth(newCardWidth);
       
       // Log screen size to console
