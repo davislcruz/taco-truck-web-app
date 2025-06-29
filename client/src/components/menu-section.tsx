@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -62,10 +62,14 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       const bodyWidth = document.body.offsetWidth;
       const htmlWidth = document.documentElement.offsetWidth;
       const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
       const documentWidth = document.documentElement.scrollWidth;
       
       setBodyWidth(bodyWidth);
       
+      // Log screen size to console
+      console.log(`Screen Size: ${viewportWidth}x${viewportHeight}`);
+      console.log(`Body Width: ${bodyWidth}px, HTML Width: ${htmlWidth}px, Document Width: ${documentWidth}px`);
 
     };
 
