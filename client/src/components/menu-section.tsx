@@ -427,22 +427,11 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     <div className="w-10 h-10" /> // Spacer to maintain layout balance
                   )}
 
-                  {/* Title and Tagline Container */}
+                  {/* Title Container */}
                   <div className="text-center flex-1 mx-4">
                     <h2 className="text-2xl font-bold my-0 text-red-600">
                       {categoryLabels[category] || category}
                     </h2>
-                    {categoryTaglines[category] && (
-                      <div className="text-xs text-green-600 my-0 mt-[11px] mb-[11px]">
-                        {categoryTaglines[category].includes('/') ? (
-                          <>
-                            {categoryTaglines[category].split(' / ')[0]} / <span className="whitespace-nowrap">{categoryTaglines[category].split(' / ')[1]}</span>
-                          </>
-                        ) : (
-                          categoryTaglines[category]
-                        )}
-                      </div>
-                    )}
                   </div>
 
                   {/* Right Arrow Button */}
@@ -462,6 +451,19 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     <div className="w-10 h-10" /> // Spacer to maintain layout balance
                   )}
                 </div>
+                
+                {/* Category Tagline - Sibling Container */}
+                {categoryTaglines[category] && (
+                  <div className="text-xs text-green-600 text-center my-0 mt-[11px] mb-[11px]">
+                    {categoryTaglines[category].includes('/') ? (
+                      <>
+                        {categoryTaglines[category].split(' / ')[0]} / <span className="whitespace-nowrap">{categoryTaglines[category].split(' / ')[1]}</span>
+                      </>
+                    ) : (
+                      categoryTaglines[category]
+                    )}
+                  </div>
+                )}
                 <div className="relative mx-auto" style={{ maxWidth: `${cardWidth}px` }}>
                   {/* Price Badge - positioned outside overflow container */}
                   <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-sm px-3 py-1 z-30 border border-gray-300 shadow-lg mt-[-14px] mb-[-14px] ml-[-14px] mr-[-14px]">
