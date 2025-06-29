@@ -408,55 +408,58 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
             return (
               <div key={category} className="max-w-2xl mx-auto">
-                {/* Category Title with Navigation */}
-                <div className="relative">
-                  <h2 className="text-2xl font-bold text-center my-0 text-red-600">
-                    {categoryLabels[category] || category}
-                  </h2>
-                  {categoryTaglines[category] && (
-                    <div className="text-xs text-green-600 text-center my-0 mt-[11px] mb-[11px]">
-                      {categoryTaglines[category].includes('/') ? (
-                        <>
-                          {categoryTaglines[category].split(' / ')[0]} / <span className="whitespace-nowrap">{categoryTaglines[category].split(' / ')[1]}</span>
-                        </>
-                      ) : (
-                        categoryTaglines[category]
-                      )}
-                    </div>
+                {/* Category Title with Navigation - Combined Container */}
+                <div className="relative flex items-center justify-center">
+                  {/* Navigation Arrows */}
+                  {filteredItems.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="absolute left-16 bg-white/70 hover:bg-white/90 shadow-lg"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleButtonPrevItem(category);
+                      }}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
                   )}
 
-                  {/* Navigation Arrows at Title Level */}
-                  {filteredItems.length > 1 && (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute left-16 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleButtonPrevItem(category);
-                        }}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
+                  {/* Title and Tagline Container */}
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold my-0 text-red-600">
+                      {categoryLabels[category] || category}
+                    </h2>
+                    {categoryTaglines[category] && (
+                      <div className="text-xs text-green-600 my-0 mt-[11px] mb-[11px]">
+                        {categoryTaglines[category].includes('/') ? (
+                          <>
+                            {categoryTaglines[category].split(' / ')[0]} / <span className="whitespace-nowrap">{categoryTaglines[category].split(' / ')[1]}</span>
+                          </>
+                        ) : (
+                          categoryTaglines[category]
+                        )}
+                      </div>
+                    )}
+                  </div>
 
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute right-16 top-1/2 -translate-y-1/2 -mt-[20px] xxs:-mt-[18px] mb-[-16px] bg-white/70 hover:bg-white/90 shadow-lg"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleButtonNextItem(category);
-                        }}
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </>
+                  {filteredItems.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="absolute right-16 bg-white/70 hover:bg-white/90 shadow-lg"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleButtonNextItem(category);
+                      }}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   )}
                 </div>
                 <div className="relative mx-auto" style={{ maxWidth: `${cardWidth}px` }}>
                   {/* Price Badge - positioned outside overflow container */}
-                  <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-sm px-3 py-1 z-30 border border-gray-300 shadow-lg mt-[-14px] mb-[-14px] ml-[-22px] mr-[-22px]">
+                  <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-sm px-3 py-1 z-30 border border-gray-300 shadow-lg mt-[-14px] mb-[-14px] ml-[-14px] mr-[-14px]">
                     ${parseFloat(currentItem.price).toFixed(2)}
                   </Badge>
                   
