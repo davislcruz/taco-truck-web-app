@@ -325,24 +325,44 @@ export default function MenuManagement() {
               <Card key={item.id}>
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h4 className="font-semibold">{item.name}</h4>
-                        <Badge variant="outline">${parseFloat(item.price).toFixed(2)}</Badge>
+                    <div className="flex space-x-4 flex-1">
+                      {/* Food Image */}
+                      <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                        {item.image ? (
+                          <img 
+                            src={item.image} 
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            <span className="text-2xl">🍽️</span>
+                          </div>
+                        )}
                       </div>
-                      <p className="text-sm text-gray-600 mb-1">{item.translation}</p>
-                      {item.description && (
-                        <p className="text-xs text-gray-500 mb-2">{item.description}</p>
-                      )}
-                      <div className="flex flex-wrap gap-1 text-xs">
-                        {item.meats && item.meats.length > 0 && (
-                          <Badge variant="secondary">Meats: {item.meats.join(", ")}</Badge>
+                      
+                      {/* Item Details */}
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <h4 className="font-semibold">{item.name}</h4>
+                          <Badge variant="outline">${parseFloat(item.price).toFixed(2)}</Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-1">{item.translation}</p>
+                        {item.description && (
+                          <p className="text-xs text-gray-500 mb-2">{item.description}</p>
                         )}
-                        {item.sizes && item.sizes.length > 0 && (
-                          <Badge variant="secondary">Sizes: {item.sizes.join(", ")}</Badge>
-                        )}
+                        <div className="flex flex-wrap gap-1 text-xs">
+                          {item.meats && item.meats.length > 0 && (
+                            <Badge variant="secondary">Meats: {item.meats.join(", ")}</Badge>
+                          )}
+                          {item.sizes && item.sizes.length > 0 && (
+                            <Badge variant="secondary">Sizes: {item.sizes.join(", ")}</Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
+                    
+                    {/* Action Buttons */}
                     <div className="flex space-x-2 ml-4">
                       <Button
                         size="sm"
