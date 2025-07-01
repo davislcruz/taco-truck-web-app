@@ -6,6 +6,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  role: text("role").notNull().default("employee"), // "owner" or "employee"
 });
 
 export const menuItems = pgTable("menu_items", {
@@ -36,6 +37,7 @@ export const orders = pgTable("orders", {
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  role: true,
 });
 
 export const insertMenuItemSchema = createInsertSchema(menuItems).omit({

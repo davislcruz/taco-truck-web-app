@@ -158,7 +158,7 @@ export class MemStorage implements IStorage {
   }
 
   private async initializeDefaultAdmin() {
-    // Create default admin user: admin/admin123
+    // Create default owner user: admin/admin123
     const scryptAsync = promisify(scrypt);
     const salt = randomBytes(16).toString("hex");
     const buf = (await scryptAsync("admin123", salt, 64)) as Buffer;
@@ -167,7 +167,8 @@ export class MemStorage implements IStorage {
     const defaultAdmin = {
       id: this.currentUserId++,
       username: "admin",
-      password: hashedPassword
+      password: hashedPassword,
+      role: "owner" as const
     };
     this.users.set(defaultAdmin.id, defaultAdmin);
   }
