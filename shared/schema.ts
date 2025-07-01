@@ -9,6 +9,14 @@ export const users = pgTable("users", {
   role: text("role").notNull().default("employee"), // "owner" or "employee"
 });
 
+export const categories = pgTable("categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  translation: text("translation").notNull(),
+  icon: text("icon").notNull(),
+  order: integer("order").notNull().default(0),
+});
+
 export const menuItems = pgTable("menu_items", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -40,6 +48,10 @@ export const insertUserSchema = createInsertSchema(users).pick({
   role: true,
 });
 
+export const insertCategorySchema = createInsertSchema(categories).omit({
+  id: true,
+});
+
 export const insertMenuItemSchema = createInsertSchema(menuItems).omit({
   id: true,
 });
@@ -51,6 +63,8 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type InsertCategory = z.infer<typeof insertCategorySchema>;
+export type Category = typeof categories.$inferSelect;
 export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
 export type MenuItem = typeof menuItems.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;

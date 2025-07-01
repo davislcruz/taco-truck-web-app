@@ -1,4 +1,4 @@
-import { users, menuItems, orders, type User, type InsertUser, type MenuItem, type InsertMenuItem, type Order, type InsertOrder } from "@shared/schema";
+import { users, menuItems, orders, categories, type User, type InsertUser, type MenuItem, type InsertMenuItem, type Order, type InsertOrder, type Category, type InsertCategory } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { scrypt, randomBytes } from "crypto";
@@ -11,6 +11,13 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+
+  // Category methods
+  getAllCategories(): Promise<Category[]>;
+  getCategoryById(id: number): Promise<Category | undefined>;
+  createCategory(data: InsertCategory): Promise<Category>;
+  updateCategory(id: number, data: InsertCategory): Promise<Category | null>;
+  deleteCategory(id: number): Promise<boolean>;
 
   // Menu methods
   getAllMenuItems(): Promise<MenuItem[]>;
@@ -33,27 +40,47 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
+  private categories: Map<number, Category>;
   private menuItems: Map<number, MenuItem>;
   private orders: Map<number, Order>;
   private currentUserId: number;
+  private currentCategoryId: number;
   private currentMenuItemId: number;
   private currentOrderId: number;
   sessionStore: session.SessionStore;
 
   constructor() {
     this.users = new Map();
+    this.categories = new Map();
     this.menuItems = new Map();
     this.orders = new Map();
     this.currentUserId = 1;
+    this.currentCategoryId = 1;
     this.currentMenuItemId = 1;
     this.currentOrderId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
 
-    // Initialize with default menu items and admin user
+    // Initialize with default data
+    this.initializeCategories();
     this.initializeMenuItems();
     this.initializeDefaultAdmin();
+  }
+
+  private initializeCategories() {
+    const defaultCategories: Omit<Category, 'id'>[] = [
+      { name: "tacos", translation: "Tacos", icon: "🌮", order: 1 },
+      { name: "burritos", translation: "Burritos", icon: "🌯", order: 2 },
+      { name: "tortas", translation: "Tortas", icon: "🥙", order: 3 },
+      { name: "semitas", translation: "Semitas", icon: "🥪", order: 4 },
+      { name: "drinks", translation: "Bebidas", icon: "🥤", order: 5 },
+    ];
+
+    defaultCategories.forEach((categoryData, index) => {
+      const category: Category = { ...categoryData, id: this.currentCategoryId++ };
+      this.categories.set(category.id, category);
+    });
   }
 
   private initializeMenuItems() {
