@@ -108,6 +108,8 @@ The application uses three main tables:
 
 ```
 Changelog:
+- June 29, 2025. Implemented role-based authentication system - removed registration functionality, added user roles (owner/employee), login-only access with admin credentials: admin/admin123
+- June 29, 2025. Made arrow button and dot navigation instant (removed transition animations)
 - June 29, 2025. Updated all navigation containers to match card width (280px small screens, 452px large screens) with restructured title/button layout using flex siblings and separated tagline containers
 - June 28, 2025. Implemented responsive card width system - cards now adapt to screen size below 491px (viewport-32px padding, min 280px) while maintaining 452px fixed width above 491px, with proportional drag thresholds and dynamic carousel dimensions
 - June 28, 2025. Repositioned navigation buttons inward (left-16/right-16) from card edges while maintaining vertical alignment, centered card container with mx-auto for better layout balance
