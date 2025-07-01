@@ -10,17 +10,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, X } from "lucide-react";
-import { MenuItem, InsertMenuItem } from "@shared/schema";
+import { MenuItem, InsertMenuItem, Category, InsertCategory } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+const categoryFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  translation: z.string().min(1, "Translation is required"),
+  icon: z.string().min(1, "Icon is required"),
+  order: z.number().min(0),
+});
+
 const menuItemFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   translation: z.string().min(1, "Translation is required"),
-  category: z.enum(["tacos", "burritos", "tortas", "semitas", "drinks"]),
+  category: z.string().min(1, "Category is required"),
   price: z.string().min(1, "Price is required"),
   description: z.string().optional(),
   image: z.string().optional(),
@@ -29,12 +36,19 @@ const menuItemFormSchema = z.object({
   sizes: z.string().optional(),
 });
 
+type CategoryFormData = z.infer<typeof categoryFormSchema>;
 type MenuItemFormData = z.infer<typeof menuItemFormSchema>;
 
 export default function MenuManagement() {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
+    queryKey: ["/api/categories"],
+  });
 
   const { data: menuItems = [], isLoading } = useQuery<MenuItem[]>({
     queryKey: ["/api/menu"],
@@ -45,13 +59,23 @@ export default function MenuManagement() {
     defaultValues: {
       name: "",
       translation: "",
-      category: "tacos",
+      category: "",
       price: "",
       description: "",
       image: "",
       meats: "",
       toppings: "",
       sizes: "",
+    },
+  });
+
+  const categoryForm = useForm<CategoryFormData>({
+    resolver: zodResolver(categoryFormSchema),
+    defaultValues: {
+      name: "",
+      translation: "",
+      icon: "",
+      order: 0,
     },
   });
 

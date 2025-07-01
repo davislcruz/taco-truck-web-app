@@ -212,9 +212,37 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { ...insertUser, id, role: insertUser.role || "employee" };
     this.users.set(id, user);
     return user;
+  }
+
+  // Category methods
+  async getAllCategories(): Promise<Category[]> {
+    return Array.from(this.categories.values()).sort((a, b) => a.order - b.order);
+  }
+
+  async getCategoryById(id: number): Promise<Category | undefined> {
+    return this.categories.get(id);
+  }
+
+  async createCategory(data: InsertCategory): Promise<Category> {
+    const id = this.currentCategoryId++;
+    const category: Category = { ...data, id };
+    this.categories.set(id, category);
+    return category;
+  }
+
+  async updateCategory(id: number, data: InsertCategory): Promise<Category | null> {
+    const category = this.categories.get(id);
+    if (!category) return null;
+    const updatedCategory = { ...category, ...data };
+    this.categories.set(id, updatedCategory);
+    return updatedCategory;
+  }
+
+  async deleteCategory(id: number): Promise<boolean> {
+    return this.categories.delete(id);
   }
 
   async getAllMenuItems(): Promise<MenuItem[]> {
