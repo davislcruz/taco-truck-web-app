@@ -242,6 +242,19 @@ export class MemStorage implements IStorage {
   }
 
   async deleteCategory(id: number): Promise<boolean> {
+    const category = this.categories.get(id);
+    if (!category) return false;
+
+    // Check if any menu items use this category
+    const itemsInCategory = Array.from(this.menuItems.values()).filter(
+      (item) => item.category === category.name
+    );
+
+    if (itemsInCategory.length > 0) {
+      // Don't allow deletion if items exist in this category
+      throw new Error(`Cannot delete category "${category.translation}" because it contains ${itemsInCategory.length} menu item(s). Please move or delete these items first.`);
+    }
+
     return this.categories.delete(id);
   }
 

@@ -261,7 +261,7 @@ export default function MenuManagement() {
   };
 
   const handleDeleteCategory = (id: number) => {
-    if (confirm("Are you sure you want to delete this category? This will affect all menu items in this category.")) {
+    if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
       deleteCategoryMutation.mutate(id);
     }
   };
@@ -345,9 +345,27 @@ export default function MenuManagement() {
                   )}
                 </div>
                 <div className="flex justify-between">
-                  <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
-                    Cancel
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
+                      Cancel
+                    </Button>
+                    {editingCategory && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => {
+                          if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
+                            handleDeleteCategory(editingCategory.id);
+                          }
+                        }}
+                        disabled={deleteCategoryMutation.isPending}
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        Delete
+                      </Button>
+                    )}
+                  </div>
                   <Button
                     type="submit"
                     className="bg-mexican-green hover:bg-green-600"
@@ -406,10 +424,56 @@ export default function MenuManagement() {
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
-                          {category.icon} {category.translation}
-                        </SelectItem>
+                        <div key={category.id} className="flex items-center justify-between px-2 py-1 hover:bg-gray-50">
+                          <SelectItem value={category.name} className="flex-1">
+                            {category.icon} {category.translation}
+                          </SelectItem>
+                          <div className="flex space-x-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 hover:bg-gray-200"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleEditCategory(category);
+                              }}
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 hover:bg-red-100 text-red-600"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
+                                  handleDeleteCategory(category.id);
+                                }
+                              }}
+                              disabled={deleteCategoryMutation.isPending}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
                       ))}
+                      <div className="border-t mt-1 pt-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="w-full justify-start text-left"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsCategoryDialogOpen(true);
+                          }}
+                        >
+                          <Plus className="h-3 w-3 mr-2" />
+                          Add New Category
+                        </Button>
+                      </div>
                     </SelectContent>
                   </Select>
                   {form.formState.errors.category && (
