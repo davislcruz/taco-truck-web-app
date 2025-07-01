@@ -87,142 +87,46 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     return () => window.removeEventListener('resize', calculateDimensions);
   }, []);
 
-  // Button navigation functions - separate from drag
+  // Button navigation functions - instant change without animation
   const handleButtonPrevItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Update the index first
+    // Update the index instantly
     setCurrentItemIndexes(prev => {
-      const currentIndex = prev[category] ?? 0; // Use nullish coalescing for proper initialization
+      const currentIndex = prev[category] ?? 0;
       return {
         ...prev,
         [category]: currentIndex === 0 ? filteredItems.length - 1 : currentIndex - 1
       };
     });
-    
-    // Trigger continuous sliding animation from right
-    setDragState(prev => ({
-      ...prev,
-      isDragging: true,
-      startX: 0,
-      currentX: cardWidth, // Slide from right to left
-      category,
-      isTransitioning: true
-    }));
-    
-    // Animate to final position with continuous effect
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        currentX: 0,
-        isTransitioning: true
-      }));
-    }, 50);
-    
-    // Reset state after continuous animation
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        isDragging: false,
-        startX: 0,
-        currentX: 0,
-        category: null,
-        isTransitioning: false
-      }));
-    }, 550);
   };
 
   const handleButtonNextItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
     
-    // Update the index first
+    // Update the index instantly
     setCurrentItemIndexes(prev => {
-      const currentIndex = prev[category] ?? 0; // Use nullish coalescing for proper initialization
+      const currentIndex = prev[category] ?? 0;
       return {
         ...prev,
         [category]: currentIndex === filteredItems.length - 1 ? 0 : currentIndex + 1
       };
     });
-    
-    // Trigger continuous sliding animation from left
-    setDragState(prev => ({
-      ...prev,
-      isDragging: true,
-      startX: 0,
-      currentX: -cardWidth, // Slide from left to right
-      category,
-      isTransitioning: true
-    }));
-    
-    // Animate to final position with continuous effect
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        currentX: 0,
-        isTransitioning: true
-      }));
-    }, 50);
-    
-    // Reset state after continuous animation
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        isDragging: false,
-        startX: 0,
-        currentX: 0,
-        category: null,
-        isTransitioning: false
-      }));
-    }, 550);
   };
 
   const handleDotNavigation = (category: string, index: number) => {
     const filteredItems = menuItems.filter(item => item.category === category);
-    const currentIndex = currentItemIndexes[category] ?? 0; // Use nullish coalescing for proper initialization
+    const currentIndex = currentItemIndexes[category] ?? 0;
     
     if (index === currentIndex || filteredItems.length <= 1) return;
     
-    // Update the index first
+    // Update the index instantly
     setCurrentItemIndexes(prev => ({
       ...prev,
       [category]: index
     }));
-    
-    // Determine slide direction for continuous effect
-    const slideDirection = index > currentIndex ? -452 : 452;
-    
-    // Trigger continuous sliding animation
-    setDragState(prev => ({
-      ...prev,
-      isDragging: true,
-      startX: 0,
-      currentX: slideDirection,
-      category,
-      isTransitioning: true
-    }));
-    
-    // Animate to final position with continuous effect
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        currentX: 0,
-        isTransitioning: true
-      }));
-    }, 50);
-    
-    // Reset state after continuous animation
-    setTimeout(() => {
-      setDragState(prev => ({
-        ...prev,
-        isDragging: false,
-        startX: 0,
-        currentX: 0,
-        category: null,
-        isTransitioning: false
-      }));
-    }, 550);
   };
 
   // Manual drag functions - completely separate from button navigation
