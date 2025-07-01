@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -79,6 +78,7 @@ export default function MenuManagement() {
     },
   });
 
+  // Menu item mutations
   const createMutation = useMutation({
     mutationFn: async (data: InsertMenuItem) => {
       const response = await apiRequest("POST", "/api/menu", data);
@@ -137,6 +137,66 @@ export default function MenuManagement() {
     },
   });
 
+  // Category mutations
+  const createCategoryMutation = useMutation({
+    mutationFn: async (data: InsertCategory) => {
+      const response = await apiRequest("POST", "/api/categories", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      toast({ title: "Category created successfully!" });
+      setIsCategoryDialogOpen(false);
+      categoryForm.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to create category",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: InsertCategory }) => {
+      const response = await apiRequest("PUT", `/api/categories/${id}`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      toast({ title: "Category updated successfully!" });
+      setIsCategoryDialogOpen(false);
+      setEditingCategory(null);
+      categoryForm.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to update category",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/categories/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      toast({ title: "Category deleted successfully!" });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to delete category",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Menu item handlers
   const onSubmit = (data: MenuItemFormData) => {
     const processedData: InsertMenuItem = {
       ...data,
@@ -157,7 +217,7 @@ export default function MenuManagement() {
     form.reset({
       name: item.name,
       translation: item.translation,
-      category: item.category as any,
+      category: item.category,
       price: item.price,
       description: item.description || "",
       image: item.image || "",
@@ -180,13 +240,42 @@ export default function MenuManagement() {
     form.reset();
   };
 
-  const categoryLabels: Record<string, string> = {
-    tacos: "Tacos",
-    burritos: "Burritos",
-    tortas: "Tortas",
-    semitas: "Semitas",
-    drinks: "Bebidas",
+  // Category handlers
+  const onCategorySubmit = (data: CategoryFormData) => {
+    if (editingCategory) {
+      updateCategoryMutation.mutate({ id: editingCategory.id, data });
+    } else {
+      createCategoryMutation.mutate(data);
+    }
   };
+
+  const handleEditCategory = (category: Category) => {
+    setEditingCategory(category);
+    categoryForm.reset({
+      name: category.name,
+      translation: category.translation,
+      icon: category.icon,
+      order: category.order,
+    });
+    setIsCategoryDialogOpen(true);
+  };
+
+  const handleDeleteCategory = (id: number) => {
+    if (confirm("Are you sure you want to delete this category? This will affect all menu items in this category.")) {
+      deleteCategoryMutation.mutate(id);
+    }
+  };
+
+  const handleCategoryDialogClose = () => {
+    setIsCategoryDialogOpen(false);
+    setEditingCategory(null);
+    categoryForm.reset();
+  };
+
+  const categoryLabels = categories.reduce((acc, cat) => {
+    acc[cat.name] = cat.translation;
+    return acc;
+  }, {} as Record<string, string>);
 
   const groupedItems = menuItems.reduce((acc, item) => {
     if (!acc[item.category]) acc[item.category] = [];
@@ -198,150 +287,265 @@ export default function MenuManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Menu Management</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-mexican-green hover:bg-green-600">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Menu Item
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingItem ? "Edit Menu Item" : "Add New Menu Item"}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Name (Spanish)</Label>
-                <Input
-                  id="name"
-                  {...form.register("name")}
-                  placeholder="e.g., De Carnitas"
-                />
-                {form.formState.errors.name && (
-                  <p className="text-sm text-red-600">{form.formState.errors.name.message}</p>
-                )}
-              </div>
+        <div className="space-x-2">
+          <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Plus className="h-4 w-4 mr-2" />
+                Manage Categories
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>{editingCategory ? "Edit Category" : "Add Category"}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-4">
+                <div>
+                  <Label htmlFor="category-name">Name (ID)</Label>
+                  <Input
+                    id="category-name"
+                    placeholder="e.g., tacos, burritos"
+                    {...categoryForm.register("name")}
+                  />
+                  {categoryForm.formState.errors.name && (
+                    <p className="text-sm text-red-600">{categoryForm.formState.errors.name.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="category-translation">Display Name</Label>
+                  <Input
+                    id="category-translation"
+                    placeholder="e.g., Tacos, Burritos"
+                    {...categoryForm.register("translation")}
+                  />
+                  {categoryForm.formState.errors.translation && (
+                    <p className="text-sm text-red-600">{categoryForm.formState.errors.translation.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="category-icon">Icon (Emoji)</Label>
+                  <Input
+                    id="category-icon"
+                    placeholder="🌮"
+                    {...categoryForm.register("icon")}
+                  />
+                  {categoryForm.formState.errors.icon && (
+                    <p className="text-sm text-red-600">{categoryForm.formState.errors.icon.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="category-order">Display Order</Label>
+                  <Input
+                    id="category-order"
+                    type="number"
+                    {...categoryForm.register("order", { valueAsNumber: true })}
+                  />
+                  {categoryForm.formState.errors.order && (
+                    <p className="text-sm text-red-600">{categoryForm.formState.errors.order.message}</p>
+                  )}
+                </div>
+                <div className="flex justify-between">
+                  <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-mexican-green hover:bg-green-600"
+                    disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
+                  >
+                    {editingCategory ? "Update" : "Create"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-mexican-green hover:bg-green-600">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Menu Item
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingItem ? "Edit Menu Item" : "Add New Menu Item"}
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Name (Spanish)</Label>
+                  <Input
+                    id="name"
+                    {...form.register("name")}
+                    placeholder="e.g., De Carnitas"
+                  />
+                  {form.formState.errors.name && (
+                    <p className="text-sm text-red-600">{form.formState.errors.name.message}</p>
+                  )}
+                </div>
 
-              <div>
-                <Label htmlFor="translation">Translation (English)</Label>
-                <Input
-                  id="translation"
-                  {...form.register("translation")}
-                  placeholder="e.g., Pulled Pork Tacos"
-                />
-                {form.formState.errors.translation && (
-                  <p className="text-sm text-red-600">{form.formState.errors.translation.message}</p>
-                )}
-              </div>
+                <div>
+                  <Label htmlFor="translation">Translation (English)</Label>
+                  <Input
+                    id="translation"
+                    {...form.register("translation")}
+                    placeholder="e.g., Pulled Pork Tacos"
+                  />
+                  {form.formState.errors.translation && (
+                    <p className="text-sm text-red-600">{form.formState.errors.translation.message}</p>
+                  )}
+                </div>
 
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={form.watch("category")}
-                  onValueChange={(value) => form.setValue("category", value as any)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="tacos">Tacos</SelectItem>
-                    <SelectItem value="burritos">Burritos</SelectItem>
-                    <SelectItem value="tortas">Tortas</SelectItem>
-                    <SelectItem value="semitas">Semitas</SelectItem>
-                    <SelectItem value="drinks">Bebidas</SelectItem>
-                  </SelectContent>
-                </Select>
-                {form.formState.errors.category && (
-                  <p className="text-sm text-red-600">{form.formState.errors.category.message}</p>
-                )}
-              </div>
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select onValueChange={(value) => form.setValue("category", value)} value={form.watch("category")}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.name}>
+                          {category.icon} {category.translation}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {form.formState.errors.category && (
+                    <p className="text-sm text-red-600">{form.formState.errors.category.message}</p>
+                  )}
+                </div>
 
-              <div>
-                <Label htmlFor="price">Price ($)</Label>
-                <Input
-                  id="price"
-                  {...form.register("price")}
-                  placeholder="e.g., 12.99"
-                  type="number"
-                  step="0.01"
-                />
-                {form.formState.errors.price && (
-                  <p className="text-sm text-red-600">{form.formState.errors.price.message}</p>
-                )}
-              </div>
+                <div>
+                  <Label htmlFor="price">Price ($)</Label>
+                  <Input
+                    id="price"
+                    {...form.register("price")}
+                    placeholder="12.99"
+                  />
+                  {form.formState.errors.price && (
+                    <p className="text-sm text-red-600">{form.formState.errors.price.message}</p>
+                  )}
+                </div>
 
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  {...form.register("description")}
-                  placeholder="Brief description of the item"
-                  rows={3}
-                />
-              </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    {...form.register("description")}
+                    placeholder="Brief description of the dish"
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="image">Image URL</Label>
-                <Input
-                  id="image"
-                  {...form.register("image")}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
+                <div>
+                  <Label htmlFor="image">Image URL</Label>
+                  <Input
+                    id="image"
+                    {...form.register("image")}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="meats">Available Meats (comma separated)</Label>
-                <Input
-                  id="meats"
-                  {...form.register("meats")}
-                  placeholder="e.g., Carnitas, Asada, Pollo"
-                />
-              </div>
+                <div>
+                  <Label htmlFor="meats">Available Meats (comma-separated)</Label>
+                  <Input
+                    id="meats"
+                    {...form.register("meats")}
+                    placeholder="Carnitas, Al Pastor, Carne Asada"
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="toppings">Available Toppings (comma separated)</Label>
-                <Input
-                  id="toppings"
-                  {...form.register("toppings")}
-                  placeholder="e.g., Cilantro, Onions, Salsa Verde"
-                />
-              </div>
+                <div>
+                  <Label htmlFor="toppings">Available Toppings (comma-separated)</Label>
+                  <Input
+                    id="toppings"
+                    {...form.register("toppings")}
+                    placeholder="Onions, Cilantro, Salsa Verde"
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="sizes">Available Sizes (comma separated)</Label>
-                <Input
-                  id="sizes"
-                  {...form.register("sizes")}
-                  placeholder="e.g., Small, Medium, Large"
-                />
-              </div>
+                <div>
+                  <Label htmlFor="sizes">Available Sizes (comma-separated)</Label>
+                  <Input
+                    id="sizes"
+                    {...form.register("sizes")}
+                    placeholder="Small, Medium, Large"
+                  />
+                </div>
 
-              <div className="flex space-x-2 pt-4">
-                <Button
-                  type="submit"
-                  className="flex-1 bg-mexican-green hover:bg-green-600"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {editingItem ? "Update Item" : "Add Item"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleDialogClose}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+                <div className="flex justify-between">
+                  <Button type="button" variant="outline" onClick={handleDialogClose}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-mexican-green hover:bg-green-600"
+                    disabled={createMutation.isPending || updateMutation.isPending}
+                  >
+                    {editingItem ? "Update" : "Create"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
+      {/* Categories Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            Categories
+            <span className="text-sm font-normal text-gray-500">
+              {categories.length} categories
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-2">
+            {categories.map((category) => (
+              <div key={category.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{category.icon}</span>
+                  <div>
+                    <div className="font-medium">{category.translation}</div>
+                    <div className="text-sm text-gray-500">ID: {category.name} • Order: {category.order}</div>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleEditCategory(category)}
+                  >
+                    <Edit className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-red-600 hover:text-red-700"
+                    onClick={() => handleDeleteCategory(category.id)}
+                    disabled={deleteCategoryMutation.isPending}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {categories.length === 0 && !categoriesLoading && (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No categories found. Add your first category!</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Menu Items Section */}
       {Object.entries(groupedItems).map(([category, items]) => (
-        <div key={category}>
-          <h3 className="text-lg font-semibold mb-3 mexican-red">
+        <div key={category} className="space-y-4">
+          <h3 className="text-xl font-semibold text-gray-800">
             {categoryLabels[category] || category} ({items.length})
           </h3>
           <div className="grid gap-4">
@@ -411,5 +615,5 @@ export default function MenuManagement() {
         </div>
       )}
     </div>
-  )
+  );
 }
