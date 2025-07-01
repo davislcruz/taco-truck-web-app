@@ -351,14 +351,6 @@ export default function MenuManagement() {
                         {item.description && (
                           <p className="text-xs text-gray-500 mb-2">{item.description}</p>
                         )}
-                        <div className="flex flex-wrap gap-1 text-xs">
-                          {item.meats && item.meats.length > 0 && (
-                            <Badge variant="secondary">Meats: {item.meats.join(", ")}</Badge>
-                          )}
-                          {item.sizes && item.sizes.length > 0 && (
-                            <Badge variant="secondary">Sizes: {item.sizes.join(", ")}</Badge>
-                          )}
-                        </div>
                       </div>
                     </div>
                     
