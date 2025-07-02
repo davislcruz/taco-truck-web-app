@@ -35,12 +35,17 @@ export default function AuthPage() {
 
   const onLogin = async (data: LoginFormData) => {
     try {
-      await loginMutation.mutateAsync(data);
+      const user = await loginMutation.mutateAsync(data);
       toast({
         title: "Welcome back!",
         description: "You have been logged in successfully.",
       });
-      setLocation("/");
+      // Redirect owners to dashboard, employees to home page
+      if (user.role === "owner") {
+        setLocation("/dashboard");
+      } else {
+        setLocation("/");
+      }
     } catch (error) {
       // Error handling is done in the mutation
     }

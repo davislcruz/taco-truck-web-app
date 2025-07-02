@@ -7,8 +7,8 @@ import { MenuItem } from "@shared/schema";
 import MenuSection from "@/components/menu-section";
 import ItemCustomizationModal from "@/components/item-customization-modal";
 import CartDrawer from "@/components/cart-drawer";
-import OwnerDashboard from "@/components/owner-dashboard";
 import { useLocation } from "wouter";
+import { useEffect } from "react";
 
 export interface CartItem extends MenuItem {
   cartId: string;
@@ -25,7 +25,13 @@ export default function HomePage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [showOwnerDashboard, setShowOwnerDashboard] = useState(false);
+
+  // Redirect owners to dashboard
+  useEffect(() => {
+    if (user && user.role === "owner") {
+      setLocation("/dashboard");
+    }
+  }, [user, setLocation]);
 
   const { data: menuItems, isLoading } = useQuery<MenuItem[]>({
     queryKey: ["/api/menu"],
@@ -64,7 +70,7 @@ export default function HomePage() {
 
   const handleOwnerAccess = () => {
     if (user) {
-      setShowOwnerDashboard(true);
+      setLocation('/dashboard');
     } else {
       setLocation('/auth');
     }
@@ -185,11 +191,7 @@ export default function HomePage() {
         total={cartTotal}
       />
 
-      {showOwnerDashboard && user && (
-        <OwnerDashboard
-          onClose={() => setShowOwnerDashboard(false)}
-        />
-      )}
+
 
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl z-50">

@@ -108,6 +108,9 @@ The application uses three main tables:
 
 ```
 Changelog:
+- July 2, 2025. Created dedicated owner dashboard page at /dashboard route - owners automatically redirect to dashboard after login, includes "View Customer Page" link to see regular customer experience, removed embedded dashboard from home page
+- July 2, 2025. Replaced all remaining emojis with professional Lucide React icons throughout application - chili pepper emojis now ChefHat icons, user emoji now User icon, updated category icon input to reference Lucide icon names
+- July 2, 2025. Fixed bottom navigation overlap issue by adding padding-bottom to menu section, ensuring last menu category is fully visible above navigation bar
 - June 29, 2025. Implemented role-based authentication system - removed registration functionality, added user roles (owner/employee), login-only access with admin credentials: admin/admin123
 - June 29, 2025. Made arrow button and dot navigation instant (removed transition animations)
 - June 29, 2025. Updated all navigation containers to match card width (280px small screens, 452px large screens) with restructured title/button layout using flex siblings and separated tagline containers
