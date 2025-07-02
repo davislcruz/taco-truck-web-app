@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingCart, ShieldX, Menu, Phone, MapPin, Home, ChefHat } from "lucide-react";
+import { Loader2, ShoppingCart, ShieldX, Menu, Phone, MapPin, Home, ChefHat, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { MenuItem } from "@shared/schema";
 import MenuSection from "@/components/menu-section";
@@ -104,7 +104,7 @@ export default function HomePage() {
                 onClick={handleOwnerAccess}
                 className="text-gray-600 hover:text-primary"
               >
-                <span className="text-lg">👤</span>
+                <User className="h-4 w-4" />
               </Button>
 
             </div>
