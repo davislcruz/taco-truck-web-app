@@ -190,20 +190,48 @@ export default function HomePage() {
         />
       )}
 
-      {/* Fixed Order Button */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-        <Button
-          onClick={() => setIsCartOpen(true)}
-          className="relative bg-mexican-red hover:bg-red-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg"
-        >
-          <ShoppingCart className="h-5 w-5 mr-2" />
-          Order
-          {cartItemCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-warm-orange text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
-              {cartItemCount}
-            </span>
-          )}
-        </Button>
+      {/* Bottom Navigation Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div className="flex items-center justify-around py-2 px-4 max-w-md mx-auto">
+          <Button
+            variant="ghost"
+            onClick={scrollToMenu}
+            className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-mexican-red"
+          >
+            <span className="text-xl mb-1">🍽️</span>
+            <span className="text-xs">Menu</span>
+          </Button>
+          
+          <Button
+            variant="ghost"
+            onClick={() => window.open('tel:+1234567890')}
+            className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-mexican-red"
+          >
+            <span className="text-xl mb-1">📞</span>
+            <span className="text-xs">Call</span>
+          </Button>
+          
+          <Button
+            onClick={() => setIsCartOpen(true)}
+            className="relative bg-mexican-red hover:bg-red-600 text-white px-6 py-3 rounded-full shadow-lg"
+          >
+            <ShoppingCart className="h-5 w-5 mr-2" />
+            Order
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-warm-orange text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                {cartItemCount}
+              </span>
+            )}
+          </Button>
+          
+          <Button
+            variant="ghost"
+            className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-mexican-red"
+          >
+            <span className="text-xl mb-1">📍</span>
+            <span className="text-xs">Location</span>
+          </Button>
+        </div>
       </div>
     </>
   );
