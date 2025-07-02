@@ -104,7 +104,7 @@ export default function HomePage() {
                 onClick={handleOwnerAccess}
                 className="text-gray-600 hover:text-primary"
               >
-                <span className="text-lg">🤠</span>
+                <span className="text-lg">👤</span>
               </Button>
               <Button
                 onClick={() => setIsCartOpen(true)}
