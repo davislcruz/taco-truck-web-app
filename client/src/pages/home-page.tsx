@@ -104,7 +104,7 @@ export default function HomePage() {
                 onClick={handleOwnerAccess}
                 className="text-gray-600 hover:text-primary"
               >
-                <ShieldX className="h-5 w-5" />
+                <span className="text-lg">🤠</span>
               </Button>
               <Button
                 onClick={() => setIsCartOpen(true)}

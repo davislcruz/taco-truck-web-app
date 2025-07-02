@@ -288,96 +288,6 @@ export default function MenuManagement() {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Menu Management</h2>
         <div className="space-x-2">
-          <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Plus className="h-4 w-4 mr-2" />
-                Manage Categories
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>{editingCategory ? "Edit Category" : "Add Category"}</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-4">
-                <div>
-                  <Label htmlFor="category-name">Name (ID)</Label>
-                  <Input
-                    id="category-name"
-                    placeholder="e.g., tacos, burritos"
-                    {...categoryForm.register("name")}
-                  />
-                  {categoryForm.formState.errors.name && (
-                    <p className="text-sm text-red-600">{categoryForm.formState.errors.name.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="category-translation">Display Name</Label>
-                  <Input
-                    id="category-translation"
-                    placeholder="e.g., Tacos, Burritos"
-                    {...categoryForm.register("translation")}
-                  />
-                  {categoryForm.formState.errors.translation && (
-                    <p className="text-sm text-red-600">{categoryForm.formState.errors.translation.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="category-icon">Icon (Emoji)</Label>
-                  <Input
-                    id="category-icon"
-                    placeholder="🌮"
-                    {...categoryForm.register("icon")}
-                  />
-                  {categoryForm.formState.errors.icon && (
-                    <p className="text-sm text-red-600">{categoryForm.formState.errors.icon.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="category-order">Display Order</Label>
-                  <Input
-                    id="category-order"
-                    type="number"
-                    {...categoryForm.register("order", { valueAsNumber: true })}
-                  />
-                  {categoryForm.formState.errors.order && (
-                    <p className="text-sm text-red-600">{categoryForm.formState.errors.order.message}</p>
-                  )}
-                </div>
-                <div className="flex justify-between">
-                  <div className="flex space-x-2">
-                    <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
-                      Cancel
-                    </Button>
-                    {editingCategory && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => {
-                          if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
-                            handleDeleteCategory(editingCategory.id);
-                          }
-                        }}
-                        disabled={deleteCategoryMutation.isPending}
-                      >
-                        <Trash2 className="h-3 w-3 mr-1" />
-                        Delete
-                      </Button>
-                    )}
-                  </div>
-                  <Button
-                    type="submit"
-                    className="bg-mexican-green hover:bg-green-600"
-                    disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
-                  >
-                    {editingCategory ? "Update" : "Create"}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-          
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-mexican-green hover:bg-green-600">
@@ -553,58 +463,99 @@ export default function MenuManagement() {
               </form>
             </DialogContent>
           </Dialog>
+          
+          <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Plus className="h-4 w-4 mr-2" />
+                Manage Categories
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>{editingCategory ? "Edit Category" : "Add Category"}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-4">
+                <div>
+                  <Label htmlFor="category-name">Name (ID)</Label>
+                  <Input
+                    id="category-name"
+                    placeholder="e.g., tacos, burritos"
+                    {...categoryForm.register("name")}
+                  />
+                  {categoryForm.formState.errors.name && (
+                    <p className="text-sm text-red-600">{categoryForm.formState.errors.name.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="category-translation">Display Name</Label>
+                  <Input
+                    id="category-translation"
+                    placeholder="e.g., Tacos, Burritos"
+                    {...categoryForm.register("translation")}
+                  />
+                  {categoryForm.formState.errors.translation && (
+                    <p className="text-sm text-red-600">{categoryForm.formState.errors.translation.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="category-icon">Icon (Emoji)</Label>
+                  <Input
+                    id="category-icon"
+                    placeholder="🌮"
+                    {...categoryForm.register("icon")}
+                  />
+                  {categoryForm.formState.errors.icon && (
+                    <p className="text-sm text-red-600">{categoryForm.formState.errors.icon.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="category-order">Display Order</Label>
+                  <Input
+                    id="category-order"
+                    type="number"
+                    {...categoryForm.register("order", { valueAsNumber: true })}
+                  />
+                  {categoryForm.formState.errors.order && (
+                    <p className="text-sm text-red-600">{categoryForm.formState.errors.order.message}</p>
+                  )}
+                </div>
+                <div className="flex justify-between">
+                  <div className="flex space-x-2">
+                    <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
+                      Cancel
+                    </Button>
+                    {editingCategory && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => {
+                          if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
+                            handleDeleteCategory(editingCategory.id);
+                          }
+                        }}
+                        disabled={deleteCategoryMutation.isPending}
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        Delete
+                      </Button>
+                    )}
+                  </div>
+                  <Button
+                    type="submit"
+                    className="bg-mexican-green hover:bg-green-600"
+                    disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
+                  >
+                    {editingCategory ? "Update" : "Create"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
-      {/* Categories Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            Categories
-            <span className="text-sm font-normal text-gray-500">
-              {categories.length} categories
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-2">
-            {categories.map((category) => (
-              <div key={category.id} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">{category.icon}</span>
-                  <div>
-                    <div className="font-medium">{category.translation}</div>
-                    <div className="text-sm text-gray-500">ID: {category.name} • Order: {category.order}</div>
-                  </div>
-                </div>
-                <div className="flex space-x-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEditCategory(category)}
-                  >
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-red-600 hover:text-red-700"
-                    onClick={() => handleDeleteCategory(category.id)}
-                    disabled={deleteCategoryMutation.isPending}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-          {categories.length === 0 && !categoriesLoading && (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No categories found. Add your first category!</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
       {/* Menu Items Section */}
       {Object.entries(groupedItems).map(([category, items]) => (
