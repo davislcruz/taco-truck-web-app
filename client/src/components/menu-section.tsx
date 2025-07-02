@@ -262,7 +262,7 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
   );
 
   return (
-    <section id="menu-section" className="py-8 lg:py-12">
+    <section id="menu-section" className="py-8 lg:py-12 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 dark-gray">
           Our Menu / Nuestro Menú
