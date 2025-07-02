@@ -5,6 +5,7 @@ import {
   Sandwich, 
   Cookie, 
   Coffee,
+  Beef,
   LucideIcon
 } from "lucide-react";
 
@@ -13,6 +14,7 @@ export const getCategoryIcon = (iconName: string): LucideIcon => {
   const iconMap: Record<string, LucideIcon> = {
     "utensils": Utensils,
     "wrap-text": WrapText,
+    "beef": Beef,
     "sandwich": Sandwich,
     "cookie": Cookie,
     "coffee": Coffee,
