@@ -1,4 +1,5 @@
 import { useLocation } from "wouter";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,10 +29,15 @@ export default function AuthPage() {
   });
 
   // Redirect if already logged in
-  if (user) {
-    setLocation("/");
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      if (user.role === "owner") {
+        setLocation("/dashboard");
+      } else {
+        setLocation("/");
+      }
+    }
+  }, [user, setLocation]);
 
   const onLogin = async (data: LoginFormData) => {
     try {

@@ -17,11 +17,11 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/checkout" component={CheckoutPage} />
-      <Route path="/dashboard" component={() => (
+      <Route path="/dashboard">
         <ProtectedRoute>
           <OwnerDashboardPage />
         </ProtectedRoute>
-      )} />
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
