@@ -106,18 +106,7 @@ export default function HomePage() {
               >
                 <span className="text-lg">👤</span>
               </Button>
-              <Button
-                onClick={() => setIsCartOpen(true)}
-                className="relative bg-mexican-red hover:bg-red-600 text-white"
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Cart
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-warm-orange text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartItemCount}
-                  </span>
-                )}
-              </Button>
+
             </div>
           </div>
         </div>
@@ -200,6 +189,22 @@ export default function HomePage() {
           onClose={() => setShowOwnerDashboard(false)}
         />
       )}
+
+      {/* Fixed Order Button */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+        <Button
+          onClick={() => setIsCartOpen(true)}
+          className="relative bg-mexican-red hover:bg-red-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg"
+        >
+          <ShoppingCart className="h-5 w-5 mr-2" />
+          Order
+          {cartItemCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-warm-orange text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+              {cartItemCount}
+            </span>
+          )}
+        </Button>
+      </div>
     </>
   );
 }
