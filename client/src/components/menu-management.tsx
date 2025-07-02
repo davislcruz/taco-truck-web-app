@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, X } from "lucide-react";
+import { Plus, Edit, Trash2, X, Utensils } from "lucide-react";
 import { MenuItem, InsertMenuItem, Category, InsertCategory } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { getCategoryIcon } from "@/lib/menu-data";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -336,7 +338,10 @@ export default function MenuManagement() {
                       {categories.map((category) => (
                         <div key={category.id} className="flex items-center justify-between px-2 py-1 hover:bg-gray-50">
                           <SelectItem value={category.name} className="flex-1">
-                            {category.icon} {category.translation}
+                            <div className="flex items-center">
+                              {React.createElement(getCategoryIcon(category.icon), { className: "h-4 w-4 mr-2" })}
+                              {category.translation}
+                            </div>
                           </SelectItem>
                           <div className="flex space-x-1">
                             <Button
@@ -499,10 +504,10 @@ export default function MenuManagement() {
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="category-icon">Icon (Emoji)</Label>
+                  <Label htmlFor="category-icon">Icon Name</Label>
                   <Input
                     id="category-icon"
-                    placeholder="🌮"
+                    placeholder="utensils, coffee, sandwich, etc."
                     {...categoryForm.register("icon")}
                   />
                   {categoryForm.formState.errors.icon && (
@@ -579,7 +584,7 @@ export default function MenuManagement() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400">
-                            <span className="text-2xl">🍽️</span>
+                            <Utensils className="h-8 w-8" />
                           </div>
                         )}
                       </div>

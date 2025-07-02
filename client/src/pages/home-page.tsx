@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingCart, ShieldX, Menu, Phone, MapPin, Home } from "lucide-react";
+import { Loader2, ShoppingCart, ShieldX, Menu, Phone, MapPin, Home, ChefHat } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { MenuItem } from "@shared/schema";
 import MenuSection from "@/components/menu-section";
@@ -90,7 +90,7 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-mexican-red rounded-full flex items-center justify-center">
-                <span className="text-white text-lg">🌶️</span>
+                <ChefHat className="h-5 w-5 text-white" />
               </div>
               <div>
                 <h1 className="text-xl font-bold dark-gray">La Charreada</h1>
@@ -124,7 +124,7 @@ export default function HomePage() {
                 
                 <div className="flex flex-col items-center">
                   <div className="flex items-center mb-2">
-                    <span className="text-xl mr-1.5">📍</span>
+                    <MapPin className="h-5 w-5 mr-1.5 text-yellow-300" />
                     <span className="text-amber-100 text-sm font-medium"> 
                       <span className="text-base font-bold text-yellow-300">Location: </span>Philadelphia, 4133 G St
                     </span>
@@ -144,7 +144,8 @@ export default function HomePage() {
                     className="border-2 border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black py-2 px-4 rounded-lg font-semibold transition-all"
                     onClick={() => window.open('tel:+1234567890')}
                   >
-                    📞 (123) 456-7890
+                    <Phone className="h-4 w-4 mr-2" />
+                    (123) 456-7890
                   </Button>
                 </div>
                 

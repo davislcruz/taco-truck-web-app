@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChefHat, Utensils, ClipboardList } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -53,7 +53,7 @@ export default function AuthPage() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-mexican-red rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white text-2xl">🌶️</span>
+              <ChefHat className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold dark-gray">La Charreada</h1>
             <p className="text-gray-600">Staff Access Portal</p>
@@ -129,11 +129,15 @@ export default function AuthPage() {
             </p>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="bg-white/10 rounded-lg p-4">
-                <div className="text-2xl mb-2">📋</div>
+                <div className="mb-2">
+                  <ClipboardList className="h-6 w-6 text-white" />
+                </div>
                 <div className="font-semibold">Order Management</div>
               </div>
               <div className="bg-white/10 rounded-lg p-4">
-                <div className="text-2xl mb-2">🍽️</div>
+                <div className="mb-2">
+                  <Utensils className="h-6 w-6 text-white" />
+                </div>
                 <div className="font-semibold">Menu Control</div>
               </div>
             </div>

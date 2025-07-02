@@ -70,11 +70,11 @@ export class MemStorage implements IStorage {
 
   private initializeCategories() {
     const defaultCategories: Omit<Category, 'id'>[] = [
-      { name: "tacos", translation: "Tacos", icon: "🌮", order: 1 },
-      { name: "burritos", translation: "Burritos", icon: "🌯", order: 2 },
-      { name: "tortas", translation: "Tortas", icon: "🥙", order: 3 },
-      { name: "semitas", translation: "Semitas", icon: "🥪", order: 4 },
-      { name: "drinks", translation: "Bebidas", icon: "🥤", order: 5 },
+      { name: "tacos", translation: "Tacos", icon: "utensils", order: 1 },
+      { name: "burritos", translation: "Burritos", icon: "wrap-text", order: 2 },
+      { name: "tortas", translation: "Tortas", icon: "sandwich", order: 3 },
+      { name: "semitas", translation: "Semitas", icon: "cookie", order: 4 },
+      { name: "drinks", translation: "Bebidas", icon: "coffee", order: 5 },
     ];
 
     defaultCategories.forEach((categoryData, index) => {
@@ -228,7 +228,7 @@ export class MemStorage implements IStorage {
 
   async createCategory(data: InsertCategory): Promise<Category> {
     const id = this.currentCategoryId++;
-    const category: Category = { ...data, id };
+    const category: Category = { ...data, id, order: data.order || 0 };
     this.categories.set(id, category);
     return category;
   }
@@ -273,7 +273,15 @@ export class MemStorage implements IStorage {
   }
 
   async createMenuItem(data: InsertMenuItem): Promise<MenuItem> {
-    const newItem = { id: this.currentMenuItemId++, ...data };
+    const newItem: MenuItem = {
+      id: this.currentMenuItemId++,
+      ...data,
+      image: data.image || null,
+      description: data.description || null,
+      sizes: data.sizes || null,
+      meats: data.meats || null,
+      toppings: data.toppings || null
+    };
     this.menuItems.set(newItem.id, newItem);
     return newItem;
   }
@@ -281,7 +289,15 @@ export class MemStorage implements IStorage {
   async updateMenuItem(id: number, data: InsertMenuItem): Promise<MenuItem | null> {
     const menuItem = this.menuItems.get(id);
     if (!menuItem) return null;
-    const updatedMenuItem = { ...menuItem, ...data };
+    const updatedMenuItem: MenuItem = {
+      ...menuItem,
+      ...data,
+      image: data.image || null,
+      description: data.description || null,
+      sizes: data.sizes || null,
+      meats: data.meats || null,
+      toppings: data.toppings || null
+    };
     this.menuItems.set(id, updatedMenuItem);
     return updatedMenuItem;
   }
@@ -295,6 +311,9 @@ export class MemStorage implements IStorage {
     const order: Order = {
       id,
       ...insertOrder,
+      status: insertOrder.status || "received",
+      instructions: insertOrder.instructions || null,
+      estimatedTime: insertOrder.estimatedTime || null,
       timestamp: new Date(),
     };
     this.orders.set(id, order);

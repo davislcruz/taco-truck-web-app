@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, CreditCard } from "lucide-react";
+import { Loader2, ArrowLeft, CreditCard, ChefHat } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -158,7 +158,7 @@ export default function CheckoutPage() {
             </Button>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-mexican-red rounded-full flex items-center justify-center">
-                <span className="text-white text-sm">🌶️</span>
+                <ChefHat className="h-4 w-4 text-white" />
               </div>
               <span className="font-bold dark-gray">La Charreada</span>
             </div>

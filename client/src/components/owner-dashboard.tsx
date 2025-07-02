@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { X, Search, LogOut, Clock, Phone, FileText, Menu } from "lucide-react";
+import { X, Search, LogOut, Clock, Phone, FileText, Menu, ChefHat } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Order } from "@shared/schema";
@@ -173,7 +173,7 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
         <div className="flex items-center justify-between p-6 border-b bg-gray-50">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-mexican-red rounded-full flex items-center justify-center">
-              <span className="text-white text-lg">🌶️</span>
+              <ChefHat className="h-5 w-5 text-white" />
             </div>
             <div>
               <h1 className="text-xl font-bold dark-gray">La Charreada</h1>
