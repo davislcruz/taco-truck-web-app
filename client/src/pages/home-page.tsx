@@ -213,12 +213,12 @@ export default function HomePage() {
           
           <Button
             onClick={() => setIsCartOpen(true)}
-            className="relative bg-mexican-red hover:bg-red-600 text-white px-6 py-3 rounded-full shadow-lg"
+            className="relative flex flex-col items-center bg-mexican-red hover:bg-red-600 text-white py-2 px-3 rounded-lg shadow-lg"
           >
-            <ShoppingCart className="h-5 w-5 mr-2" />
-            Order
+            <ShoppingCart className="h-5 w-5 mb-1" />
+            <span className="text-xs">Order</span>
             {cartItemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-warm-orange text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+              <span className="absolute -top-1 -right-1 bg-warm-orange text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                 {cartItemCount}
               </span>
             )}
