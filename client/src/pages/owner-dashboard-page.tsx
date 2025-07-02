@@ -171,7 +171,10 @@ export default function OwnerDashboardPage() {
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
-                onClick={() => setLocation("/")}
+                onClick={() => {
+                  sessionStorage.setItem("allowOwnerHomepage", "true");
+                  setLocation("/");
+                }}
                 className="mr-2"
               >
                 <Eye className="h-4 w-4 mr-2" />

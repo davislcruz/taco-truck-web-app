@@ -108,6 +108,7 @@ The application uses three main tables:
 
 ```
 Changelog:
+- July 2, 2025. Fixed "View Customer Page" button functionality - owners can now properly view customer ordering experience without being redirected back to dashboard, uses sessionStorage flag system
 - July 2, 2025. Created dedicated owner dashboard page at /dashboard route - owners automatically redirect to dashboard after login, includes "View Customer Page" link to see regular customer experience, removed embedded dashboard from home page
 - July 2, 2025. Replaced all remaining emojis with professional Lucide React icons throughout application - chili pepper emojis now ChefHat icons, user emoji now User icon, updated category icon input to reference Lucide icon names
 - July 2, 2025. Fixed bottom navigation overlap issue by adding padding-bottom to menu section, ensuring last menu category is fully visible above navigation bar

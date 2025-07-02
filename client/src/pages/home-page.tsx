@@ -26,12 +26,19 @@ export default function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
-  // Redirect owners to dashboard
+  // Only redirect owners to dashboard on initial login, not when they explicitly visit homepage
   useEffect(() => {
-    if (user && user.role === "owner") {
+    if (user && user.role === "owner" && !sessionStorage.getItem("allowOwnerHomepage")) {
       setLocation("/dashboard");
     }
   }, [user, setLocation]);
+
+  // Clear the flag when component unmounts
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem("allowOwnerHomepage");
+    };
+  }, []);
 
   const { data: menuItems, isLoading } = useQuery<MenuItem[]>({
     queryKey: ["/api/menu"],
