@@ -74,7 +74,7 @@ export class MemStorage implements IStorage {
       { name: "burritos", translation: "Burritos", icon: "beef", order: 2 },
       { name: "tortas", translation: "Tortas", icon: "sandwich", order: 3 },
       { name: "semitas", translation: "Semitas", icon: "sandwich", order: 4 },
-      { name: "drinks", translation: "Bebidas", icon: "coffee", order: 5 },
+      { name: "drinks", translation: "Bebidas", icon: "glass-water", order: 5 },
     ];
 
     defaultCategories.forEach((categoryData, index) => {

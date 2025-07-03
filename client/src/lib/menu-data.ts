@@ -6,6 +6,7 @@ import {
   Cookie, 
   Coffee,
   Beef,
+  GlassWater,
   LucideIcon
 } from "lucide-react";
 
@@ -18,6 +19,7 @@ export const getCategoryIcon = (iconName: string): LucideIcon => {
     "sandwich": Sandwich,
     "cookie": Cookie,
     "coffee": Coffee,
+    "glass-water": GlassWater,
   };
   return iconMap[iconName] || Utensils;
 };
