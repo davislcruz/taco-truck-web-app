@@ -71,9 +71,9 @@ export class MemStorage implements IStorage {
   private initializeCategories() {
     const defaultCategories: Omit<Category, 'id'>[] = [
       { name: "tacos", translation: "Tacos", icon: "utensils", order: 1 },
-      { name: "burritos", translation: "Burritos", icon: "beef", order: 2 },
-      { name: "tortas", translation: "Tortas", icon: "sandwich", order: 3 },
-      { name: "semitas", translation: "Semitas", icon: "sandwich", order: 4 },
+      { name: "burritos", translation: "Burritos", icon: "utensils", order: 2 },
+      { name: "tortas", translation: "Tortas", icon: "utensils", order: 3 },
+      { name: "semitas", translation: "Semitas", icon: "utensils", order: 4 },
       { name: "drinks", translation: "Bebidas", icon: "glass-water", order: 5 },
     ];
 
