@@ -565,9 +565,33 @@ export default function MenuManagement() {
       {/* Menu Items Section */}
       {Object.entries(groupedItems).map(([category, items]) => (
         <div key={category} className="space-y-4">
-          <h3 className="text-xl font-semibold text-gray-800">
-            {categoryLabels[category] || category} ({items.length})
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-gray-800">
+              {categoryLabels[category] || category} ({items.length})
+            </h3>
+            <Button
+              size="sm"
+              onClick={() => {
+                form.reset({
+                  name: "",
+                  translation: "",
+                  category: category,
+                  price: "",
+                  description: "",
+                  image: "",
+                  meats: "",
+                  toppings: "",
+                  sizes: ""
+                });
+                setEditingItem(null);
+                setIsDialogOpen(true);
+              }}
+              className="bg-mexican-green hover:bg-green-600"
+            >
+              <Plus className="h-3 w-3 mr-2" />
+              Add Item
+            </Button>
+          </div>
           <div className="grid gap-4">
             {items.map((item) => (
               <Card key={item.id}>
