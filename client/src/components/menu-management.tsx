@@ -46,6 +46,8 @@ export default function MenuManagement() {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [inlineEditing, setInlineEditing] = useState<{[key: string]: boolean}>({});
+  const [tempValues, setTempValues] = useState<{[key: string]: any}>({});
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -265,6 +267,41 @@ export default function MenuManagement() {
   const handleDeleteCategory = (id: number) => {
     if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
       deleteCategoryMutation.mutate(id);
+    }
+  };
+
+  // Inline editing functions
+  const startInlineEdit = (itemId: number, field: string, currentValue: any) => {
+    const key = `${itemId}-${field}`;
+    setInlineEditing(prev => ({ ...prev, [key]: true }));
+    setTempValues(prev => ({ ...prev, [key]: currentValue }));
+  };
+
+  const cancelInlineEdit = (itemId: number, field: string) => {
+    const key = `${itemId}-${field}`;
+    setInlineEditing(prev => ({ ...prev, [key]: false }));
+    setTempValues(prev => ({ ...prev, [key]: undefined }));
+  };
+
+  const saveInlineEdit = (itemId: number, field: string) => {
+    const key = `${itemId}-${field}`;
+    const newValue = tempValues[key];
+    const item = menuItems.find(item => item.id === itemId);
+    
+    if (item && newValue !== undefined && newValue !== item[field as keyof MenuItem]) {
+      const updatedData = { ...item, [field]: newValue };
+      updateMutation.mutate({ id: itemId, data: updatedData });
+    }
+    
+    setInlineEditing(prev => ({ ...prev, [key]: false }));
+    setTempValues(prev => ({ ...prev, [key]: undefined }));
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent, itemId: number, field: string) => {
+    if (e.key === 'Enter') {
+      saveInlineEdit(itemId, field);
+    } else if (e.key === 'Escape') {
+      cancelInlineEdit(itemId, field);
     }
   };
 
@@ -616,25 +653,72 @@ export default function MenuManagement() {
                       {/* Item Details */}
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
-                          <h4 className="font-semibold">{item.name}</h4>
-                          <Badge variant="outline">${parseFloat(item.price).toFixed(2)}</Badge>
+                          {/* Editable Name */}
+                          {inlineEditing[`${item.id}-name`] ? (
+                            <Input
+                              value={tempValues[`${item.id}-name`] || ''}
+                              onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-name`]: e.target.value }))}
+                              onKeyDown={(e) => handleKeyPress(e, item.id, 'name')}
+                              onBlur={() => saveInlineEdit(item.id, 'name')}
+                              className="font-semibold h-7 text-sm"
+                              autoFocus
+                            />
+                          ) : (
+                            <h4 
+                              className="font-semibold cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
+                              onClick={() => startInlineEdit(item.id, 'name', item.name)}
+                            >
+                              {item.name}
+                            </h4>
+                          )}
+                          
+                          {/* Editable Price */}
+                          {inlineEditing[`${item.id}-price`] ? (
+                            <Input
+                              value={tempValues[`${item.id}-price`] || ''}
+                              onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-price`]: e.target.value }))}
+                              onKeyDown={(e) => handleKeyPress(e, item.id, 'price')}
+                              onBlur={() => saveInlineEdit(item.id, 'price')}
+                              className="h-7 text-sm w-20"
+                              autoFocus
+                            />
+                          ) : (
+                            <Badge 
+                              variant="outline" 
+                              className="cursor-pointer hover:bg-gray-100"
+                              onClick={() => startInlineEdit(item.id, 'price', item.price)}
+                            >
+                              ${parseFloat(item.price).toFixed(2)}
+                            </Badge>
+                          )}
                         </div>
+                        
+                        {/* Translation (non-editable for now) */}
                         <p className="text-sm text-gray-600 mb-1">{item.translation}</p>
-                        {item.description && (
-                          <p className="text-xs text-gray-500 mb-2">{item.description}</p>
+                        
+                        {/* Editable Description */}
+                        {inlineEditing[`${item.id}-description`] ? (
+                          <Textarea
+                            value={tempValues[`${item.id}-description`] || ''}
+                            onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-description`]: e.target.value }))}
+                            onKeyDown={(e) => handleKeyPress(e, item.id, 'description')}
+                            onBlur={() => saveInlineEdit(item.id, 'description')}
+                            className="text-xs h-16 resize-none"
+                            autoFocus
+                          />
+                        ) : (
+                          <p 
+                            className="text-xs text-gray-500 mb-2 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded min-h-[20px]"
+                            onClick={() => startInlineEdit(item.id, 'description', item.description || '')}
+                          >
+                            {item.description || 'Click to add description...'}
+                          </p>
                         )}
                       </div>
                     </div>
                     
                     {/* Action Buttons */}
                     <div className="flex space-x-2 ml-4">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(item)}
-                      >
-                        <Edit className="h-3 w-3" />
-                      </Button>
                       <Button
                         size="sm"
                         variant="outline"

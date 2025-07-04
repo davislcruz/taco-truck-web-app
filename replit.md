@@ -108,6 +108,8 @@ The application uses three main tables:
 
 ```
 Changelog:
+- July 2, 2025. Added inline editing for menu items - click directly on name, price, or description to edit in place without forms, includes keyboard shortcuts (Enter to save, Escape to cancel) and auto-save on blur
+- July 2, 2025. Added category-specific "Add Item" buttons next to each category title for faster menu item creation with pre-filled category selection
 - July 2, 2025. Standardized category icons - all food categories (tacos, burritos, tortas, semitas) now use utensils icon for consistency, bebidas keeps glass-water icon to distinguish drinks from food
 - July 2, 2025. Fixed "View Customer Page" button functionality - owners can now properly view customer ordering experience without being redirected back to dashboard, uses sessionStorage flag system
 - July 2, 2025. Created dedicated owner dashboard page at /dashboard route - owners automatically redirect to dashboard after login, includes "View Customer Page" link to see regular customer experience, removed embedded dashboard from home page
