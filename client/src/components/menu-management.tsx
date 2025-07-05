@@ -738,7 +738,6 @@ export default function MenuManagement() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => {
                           startInlineEdit(item.id, 'name', item.name);
                           startInlineEdit(item.id, 'price', item.price);
@@ -751,7 +750,7 @@ export default function MenuManagement() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-red-600 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="text-red-600 hover:text-red-700"
                         onClick={() => handleDelete(item.id)}
                         disabled={deleteMutation.isPending}
                       >
