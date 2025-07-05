@@ -693,8 +693,24 @@ export default function MenuManagement() {
                           )}
                         </div>
                         
-                        {/* Translation (non-editable for now) */}
-                        <p className="text-sm text-gray-600 mb-1">{item.translation}</p>
+                        {/* Editable Translation */}
+                        {inlineEditing[`${item.id}-translation`] ? (
+                          <Input
+                            value={tempValues[`${item.id}-translation`] || ''}
+                            onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-translation`]: e.target.value }))}
+                            onKeyDown={(e) => handleKeyPress(e, item.id, 'translation')}
+                            onBlur={() => saveInlineEdit(item.id, 'translation')}
+                            className="text-sm h-7 mb-1"
+                            autoFocus
+                          />
+                        ) : (
+                          <p 
+                            className="text-sm text-gray-600 mb-1 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded min-h-[20px]"
+                            onClick={() => startInlineEdit(item.id, 'translation', item.translation || '')}
+                          >
+                            {item.translation || 'Click to add translation...'}
+                          </p>
+                        )}
                         
                         {/* Editable Description */}
                         {inlineEditing[`${item.id}-description`] ? (
