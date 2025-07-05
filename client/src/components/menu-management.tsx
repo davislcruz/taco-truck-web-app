@@ -667,9 +667,9 @@ export default function MenuManagement() {
                             />
                           ) : (
                             <h4 
-                              className={`font-semibold px-1 py-0.5 rounded ${
+                              className={`font-semibold px-1 py-0.5 rounded transition-all ${
                                 editMode[item.id] 
-                                  ? 'cursor-pointer hover:bg-gray-100' 
+                                  ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
                                   : 'cursor-default'
                               }`}
                               onClick={() => startInlineEdit(item.id, 'name', item.name)}
@@ -691,7 +691,7 @@ export default function MenuManagement() {
                           ) : (
                             <Badge 
                               variant="outline" 
-                              className={editMode[item.id] ? 'cursor-pointer hover:bg-gray-100' : 'cursor-default'}
+                              className={`transition-all ${editMode[item.id] ? 'cursor-pointer hover:bg-gray-100 border-dashed border-blue-300 bg-blue-50' : 'cursor-default'}`}
                               onClick={() => startInlineEdit(item.id, 'price', item.price)}
                             >
                               ${parseFloat(item.price).toFixed(2)}
@@ -711,9 +711,9 @@ export default function MenuManagement() {
                           />
                         ) : (
                           <p 
-                            className={`text-sm text-gray-600 mb-1 px-1 py-0.5 rounded min-h-[20px] ${
+                            className={`text-sm text-gray-600 mb-1 px-1 py-0.5 rounded min-h-[20px] transition-all ${
                               editMode[item.id] 
-                                ? 'cursor-pointer hover:bg-gray-100' 
+                                ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
                                 : 'cursor-default'
                             }`}
                             onClick={() => startInlineEdit(item.id, 'translation', item.translation || '')}
@@ -734,9 +734,9 @@ export default function MenuManagement() {
                           />
                         ) : (
                           <p 
-                            className={`text-xs text-gray-500 mb-2 px-1 py-0.5 rounded min-h-[20px] ${
+                            className={`text-xs text-gray-500 mb-2 px-1 py-0.5 rounded min-h-[20px] transition-all ${
                               editMode[item.id] 
-                                ? 'cursor-pointer hover:bg-gray-100' 
+                                ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
                                 : 'cursor-default'
                             }`}
                             onClick={() => startInlineEdit(item.id, 'description', item.description || '')}
