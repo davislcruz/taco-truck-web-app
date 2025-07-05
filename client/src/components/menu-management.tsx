@@ -753,7 +753,16 @@ export default function MenuManagement() {
                         size="sm"
                         variant={editMode[item.id] ? "default" : "outline"}
                         onClick={() => {
+                          const isEnteringEditMode = !editMode[item.id];
                           setEditMode(prev => ({ ...prev, [item.id]: !prev[item.id] }));
+                          
+                          if (isEnteringEditMode) {
+                            toast({
+                              title: "Edit mode enabled",
+                              description: "Click on any field to edit",
+                              duration: 2000,
+                            });
+                          }
                         }}
                       >
                         <Edit className="h-3 w-3" />
