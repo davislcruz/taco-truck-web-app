@@ -631,7 +631,7 @@ export default function MenuManagement() {
           </div>
           <div className="grid gap-4">
             {items.map((item) => (
-              <Card key={item.id}>
+              <Card key={item.id} className="group">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="flex space-x-4 flex-1">
@@ -738,6 +738,7 @@ export default function MenuManagement() {
                       <Button
                         size="sm"
                         variant="outline"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => {
                           startInlineEdit(item.id, 'name', item.name);
                           startInlineEdit(item.id, 'price', item.price);
@@ -750,7 +751,7 @@ export default function MenuManagement() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-red-600 hover:text-red-700"
+                        className="text-red-600 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => handleDelete(item.id)}
                         disabled={deleteMutation.isPending}
                       >
