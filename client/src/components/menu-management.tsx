@@ -330,12 +330,6 @@ export default function MenuManagement() {
         <h2 className="text-2xl font-bold">Menu Management</h2>
         <div className="space-x-2">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-mexican-green hover:bg-green-600">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Menu Item
-              </Button>
-            </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
