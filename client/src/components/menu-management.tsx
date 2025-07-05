@@ -738,6 +738,18 @@ export default function MenuManagement() {
                       <Button
                         size="sm"
                         variant="outline"
+                        onClick={() => {
+                          startInlineEdit(item.id, 'name', item.name);
+                          startInlineEdit(item.id, 'price', item.price);
+                          startInlineEdit(item.id, 'translation', item.translation || '');
+                          startInlineEdit(item.id, 'description', item.description || '');
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
                         className="text-red-600 hover:text-red-700"
                         onClick={() => handleDelete(item.id)}
                         disabled={deleteMutation.isPending}
