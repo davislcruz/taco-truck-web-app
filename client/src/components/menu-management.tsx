@@ -681,8 +681,20 @@ export default function MenuManagement() {
           </div>
           <div className="grid gap-4">
             {items.map((item) => (
-              <Card key={item.id} className="group">
+              <Card key={item.id} className="group relative">
                 <CardContent className="p-4">
+                  {/* Delete button in corner when edit mode is active */}
+                  {editMode[item.id] && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="absolute top-2 right-2 text-red-600 hover:text-red-700 bg-white hover:bg-red-50 border-red-200 w-8 h-8 p-0 rounded-full shadow-sm"
+                      onClick={() => handleDelete(item.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  )}
                   <div className="flex space-x-4">
                     {/* Food Image */}
                     <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
