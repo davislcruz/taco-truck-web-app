@@ -48,6 +48,7 @@ export default function MenuManagement() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [inlineEditing, setInlineEditing] = useState<{[key: string]: boolean}>({});
   const [tempValues, setTempValues] = useState<{[key: string]: any}>({});
+  const [editMode, setEditMode] = useState<{[key: number]: boolean}>({});
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -272,6 +273,7 @@ export default function MenuManagement() {
 
   // Inline editing functions
   const startInlineEdit = (itemId: number, field: string, currentValue: any) => {
+    if (!editMode[itemId]) return; // Only allow editing if edit mode is enabled for this item
     const key = `${itemId}-${field}`;
     setInlineEditing(prev => ({ ...prev, [key]: true }));
     setTempValues(prev => ({ ...prev, [key]: currentValue }));
@@ -665,7 +667,11 @@ export default function MenuManagement() {
                             />
                           ) : (
                             <h4 
-                              className="font-semibold cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
+                              className={`font-semibold px-1 py-0.5 rounded ${
+                                editMode[item.id] 
+                                  ? 'cursor-pointer hover:bg-gray-100' 
+                                  : 'cursor-default'
+                              }`}
                               onClick={() => startInlineEdit(item.id, 'name', item.name)}
                             >
                               {item.name}
@@ -685,7 +691,7 @@ export default function MenuManagement() {
                           ) : (
                             <Badge 
                               variant="outline" 
-                              className="cursor-pointer hover:bg-gray-100"
+                              className={editMode[item.id] ? 'cursor-pointer hover:bg-gray-100' : 'cursor-default'}
                               onClick={() => startInlineEdit(item.id, 'price', item.price)}
                             >
                               ${parseFloat(item.price).toFixed(2)}
@@ -705,7 +711,11 @@ export default function MenuManagement() {
                           />
                         ) : (
                           <p 
-                            className="text-sm text-gray-600 mb-1 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded min-h-[20px]"
+                            className={`text-sm text-gray-600 mb-1 px-1 py-0.5 rounded min-h-[20px] ${
+                              editMode[item.id] 
+                                ? 'cursor-pointer hover:bg-gray-100' 
+                                : 'cursor-default'
+                            }`}
                             onClick={() => startInlineEdit(item.id, 'translation', item.translation || '')}
                           >
                             {item.translation || 'Click to add translation...'}
@@ -724,7 +734,11 @@ export default function MenuManagement() {
                           />
                         ) : (
                           <p 
-                            className="text-xs text-gray-500 mb-2 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded min-h-[20px]"
+                            className={`text-xs text-gray-500 mb-2 px-1 py-0.5 rounded min-h-[20px] ${
+                              editMode[item.id] 
+                                ? 'cursor-pointer hover:bg-gray-100' 
+                                : 'cursor-default'
+                            }`}
                             onClick={() => startInlineEdit(item.id, 'description', item.description || '')}
                           >
                             {item.description || 'Click to add description...'}
@@ -737,12 +751,9 @@ export default function MenuManagement() {
                     <div className="flex space-x-2 ml-4">
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant={editMode[item.id] ? "default" : "outline"}
                         onClick={() => {
-                          startInlineEdit(item.id, 'name', item.name);
-                          startInlineEdit(item.id, 'price', item.price);
-                          startInlineEdit(item.id, 'translation', item.translation || '');
-                          startInlineEdit(item.id, 'description', item.description || '');
+                          setEditMode(prev => ({ ...prev, [item.id]: !prev[item.id] }));
                         }}
                       >
                         <Edit className="h-3 w-3" />
