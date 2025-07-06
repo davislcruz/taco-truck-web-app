@@ -673,134 +673,192 @@ export default function MenuManagement() {
               )}
             </div>
           </div>
-          <div className="grid gap-4">
-            {items.map((item) => (
-              <Card key={item.id} className="group relative">
-                <CardContent className="p-4">
-                  {/* Delete button in corner when edit mode is active */}
-                  {editMode[item.id] && (
+          <div className="space-y-4">
+            {items.map((item, index) => (
+              <div key={item.id}>
+                {/* Plus button before each card (except first) when edit mode is active */}
+                {index > 0 && items.some(i => editMode[i.id]) && (
+                  <div className="flex justify-center py-2">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="absolute top-2 right-2 text-red-600 hover:text-red-700 bg-white hover:bg-red-50 border-red-200 w-8 h-8 p-0 rounded-full shadow-sm"
-                      onClick={() => handleDelete(item.id)}
-                      disabled={deleteMutation.isPending}
+                      className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors"
+                      onClick={() => {
+                        form.reset({
+                          name: "",
+                          translation: "",
+                          category: category,
+                          price: "",
+                          description: "",
+                          image: "",
+                          meats: "",
+                          toppings: "",
+                          sizes: ""
+                        });
+                        setEditingItem(null);
+                        setIsDialogOpen(true);
+                      }}
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Plus className="h-3 w-3 text-gray-500" />
                     </Button>
-                  )}
-                  <div className="flex space-x-4">
-                    {/* Food Image */}
-                    <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                      {item.image ? (
-                        <img 
-                          src={item.image} 
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400">
-                          <Utensils className="h-8 w-8" />
+                  </div>
+                )}
+                
+                <Card className="group relative">
+                  <CardContent className="p-4">
+                    {/* Delete button in corner when edit mode is active */}
+                    {editMode[item.id] && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="absolute top-2 right-2 text-red-600 hover:text-red-700 bg-white hover:bg-red-50 border-red-200 w-8 h-8 p-0 rounded-full shadow-sm"
+                        onClick={() => handleDelete(item.id)}
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    )}
+                    <div className="flex space-x-4">
+                      {/* Food Image */}
+                      <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                        {item.image ? (
+                          <img 
+                            src={item.image} 
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            <Utensils className="h-8 w-8" />
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Item Details */}
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          {/* Editable Name */}
+                          {inlineEditing[`${item.id}-name`] ? (
+                            <Input
+                              value={tempValues[`${item.id}-name`] || ''}
+                              onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-name`]: e.target.value }))}
+                              onKeyDown={(e) => handleKeyPress(e, item.id, 'name')}
+                              onBlur={() => saveInlineEdit(item.id, 'name')}
+                              className="font-semibold h-7 text-sm"
+                              autoFocus
+                            />
+                          ) : (
+                            <h4 
+                              className={`font-semibold px-1 py-0.5 rounded transition-all ${
+                                editMode[item.id] 
+                                  ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
+                                  : 'cursor-default'
+                              }`}
+                              onClick={() => startInlineEdit(item.id, 'name', item.name)}
+                            >
+                              {item.name}
+                            </h4>
+                          )}
+                          
+                          {/* Editable Price */}
+                          {inlineEditing[`${item.id}-price`] ? (
+                            <Input
+                              value={tempValues[`${item.id}-price`] || ''}
+                              onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-price`]: e.target.value }))}
+                              onKeyDown={(e) => handleKeyPress(e, item.id, 'price')}
+                              onBlur={() => saveInlineEdit(item.id, 'price')}
+                              className="h-7 text-sm w-20"
+                              autoFocus
+                            />
+                          ) : (
+                            <Badge 
+                              variant="outline" 
+                              className={`transition-all ${editMode[item.id] ? 'cursor-pointer hover:bg-gray-100 border-dashed border-blue-300 bg-blue-50' : 'cursor-default'}`}
+                              onClick={() => startInlineEdit(item.id, 'price', item.price)}
+                            >
+                              ${parseFloat(item.price).toFixed(2)}
+                            </Badge>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    
-                    {/* Item Details */}
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        {/* Editable Name */}
-                        {inlineEditing[`${item.id}-name`] ? (
+                        
+                        {/* Editable Translation */}
+                        {inlineEditing[`${item.id}-translation`] ? (
                           <Input
-                            value={tempValues[`${item.id}-name`] || ''}
-                            onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-name`]: e.target.value }))}
-                            onKeyDown={(e) => handleKeyPress(e, item.id, 'name')}
-                            onBlur={() => saveInlineEdit(item.id, 'name')}
-                            className="font-semibold h-7 text-sm"
+                            value={tempValues[`${item.id}-translation`] || ''}
+                            onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-translation`]: e.target.value }))}
+                            onKeyDown={(e) => handleKeyPress(e, item.id, 'translation')}
+                            onBlur={() => saveInlineEdit(item.id, 'translation')}
+                            className="text-sm h-7 mb-1"
                             autoFocus
                           />
                         ) : (
-                          <h4 
-                            className={`font-semibold px-1 py-0.5 rounded transition-all ${
+                          <p 
+                            className={`text-sm text-gray-600 mb-1 px-1 py-0.5 rounded min-h-[20px] transition-all ${
                               editMode[item.id] 
                                 ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
                                 : 'cursor-default'
                             }`}
-                            onClick={() => startInlineEdit(item.id, 'name', item.name)}
+                            onClick={() => startInlineEdit(item.id, 'translation', item.translation || '')}
                           >
-                            {item.name}
-                          </h4>
+                            {item.translation || 'Click to add translation...'}
+                          </p>
                         )}
                         
-                        {/* Editable Price */}
-                        {inlineEditing[`${item.id}-price`] ? (
-                          <Input
-                            value={tempValues[`${item.id}-price`] || ''}
-                            onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-price`]: e.target.value }))}
-                            onKeyDown={(e) => handleKeyPress(e, item.id, 'price')}
-                            onBlur={() => saveInlineEdit(item.id, 'price')}
-                            className="h-7 text-sm w-20"
+                        {/* Editable Description */}
+                        {inlineEditing[`${item.id}-description`] ? (
+                          <Textarea
+                            value={tempValues[`${item.id}-description`] || ''}
+                            onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-description`]: e.target.value }))}
+                            onKeyDown={(e) => handleKeyPress(e, item.id, 'description')}
+                            onBlur={() => saveInlineEdit(item.id, 'description')}
+                            className="text-xs h-16 resize-none"
                             autoFocus
                           />
                         ) : (
-                          <Badge 
-                            variant="outline" 
-                            className={`transition-all ${editMode[item.id] ? 'cursor-pointer hover:bg-gray-100 border-dashed border-blue-300 bg-blue-50' : 'cursor-default'}`}
-                            onClick={() => startInlineEdit(item.id, 'price', item.price)}
+                          <p 
+                            className={`text-xs text-gray-500 mb-2 px-1 py-0.5 rounded min-h-[20px] transition-all ${
+                              editMode[item.id] 
+                                ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
+                                : 'cursor-default'
+                            }`}
+                            onClick={() => startInlineEdit(item.id, 'description', item.description || '')}
                           >
-                            ${parseFloat(item.price).toFixed(2)}
-                          </Badge>
+                            {item.description || 'Click to add description...'}
+                          </p>
                         )}
                       </div>
-                      
-                      {/* Editable Translation */}
-                      {inlineEditing[`${item.id}-translation`] ? (
-                        <Input
-                          value={tempValues[`${item.id}-translation`] || ''}
-                          onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-translation`]: e.target.value }))}
-                          onKeyDown={(e) => handleKeyPress(e, item.id, 'translation')}
-                          onBlur={() => saveInlineEdit(item.id, 'translation')}
-                          className="text-sm h-7 mb-1"
-                          autoFocus
-                        />
-                      ) : (
-                        <p 
-                          className={`text-sm text-gray-600 mb-1 px-1 py-0.5 rounded min-h-[20px] transition-all ${
-                            editMode[item.id] 
-                              ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
-                              : 'cursor-default'
-                          }`}
-                          onClick={() => startInlineEdit(item.id, 'translation', item.translation || '')}
-                        >
-                          {item.translation || 'Click to add translation...'}
-                        </p>
-                      )}
-                      
-                      {/* Editable Description */}
-                      {inlineEditing[`${item.id}-description`] ? (
-                        <Textarea
-                          value={tempValues[`${item.id}-description`] || ''}
-                          onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-description`]: e.target.value }))}
-                          onKeyDown={(e) => handleKeyPress(e, item.id, 'description')}
-                          onBlur={() => saveInlineEdit(item.id, 'description')}
-                          className="text-xs h-16 resize-none"
-                          autoFocus
-                        />
-                      ) : (
-                        <p 
-                          className={`text-xs text-gray-500 mb-2 px-1 py-0.5 rounded min-h-[20px] transition-all ${
-                            editMode[item.id] 
-                              ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
-                              : 'cursor-default'
-                          }`}
-                          onClick={() => startInlineEdit(item.id, 'description', item.description || '')}
-                        >
-                          {item.description || 'Click to add description...'}
-                        </p>
-                      )}
                     </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Plus button after last card when edit mode is active */}
+                {index === items.length - 1 && items.some(i => editMode[i.id]) && (
+                  <div className="flex justify-center py-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors"
+                      onClick={() => {
+                        form.reset({
+                          name: "",
+                          translation: "",
+                          category: category,
+                          price: "",
+                          description: "",
+                          image: "",
+                          meats: "",
+                          toppings: "",
+                          sizes: ""
+                        });
+                        setEditingItem(null);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      <Plus className="h-3 w-3 text-gray-500" />
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             ))}
           </div>
         </div>
