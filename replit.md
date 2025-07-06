@@ -108,6 +108,7 @@ The application uses three main tables:
 
 ```
 Changelog:
+- July 6, 2025. Implemented precise positional insertion system for menu items - plus buttons now insert items exactly where clicked using custom order tracking arrays, works for beginning, middle, and end positions with persistent placement
 - July 2, 2025. Added inline editing for menu items - click directly on name, price, or description to edit in place without forms, includes keyboard shortcuts (Enter to save, Escape to cancel) and auto-save on blur
 - July 2, 2025. Added category-specific "Add Item" buttons next to each category title for faster menu item creation with pre-filled category selection
 - July 2, 2025. Standardized category icons - all food categories (tacos, burritos, tortas, semitas) now use utensils icon for consistency, bebidas keeps glass-water icon to distinguish drinks from food
