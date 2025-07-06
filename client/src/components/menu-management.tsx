@@ -49,7 +49,7 @@ export default function MenuManagement() {
   const [inlineEditing, setInlineEditing] = useState<{[key: string]: boolean}>({});
   const [tempValues, setTempValues] = useState<{[key: string]: any}>({});
   const [editMode, setEditMode] = useState<{[key: number]: boolean}>({});
-  const [lastInsertedItem, setLastInsertedItem] = useState<{ id: number, insertAfterIndex: number, category: string } | null>(null);
+  const [customOrder, setCustomOrder] = useState<Record<string, number[]>>({});
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -92,12 +92,25 @@ export default function MenuManagement() {
       const response = await apiRequest("POST", "/api/menu", serverData);
       const newItem = await response.json();
       
-      // Store insertion context with the new item
+      // Update custom order if insertion position was specified
       if (typeof insertAfterIndex === 'number') {
-        setLastInsertedItem({
-          id: newItem.id,
-          insertAfterIndex,
-          category: data.category
+        setCustomOrder(prev => {
+          const categoryOrder = prev[data.category] || [];
+          const newOrder = [...categoryOrder];
+          
+          if (insertAfterIndex === -1) {
+            // Insert at beginning
+            newOrder.unshift(newItem.id);
+          } else {
+            // Insert after the specified index
+            const insertAt = Math.min(insertAfterIndex + 1, newOrder.length);
+            newOrder.splice(insertAt, 0, newItem.id);
+          }
+          
+          return {
+            ...prev,
+            [data.category]: newOrder
+          };
         });
       }
       
@@ -120,7 +133,6 @@ export default function MenuManagement() {
         description: error.message,
         variant: "destructive",
       });
-      setLastInsertedItem(null);
     },
   });
 
@@ -148,8 +160,18 @@ export default function MenuManagement() {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       await apiRequest("DELETE", `/api/menu/${id}`);
+      return id;
     },
-    onSuccess: () => {
+    onSuccess: (deletedId: number) => {
+      // Clean up custom order
+      setCustomOrder(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(category => {
+          updated[category] = updated[category].filter(itemId => itemId !== deletedId);
+        });
+        return updated;
+      });
+      
       queryClient.invalidateQueries({ queryKey: ["/api/menu"] });
       toast({ title: "Menu item deleted successfully!" });
     },
@@ -345,50 +367,37 @@ export default function MenuManagement() {
       return acc;
     }, {} as Record<string, MenuItem[]>);
 
-    // Sort items within each category and handle positional insertion
+    // Sort items within each category using custom order or default ID order
     Object.keys(grouped).forEach(category => {
       const items = grouped[category];
+      const categoryOrder = customOrder[category];
       
-      // Check if we have a recently inserted item for this category
-      if (lastInsertedItem && lastInsertedItem.category === category) {
-        // Find the inserted item
-        const insertedItem = items.find(item => item.id === lastInsertedItem.id);
+      if (categoryOrder && categoryOrder.length > 0) {
+        // Use custom order if available
+        const orderedItems: MenuItem[] = [];
+        const remainingItems = [...items];
         
-        if (insertedItem) {
-          // Remove the inserted item from its current position
-          const otherItems = items.filter(item => item.id !== lastInsertedItem.id);
-          
-          // Sort other items first by ID to get the correct reference order
-          otherItems.sort((a, b) => a.id - b.id);
-          
-          // Insert it at the desired position
-          let insertAtIndex;
-          if (lastInsertedItem.insertAfterIndex === -1) {
-            // Insert at the beginning
-            insertAtIndex = 0;
-          } else {
-            // Insert after the specified index (in the original sorted order)
-            insertAtIndex = Math.min(lastInsertedItem.insertAfterIndex + 1, otherItems.length);
+        // First, add items in the specified order
+        categoryOrder.forEach(itemId => {
+          const itemIndex = remainingItems.findIndex(item => item.id === itemId);
+          if (itemIndex !== -1) {
+            orderedItems.push(remainingItems.splice(itemIndex, 1)[0]);
           }
-          
-          console.log('DEBUG: Inserting item', insertedItem.name, 'at index', insertAtIndex, 'after index', lastInsertedItem.insertAfterIndex, 'in category', category);
-          console.log('DEBUG: Other items:', otherItems.map(i => i.name));
-          
-          otherItems.splice(insertAtIndex, 0, insertedItem);
-          
-          grouped[category] = otherItems;
-          
-          // Clear the insertion state after applying it (in a timeout to avoid infinite loops)
-          setTimeout(() => setLastInsertedItem(null), 0);
-        }
+        });
+        
+        // Then add any remaining items (not in custom order) at the end
+        remainingItems.sort((a, b) => a.id - b.id);
+        orderedItems.push(...remainingItems);
+        
+        grouped[category] = orderedItems;
       } else {
-        // Normal sorting by ID for creation order
+        // Default sorting by ID for creation order
         items.sort((a, b) => a.id - b.id);
       }
     });
     
     return grouped;
-  }, [menuItems, lastInsertedItem]);
+  }, [menuItems, customOrder]);
 
   return (
     <div className="space-y-6">
