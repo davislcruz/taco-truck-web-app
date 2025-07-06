@@ -684,20 +684,21 @@ export default function MenuManagement() {
                       variant="outline"
                       className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
                       onClick={() => {
-                        form.reset({
-                          name: "",
-                          translation: "",
+                        // Create a new item with placeholder data
+                        const placeholderItem = {
+                          name: "New Item",
+                          translation: "Click to edit",
                           category: category,
-                          price: "",
-                          description: "",
+                          price: "0.00",
+                          description: "Add description...",
                           image: "",
-                          meats: "",
-                          toppings: "",
-                          sizes: ""
-                        });
-                        setEditingItem(null);
-                        setIsDialogOpen(true);
+                          meats: [],
+                          toppings: [],
+                          sizes: []
+                        };
+                        createMutation.mutate(placeholderItem);
                       }}
+                      disabled={createMutation.isPending}
                     >
                       <Plus className="h-3 w-3 text-gray-500" />
                     </Button>
@@ -839,20 +840,21 @@ export default function MenuManagement() {
                       variant="outline"
                       className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
                       onClick={() => {
-                        form.reset({
-                          name: "",
-                          translation: "",
+                        // Create a new item with placeholder data
+                        const placeholderItem = {
+                          name: "New Item",
+                          translation: "Click to edit",
                           category: category,
-                          price: "",
-                          description: "",
+                          price: "0.00",
+                          description: "Add description...",
                           image: "",
-                          meats: "",
-                          toppings: "",
-                          sizes: ""
-                        });
-                        setEditingItem(null);
-                        setIsDialogOpen(true);
+                          meats: [],
+                          toppings: [],
+                          sizes: []
+                        };
+                        createMutation.mutate(placeholderItem);
                       }}
+                      disabled={createMutation.isPending}
                     >
                       <Plus className="h-3 w-3 text-gray-500" />
                     </Button>
