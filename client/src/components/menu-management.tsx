@@ -675,14 +675,14 @@ export default function MenuManagement() {
           </div>
           <div className="space-y-4">
             {items.map((item, index) => (
-              <div key={item.id}>
+              <React.Fragment key={item.id}>
                 {/* Plus button before each card (except first) when edit mode is active */}
                 {index > 0 && items.some(i => editMode[i.id]) && (
-                  <div className="flex justify-center -my-2">
+                  <div className="flex justify-center -mt-2 -mb-2 relative z-10">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors"
+                      className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
                       onClick={() => {
                         form.reset({
                           name: "",
@@ -711,7 +711,7 @@ export default function MenuManagement() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="absolute top-2 right-2 text-red-600 hover:text-red-700 bg-white hover:bg-red-50 border-red-200 w-8 h-8 p-0 rounded-full shadow-sm"
+                        className="absolute top-2 right-2 text-red-600 hover:text-red-700 bg-white hover:bg-red-50 border-red-200 w-8 h-8 p-0 rounded-full shadow-sm z-10"
                         onClick={() => handleDelete(item.id)}
                         disabled={deleteMutation.isPending}
                       >
@@ -833,11 +833,11 @@ export default function MenuManagement() {
                 
                 {/* Plus button after last card when edit mode is active */}
                 {index === items.length - 1 && items.some(i => editMode[i.id]) && (
-                  <div className="flex justify-center -my-2">
+                  <div className="flex justify-center -mt-2 pt-2 relative z-10">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors"
+                      className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
                       onClick={() => {
                         form.reset({
                           name: "",
@@ -858,7 +858,7 @@ export default function MenuManagement() {
                     </Button>
                   </div>
                 )}
-              </div>
+              </React.Fragment>
             ))}
           </div>
         </div>
