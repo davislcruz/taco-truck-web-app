@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, X, Utensils } from "lucide-react";
+import { Plus, Edit, Trash2, X, Utensils, Camera } from "lucide-react";
 import { MenuItem, InsertMenuItem, Category, InsertCategory } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getCategoryIcon } from "@/lib/menu-data";
@@ -831,7 +831,9 @@ export default function MenuManagement() {
                     )}
                     <div className="flex space-x-4">
                       {/* Food Image */}
-                      <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                      <div className={`w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative group ${
+                        editMode[item.id] ? 'cursor-pointer' : ''
+                      }`}>
                         {item.image ? (
                           <img 
                             src={item.image} 
@@ -842,6 +844,37 @@ export default function MenuManagement() {
                           <div className="w-full h-full flex items-center justify-center text-gray-400">
                             <Utensils className="h-8 w-8" />
                           </div>
+                        )}
+                        
+                        {/* Hover overlay - only shown in edit mode */}
+                        {editMode[item.id] && (
+                          <>
+                            {/* Image editing input */}
+                            {inlineEditing[`${item.id}-image`] ? (
+                              <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-2">
+                                <Input
+                                  value={tempValues[`${item.id}-image`] || ''}
+                                  onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-image`]: e.target.value }))}
+                                  onKeyDown={(e) => handleKeyPress(e, item.id, 'image')}
+                                  onBlur={() => saveInlineEdit(item.id, 'image')}
+                                  placeholder="Image URL..."
+                                  className="text-xs h-6 bg-white"
+                                  autoFocus
+                                />
+                              </div>
+                            ) : (
+                              /* Hover overlay */
+                              <div 
+                                className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+                                onClick={() => startInlineEdit(item.id, 'image', item.image)}
+                              >
+                                <div className="text-white text-center">
+                                  <Camera className="h-4 w-4 mx-auto mb-1" />
+                                  <span className="text-xs font-medium">Change Image</span>
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                       
