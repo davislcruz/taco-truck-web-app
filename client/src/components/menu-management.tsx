@@ -89,11 +89,16 @@ export default function MenuManagement() {
       const response = await apiRequest("POST", "/api/menu", data);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (newItem: MenuItem) => {
       queryClient.invalidateQueries({ queryKey: ["/api/menu"] });
       toast({ title: "Menu item created successfully!" });
       setIsDialogOpen(false);
       form.reset();
+      
+      // Automatically put new item in edit mode if it was created via plus button
+      if (newItem.name === "New Item" && newItem.translation === "Click to edit") {
+        setEditMode(prev => ({ ...prev, [newItem.id]: true }));
+      }
     },
     onError: (error: any) => {
       toast({
