@@ -678,7 +678,7 @@ export default function MenuManagement() {
               <div key={item.id}>
                 {/* Plus button before each card (except first) when edit mode is active */}
                 {index > 0 && items.some(i => editMode[i.id]) && (
-                  <div className="flex justify-center py-2">
+                  <div className="flex justify-center -my-2">
                     <Button
                       size="sm"
                       variant="outline"
@@ -833,7 +833,7 @@ export default function MenuManagement() {
                 
                 {/* Plus button after last card when edit mode is active */}
                 {index === items.length - 1 && items.some(i => editMode[i.id]) && (
-                  <div className="flex justify-center py-2">
+                  <div className="flex justify-center -my-2">
                     <Button
                       size="sm"
                       variant="outline"
