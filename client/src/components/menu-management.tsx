@@ -358,15 +358,22 @@ export default function MenuManagement() {
           // Remove the inserted item from its current position
           const otherItems = items.filter(item => item.id !== lastInsertedItem.id);
           
+          // Sort other items first by ID to get the correct reference order
+          otherItems.sort((a, b) => a.id - b.id);
+          
           // Insert it at the desired position
           let insertAtIndex;
           if (lastInsertedItem.insertAfterIndex === -1) {
             // Insert at the beginning
             insertAtIndex = 0;
           } else {
-            // Insert after the specified index
+            // Insert after the specified index (in the original sorted order)
             insertAtIndex = Math.min(lastInsertedItem.insertAfterIndex + 1, otherItems.length);
           }
+          
+          console.log('DEBUG: Inserting item', insertedItem.name, 'at index', insertAtIndex, 'after index', lastInsertedItem.insertAfterIndex, 'in category', category);
+          console.log('DEBUG: Other items:', otherItems.map(i => i.name));
+          
           otherItems.splice(insertAtIndex, 0, insertedItem);
           
           grouped[category] = otherItems;
