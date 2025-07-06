@@ -49,6 +49,7 @@ export default function MenuManagement() {
   const [inlineEditing, setInlineEditing] = useState<{[key: string]: boolean}>({});
   const [tempValues, setTempValues] = useState<{[key: string]: any}>({});
   const [editMode, setEditMode] = useState<{[key: number]: boolean}>({});
+  const [pendingInsertions, setPendingInsertions] = useState<Record<string, { afterIndex: number, category: string }>>({});
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -85,8 +86,19 @@ export default function MenuManagement() {
 
   // Menu item mutations
   const createMutation = useMutation({
-    mutationFn: async (data: InsertMenuItem) => {
-      const response = await apiRequest("POST", "/api/menu", data);
+    mutationFn: async (data: InsertMenuItem & { insertAfterIndex?: number }) => {
+      // Store insertion context if provided
+      if (typeof data.insertAfterIndex === 'number') {
+        const insertionKey = `${data.category}-${Date.now()}`;
+        setPendingInsertions(prev => ({
+          ...prev,
+          [insertionKey]: { afterIndex: data.insertAfterIndex as number, category: data.category }
+        }));
+      }
+      
+      // Remove insertAfterIndex from the data sent to server
+      const { insertAfterIndex, ...serverData } = data;
+      const response = await apiRequest("POST", "/api/menu", serverData);
       return response.json();
     },
     onSuccess: (newItem: MenuItem) => {
@@ -99,6 +111,17 @@ export default function MenuManagement() {
       if (newItem.name === "New Item" && newItem.translation === "Click to edit") {
         setEditMode(prev => ({ ...prev, [newItem.id]: true }));
       }
+      
+      // Clear any pending insertions for this category
+      setPendingInsertions(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(key => {
+          if (updated[key].category === newItem.category) {
+            delete updated[key];
+          }
+        });
+        return updated;
+      });
     },
     onError: (error: any) => {
       toast({
@@ -106,6 +129,8 @@ export default function MenuManagement() {
         description: error.message,
         variant: "destructive",
       });
+      // Clear pending insertions on error
+      setPendingInsertions({});
     },
   });
 
@@ -329,9 +354,38 @@ export default function MenuManagement() {
     return acc;
   }, {} as Record<string, MenuItem[]>);
 
-  // Sort items within each category by ID to maintain creation order
+  // Sort items within each category and handle positional insertion
   Object.keys(groupedItems).forEach(category => {
-    groupedItems[category].sort((a, b) => a.id - b.id);
+    const items = groupedItems[category];
+    
+    // Check if there are any pending insertions for this category
+    const pendingForCategory = Object.values(pendingInsertions).find(p => p.category === category);
+    
+    if (pendingForCategory) {
+      // Find the newest item (highest ID) which is likely our newly inserted item
+      const newestItem = items.reduce((newest, current) => 
+        current.id > newest.id ? current : newest
+      );
+      
+      // Remove the newest item from its current position
+      const otherItems = items.filter(item => item.id !== newestItem.id);
+      
+      // Insert it at the desired position
+      let insertAtIndex;
+      if (pendingForCategory.afterIndex === -1) {
+        // Insert at the beginning
+        insertAtIndex = 0;
+      } else {
+        // Insert after the specified index
+        insertAtIndex = Math.min(pendingForCategory.afterIndex + 1, otherItems.length);
+      }
+      otherItems.splice(insertAtIndex, 0, newestItem);
+      
+      groupedItems[category] = otherItems;
+    } else {
+      // Normal sorting by ID for creation order
+      items.sort((a, b) => a.id - b.id);
+    }
   });
 
   return (
@@ -661,6 +715,36 @@ export default function MenuManagement() {
             </div>
           </div>
           <div className="space-y-4">
+            {/* Plus button at the beginning when edit mode is active and category has items */}
+            {items.length > 0 && items.some(i => editMode[i.id]) && (
+              <div className="flex justify-center -mb-2 relative z-10">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
+                  onClick={() => {
+                    // Create a new item at the beginning of the category
+                    const placeholderItem = {
+                      name: "New Item",
+                      translation: "Click to edit",
+                      category: category,
+                      price: "0.00",
+                      description: "Add description...",
+                      image: "",
+                      meats: [],
+                      toppings: [],
+                      sizes: [],
+                      insertAfterIndex: -1, // Insert at the beginning
+                    };
+                    createMutation.mutate(placeholderItem);
+                  }}
+                  disabled={createMutation.isPending}
+                >
+                  <Plus className="h-3 w-3 text-gray-500" />
+                </Button>
+              </div>
+            )}
+            
             {items.map((item, index) => (
               <React.Fragment key={item.id}>
                 {/* Plus button before each card (except first) when edit mode is active */}
@@ -682,7 +766,7 @@ export default function MenuManagement() {
                           meats: [],
                           toppings: [],
                           sizes: [],
-
+                          insertAfterIndex: index - 1, // Insert after the previous item
                         };
                         createMutation.mutate(placeholderItem);
                       }}
@@ -839,7 +923,7 @@ export default function MenuManagement() {
                           meats: [],
                           toppings: [],
                           sizes: [],
-
+                          insertAfterIndex: index, // Insert after the current (last) item
                         };
                         createMutation.mutate(placeholderItem);
                       }}
