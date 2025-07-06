@@ -613,29 +613,6 @@ export default function MenuManagement() {
               {categoryLabels[category] || category} ({items.length})
             </h3>
             <div className="flex space-x-2">
-              <Button
-                size="sm"
-                onClick={() => {
-                  form.reset({
-                    name: "",
-                    translation: "",
-                    category: category,
-                    price: "",
-                    description: "",
-                    image: "",
-                    meats: "",
-                    toppings: "",
-                    sizes: ""
-                  });
-                  setEditingItem(null);
-                  setIsDialogOpen(true);
-                }}
-                className="bg-mexican-green hover:bg-green-600"
-              >
-                <Plus className="h-3 w-3 mr-2" />
-                Add Item
-              </Button>
-              
               {/* Edit All Items in Category */}
               <Button
                 size="sm"
