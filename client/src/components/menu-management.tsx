@@ -96,21 +96,48 @@ export default function MenuManagement() {
       if (typeof insertAfterIndex === 'number') {
         setCustomOrder(prev => {
           const categoryOrder = prev[data.category] || [];
-          const newOrder = [...categoryOrder];
           
-          if (insertAfterIndex === -1) {
-            // Insert at beginning
-            newOrder.unshift(newItem.id);
+          // If no custom order exists yet, we need to build it from the existing items
+          if (categoryOrder.length === 0) {
+            // Get current menu items for this category (excluding the new item)
+            const currentCategoryItems = menuItems
+              .filter(item => item.category === data.category)
+              .sort((a, b) => a.id - b.id)
+              .map(item => item.id);
+            
+            let newOrder = [...currentCategoryItems];
+            
+            if (insertAfterIndex === -1) {
+              // Insert at beginning
+              newOrder.unshift(newItem.id);
+            } else {
+              // Insert after the specified index
+              const insertAt = Math.min(insertAfterIndex + 1, newOrder.length);
+              newOrder.splice(insertAt, 0, newItem.id);
+            }
+            
+            return {
+              ...prev,
+              [data.category]: newOrder
+            };
           } else {
-            // Insert after the specified index
-            const insertAt = Math.min(insertAfterIndex + 1, newOrder.length);
-            newOrder.splice(insertAt, 0, newItem.id);
+            // Use existing custom order
+            const newOrder = [...categoryOrder];
+            
+            if (insertAfterIndex === -1) {
+              // Insert at beginning
+              newOrder.unshift(newItem.id);
+            } else {
+              // Insert after the specified index
+              const insertAt = Math.min(insertAfterIndex + 1, newOrder.length);
+              newOrder.splice(insertAt, 0, newItem.id);
+            }
+            
+            return {
+              ...prev,
+              [data.category]: newOrder
+            };
           }
-          
-          return {
-            ...prev,
-            [data.category]: newOrder
-          };
         });
       }
       
