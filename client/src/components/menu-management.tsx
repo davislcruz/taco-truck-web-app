@@ -324,6 +324,11 @@ export default function MenuManagement() {
     return acc;
   }, {} as Record<string, MenuItem[]>);
 
+  // Sort items within each category by ID to maintain creation order
+  Object.keys(groupedItems).forEach(category => {
+    groupedItems[category].sort((a, b) => a.id - b.id);
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -684,7 +689,7 @@ export default function MenuManagement() {
                       variant="outline"
                       className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
                       onClick={() => {
-                        // Create a new item with placeholder data
+                        // Create a new item with placeholder data at specific position
                         const placeholderItem = {
                           name: "New Item",
                           translation: "Click to edit",
@@ -694,7 +699,8 @@ export default function MenuManagement() {
                           image: "",
                           meats: [],
                           toppings: [],
-                          sizes: []
+                          sizes: [],
+
                         };
                         createMutation.mutate(placeholderItem);
                       }}
@@ -840,7 +846,7 @@ export default function MenuManagement() {
                       variant="outline"
                       className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
                       onClick={() => {
-                        // Create a new item with placeholder data
+                        // Create a new item with placeholder data at end of list
                         const placeholderItem = {
                           name: "New Item",
                           translation: "Click to edit",
@@ -850,7 +856,8 @@ export default function MenuManagement() {
                           image: "",
                           meats: [],
                           toppings: [],
-                          sizes: []
+                          sizes: [],
+
                         };
                         createMutation.mutate(placeholderItem);
                       }}
