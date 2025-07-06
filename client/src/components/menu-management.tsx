@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,7 @@ export default function MenuManagement() {
   const [inlineEditing, setInlineEditing] = useState<{[key: string]: boolean}>({});
   const [tempValues, setTempValues] = useState<{[key: string]: any}>({});
   const [editMode, setEditMode] = useState<{[key: number]: boolean}>({});
-  const [pendingInsertions, setPendingInsertions] = useState<Record<string, { afterIndex: number, category: string }>>({});
+  const [lastInsertedItem, setLastInsertedItem] = useState<{ id: number, insertAfterIndex: number, category: string } | null>(null);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -87,19 +87,21 @@ export default function MenuManagement() {
   // Menu item mutations
   const createMutation = useMutation({
     mutationFn: async (data: InsertMenuItem & { insertAfterIndex?: number }) => {
-      // Store insertion context if provided
-      if (typeof data.insertAfterIndex === 'number') {
-        const insertionKey = `${data.category}-${Date.now()}`;
-        setPendingInsertions(prev => ({
-          ...prev,
-          [insertionKey]: { afterIndex: data.insertAfterIndex as number, category: data.category }
-        }));
-      }
-      
       // Remove insertAfterIndex from the data sent to server
       const { insertAfterIndex, ...serverData } = data;
       const response = await apiRequest("POST", "/api/menu", serverData);
-      return response.json();
+      const newItem = await response.json();
+      
+      // Store insertion context with the new item
+      if (typeof insertAfterIndex === 'number') {
+        setLastInsertedItem({
+          id: newItem.id,
+          insertAfterIndex,
+          category: data.category
+        });
+      }
+      
+      return newItem;
     },
     onSuccess: (newItem: MenuItem) => {
       queryClient.invalidateQueries({ queryKey: ["/api/menu"] });
@@ -111,17 +113,6 @@ export default function MenuManagement() {
       if (newItem.name === "New Item" && newItem.translation === "Click to edit") {
         setEditMode(prev => ({ ...prev, [newItem.id]: true }));
       }
-      
-      // Clear any pending insertions for this category
-      setPendingInsertions(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(key => {
-          if (updated[key].category === newItem.category) {
-            delete updated[key];
-          }
-        });
-        return updated;
-      });
     },
     onError: (error: any) => {
       toast({
@@ -129,8 +120,7 @@ export default function MenuManagement() {
         description: error.message,
         variant: "destructive",
       });
-      // Clear pending insertions on error
-      setPendingInsertions({});
+      setLastInsertedItem(null);
     },
   });
 
@@ -348,45 +338,50 @@ export default function MenuManagement() {
     return acc;
   }, {} as Record<string, string>);
 
-  const groupedItems = menuItems.reduce((acc, item) => {
-    if (!acc[item.category]) acc[item.category] = [];
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, MenuItem[]>);
+  const groupedItems = useMemo(() => {
+    const grouped = menuItems.reduce((acc, item) => {
+      if (!acc[item.category]) acc[item.category] = [];
+      acc[item.category].push(item);
+      return acc;
+    }, {} as Record<string, MenuItem[]>);
 
-  // Sort items within each category and handle positional insertion
-  Object.keys(groupedItems).forEach(category => {
-    const items = groupedItems[category];
-    
-    // Check if there are any pending insertions for this category
-    const pendingForCategory = Object.values(pendingInsertions).find(p => p.category === category);
-    
-    if (pendingForCategory) {
-      // Find the newest item (highest ID) which is likely our newly inserted item
-      const newestItem = items.reduce((newest, current) => 
-        current.id > newest.id ? current : newest
-      );
+    // Sort items within each category and handle positional insertion
+    Object.keys(grouped).forEach(category => {
+      const items = grouped[category];
       
-      // Remove the newest item from its current position
-      const otherItems = items.filter(item => item.id !== newestItem.id);
-      
-      // Insert it at the desired position
-      let insertAtIndex;
-      if (pendingForCategory.afterIndex === -1) {
-        // Insert at the beginning
-        insertAtIndex = 0;
+      // Check if we have a recently inserted item for this category
+      if (lastInsertedItem && lastInsertedItem.category === category) {
+        // Find the inserted item
+        const insertedItem = items.find(item => item.id === lastInsertedItem.id);
+        
+        if (insertedItem) {
+          // Remove the inserted item from its current position
+          const otherItems = items.filter(item => item.id !== lastInsertedItem.id);
+          
+          // Insert it at the desired position
+          let insertAtIndex;
+          if (lastInsertedItem.insertAfterIndex === -1) {
+            // Insert at the beginning
+            insertAtIndex = 0;
+          } else {
+            // Insert after the specified index
+            insertAtIndex = Math.min(lastInsertedItem.insertAfterIndex + 1, otherItems.length);
+          }
+          otherItems.splice(insertAtIndex, 0, insertedItem);
+          
+          grouped[category] = otherItems;
+          
+          // Clear the insertion state after applying it (in a timeout to avoid infinite loops)
+          setTimeout(() => setLastInsertedItem(null), 0);
+        }
       } else {
-        // Insert after the specified index
-        insertAtIndex = Math.min(pendingForCategory.afterIndex + 1, otherItems.length);
+        // Normal sorting by ID for creation order
+        items.sort((a, b) => a.id - b.id);
       }
-      otherItems.splice(insertAtIndex, 0, newestItem);
-      
-      groupedItems[category] = otherItems;
-    } else {
-      // Normal sorting by ID for creation order
-      items.sort((a, b) => a.id - b.id);
-    }
-  });
+    });
+    
+    return grouped;
+  }, [menuItems, lastInsertedItem]);
 
   return (
     <div className="space-y-6">
