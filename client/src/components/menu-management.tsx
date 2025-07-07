@@ -700,9 +700,9 @@ export default function MenuManagement() {
       {/* Menu Items Section */}
       {Object.entries(groupedItems).map(([category, items]) => (
         <Card key={category} className="border border-gray-200 shadow-sm bg-white">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             {/* Category Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-mexican-green/10 rounded-lg">
                   {React.createElement(getCategoryIcon(categories.find(c => c.name === category)?.icon || 'utensils'), {
@@ -769,7 +769,7 @@ export default function MenuManagement() {
             </div>
             
             {/* Menu Items List */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               {/* Plus button at the beginning when edit mode is active and category has items */}
               {items.length > 0 && items.some(i => editMode[i.id]) && (
                 <div className="flex justify-center -mb-2 relative z-10">
