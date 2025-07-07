@@ -779,16 +779,16 @@ export default function MenuManagement() {
                   <Label>Category Display Order</Label>
                   <div className="border rounded-lg p-3 max-h-60 overflow-y-auto bg-gray-50">
                     <p className="text-xs text-gray-600 mb-3">
-                      Arrange categories in your preferred order. New category will be highlighted.
+                      Arrange categories in your preferred order. Use ↑↓ arrows to reorder. New category appears highlighted and can be moved before saving.
                     </p>
                     {categoryOrderList.length > 0 ? (
                       <div className="space-y-2">
                         {categoryOrderList.map((cat, index) => (
                           <div 
                             key={cat.id} 
-                            className={`flex items-center justify-between p-2 rounded border transition-all duration-500 ${
+                            className={`flex items-center justify-between p-2 rounded border transition-all duration-300 ${
                               cat.isNew 
-                                ? 'bg-blue-100 border-blue-300 shadow-md animate-pulse' 
+                                ? 'bg-blue-50 border-blue-400 shadow-sm ring-2 ring-blue-200 ring-opacity-50' 
                                 : 'bg-white border-gray-200 hover:border-gray-300'
                             }`}
                           >
@@ -802,41 +802,39 @@ export default function MenuManagement() {
                                 ) : (
                                   <GlassWater className="h-4 w-4 text-gray-600" />
                                 )}
-                                <span className={`text-sm ${cat.isNew ? 'font-semibold text-blue-700' : 'text-gray-700'}`}>
+                                <span className={`text-sm ${cat.isNew ? 'font-semibold text-blue-800' : 'text-gray-700'}`}>
                                   {cat.name}
                                 </span>
                                 {cat.isNew && (
-                                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
-                                    New
+                                  <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-300 animate-bounce">
+                                    New - Click arrows to reorder
                                   </Badge>
                                 )}
                               </div>
                             </div>
                             
-                            {!cat.isNew && (
-                              <div className="flex space-x-1">
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant="outline"
-                                  className="w-7 h-7 p-0"
-                                  onClick={() => moveCategoryUp(index)}
-                                  disabled={index === 0}
-                                >
-                                  <ChevronUp className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant="outline"
-                                  className="w-7 h-7 p-0"
-                                  onClick={() => moveCategoryDown(index)}
-                                  disabled={index === categoryOrderList.length - 1 || (index === categoryOrderList.length - 2 && categoryOrderList[categoryOrderList.length - 1].isNew)}
-                                >
-                                  <ChevronDownIcon className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            )}
+                            <div className="flex space-x-1">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="w-7 h-7 p-0"
+                                onClick={() => moveCategoryUp(index)}
+                                disabled={index === 0}
+                              >
+                                <ChevronUp className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="w-7 h-7 p-0"
+                                onClick={() => moveCategoryDown(index)}
+                                disabled={index === categoryOrderList.length - 1}
+                              >
+                                <ChevronDownIcon className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
                         ))}
                       </div>
