@@ -158,16 +158,16 @@ export default function MenuManagement() {
           };
           return updated;
         } else {
-          // Add new category at the end only if it doesn't exist
+          // Add new category at the beginning only if it doesn't exist
           const withoutNew = prev.filter(cat => !cat.isNew);
           return [
-            ...withoutNew,
             {
               id: newId,
               name: translation,
               icon: icon || "utensils",
               isNew: true
-            }
+            },
+            ...withoutNew
           ];
         }
       });
