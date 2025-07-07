@@ -13,14 +13,14 @@ import { Plus, Edit, Trash2, X, Utensils, Camera, ChevronDown } from "lucide-rea
 import { MenuItem, InsertMenuItem, Category, InsertCategory } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getCategoryIcon } from "@/lib/menu-data";
+import { generateSlug } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 const categoryFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  translation: z.string().min(1, "Translation is required"),
+  translation: z.string().min(1, "Display name is required"),
   icon: z.string().min(1, "Icon is required"),
   order: z.number().min(0),
 });
@@ -96,9 +96,8 @@ export default function MenuManagement() {
   const categoryForm = useForm<CategoryFormData>({
     resolver: zodResolver(categoryFormSchema),
     defaultValues: {
-      name: "",
       translation: "",
-      icon: "",
+      icon: "utensils",
       order: 0,
     },
   });
@@ -335,17 +334,24 @@ export default function MenuManagement() {
 
   // Category handlers
   const onCategorySubmit = (data: CategoryFormData) => {
+    // Auto-generate the name (slug) from the display name
+    const categoryData = {
+      name: generateSlug(data.translation),
+      translation: data.translation,
+      icon: data.icon,
+      order: data.order
+    };
+
     if (editingCategory) {
-      updateCategoryMutation.mutate({ id: editingCategory.id, data });
+      updateCategoryMutation.mutate({ id: editingCategory.id, data: categoryData });
     } else {
-      createCategoryMutation.mutate(data);
+      createCategoryMutation.mutate(categoryData);
     }
   };
 
   const handleEditCategory = (category: Category) => {
     setEditingCategory(category);
     categoryForm.reset({
-      name: category.name,
       translation: category.translation,
       icon: category.icon,
       order: category.order,
@@ -633,29 +639,24 @@ export default function MenuManagement() {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>{editingCategory ? "Edit Category" : "Add Category"}</DialogTitle>
+                <p className="text-sm text-gray-600">
+                  {editingCategory ? "Update category details" : "Create a new menu category"}
+                </p>
               </DialogHeader>
               <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-4">
                 <div>
-                  <Label htmlFor="category-name">Name (ID)</Label>
-                  <Input
-                    id="category-name"
-                    placeholder="e.g., tacos, burritos"
-                    {...categoryForm.register("name")}
-                  />
-                  {categoryForm.formState.errors.name && (
-                    <p className="text-sm text-red-600">{categoryForm.formState.errors.name.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="category-translation">Display Name</Label>
+                  <Label htmlFor="category-translation">Category Name</Label>
                   <Input
                     id="category-translation"
-                    placeholder="e.g., Tacos, Burritos"
+                    placeholder="e.g., Tacos, Burritos, Bebidas Especiales"
                     {...categoryForm.register("translation")}
                   />
                   {categoryForm.formState.errors.translation && (
                     <p className="text-sm text-red-600">{categoryForm.formState.errors.translation.message}</p>
                   )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Internal ID will be auto-generated (e.g., "bebidas-especiales")
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="category-icon">Icon Name</Label>
