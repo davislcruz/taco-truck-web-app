@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, X, Utensils, Camera, ChevronDown, GlassWater } from "lucide-react";
+import { Plus, Edit, Trash2, X, Utensils, Camera, ChevronDown, GlassWater, ChevronUp, ChevronDown as ChevronDownIcon } from "lucide-react";
 import { MenuItem, InsertMenuItem, Category, InsertCategory } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getCategoryIcon } from "@/lib/menu-data";
@@ -53,6 +53,8 @@ export default function MenuManagement() {
   const [expandedItems, setExpandedItems] = useState<{[key: number]: boolean}>({});
   // Initialize all categories as expanded by default
   const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>({});
+  const [categoryOrderList, setCategoryOrderList] = useState<Array<{id: string, name: string, icon: string, isNew?: boolean}>>([]);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   // Toggle item expansion
   const toggleItemExpansion = (itemId: number) => {
@@ -73,6 +75,37 @@ export default function MenuManagement() {
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
   });
+
+  // Initialize category order list when categories change
+  useEffect(() => {
+    if (categories.length > 0) {
+      const sortedCategories = [...categories].sort((a, b) => a.order - b.order);
+      setCategoryOrderList(sortedCategories.map(cat => ({
+        id: cat.name,
+        name: cat.translation,
+        icon: cat.icon
+      })));
+    }
+  }, [categories]);
+
+
+
+  // Functions to handle category reordering
+  const moveCategoryUp = (index: number) => {
+    if (index > 0) {
+      const newList = [...categoryOrderList];
+      [newList[index], newList[index - 1]] = [newList[index - 1], newList[index]];
+      setCategoryOrderList(newList);
+    }
+  };
+
+  const moveCategoryDown = (index: number) => {
+    if (index < categoryOrderList.length - 1) {
+      const newList = [...categoryOrderList];
+      [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
+      setCategoryOrderList(newList);
+    }
+  };
 
   const { data: menuItems = [], isLoading } = useQuery<MenuItem[]>({
     queryKey: ["/api/menu"],
@@ -101,6 +134,33 @@ export default function MenuManagement() {
       order: 0,
     },
   });
+
+  // Update category order list when new category name changes
+  useEffect(() => {
+    const translation = categoryForm.watch("translation");
+    const icon = categoryForm.watch("icon");
+    
+    if (translation && translation.trim()) {
+      const newId = generateSlug(translation);
+      
+      // Remove any existing new category entries
+      const withoutNew = categoryOrderList.filter(cat => !cat.isNew);
+      
+      // Add the new category at the end with highlighting
+      setCategoryOrderList([
+        ...withoutNew,
+        {
+          id: newId,
+          name: translation,
+          icon: icon || "utensils",
+          isNew: true
+        }
+      ]);
+    } else {
+      // Remove new category if name is cleared
+      setCategoryOrderList(prev => prev.filter(cat => !cat.isNew));
+    }
+  }, [categoryForm.watch("translation"), categoryForm.watch("icon"), categoryOrderList]);
 
   // Menu item mutations
   const createMutation = useMutation({
@@ -345,7 +405,16 @@ export default function MenuManagement() {
     if (editingCategory) {
       updateCategoryMutation.mutate({ id: editingCategory.id, data: categoryData });
     } else {
-      createCategoryMutation.mutate(categoryData);
+      // For new categories, use the position in the visual order list
+      const newCategoryIndex = categoryOrderList.findIndex(cat => cat.isNew);
+      const finalOrder = newCategoryIndex >= 0 ? newCategoryIndex : categoryOrderList.length;
+      
+      const finalData = {
+        ...categoryData,
+        order: finalOrder
+      };
+      
+      createCategoryMutation.mutate(finalData);
     }
   };
 
@@ -363,6 +432,14 @@ export default function MenuManagement() {
     if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
       deleteCategoryMutation.mutate(id);
     }
+  };
+
+  const handleCategoryDialogClose = () => {
+    setIsCategoryDialogOpen(false);
+    setEditingCategory(null);
+    categoryForm.reset();
+    // Reset the category order list to remove any "new" items
+    setCategoryOrderList(prev => prev.filter(cat => !cat.isNew));
   };
 
   // Inline editing functions
@@ -401,11 +478,7 @@ export default function MenuManagement() {
     }
   };
 
-  const handleCategoryDialogClose = () => {
-    setIsCategoryDialogOpen(false);
-    setEditingCategory(null);
-    categoryForm.reset();
-  };
+
 
   const categoryLabels = categories.reduce((acc, cat) => {
     acc[cat.name] = cat.translation;
@@ -703,15 +776,76 @@ export default function MenuManagement() {
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="category-order">Display Order</Label>
-                  <Input
-                    id="category-order"
-                    type="number"
-                    {...categoryForm.register("order", { valueAsNumber: true })}
-                  />
-                  {categoryForm.formState.errors.order && (
-                    <p className="text-sm text-red-600">{categoryForm.formState.errors.order.message}</p>
-                  )}
+                  <Label>Category Display Order</Label>
+                  <div className="border rounded-lg p-3 max-h-60 overflow-y-auto bg-gray-50">
+                    <p className="text-xs text-gray-600 mb-3">
+                      Arrange categories in your preferred order. New category will be highlighted.
+                    </p>
+                    {categoryOrderList.length > 0 ? (
+                      <div className="space-y-2">
+                        {categoryOrderList.map((cat, index) => (
+                          <div 
+                            key={cat.id} 
+                            className={`flex items-center justify-between p-2 rounded border transition-all duration-500 ${
+                              cat.isNew 
+                                ? 'bg-blue-100 border-blue-300 shadow-md animate-pulse' 
+                                : 'bg-white border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <span className="text-sm font-medium text-gray-500 w-6">
+                                {index + 1}.
+                              </span>
+                              <div className="flex items-center space-x-2">
+                                {cat.icon === "utensils" ? (
+                                  <Utensils className="h-4 w-4 text-gray-600" />
+                                ) : (
+                                  <GlassWater className="h-4 w-4 text-gray-600" />
+                                )}
+                                <span className={`text-sm ${cat.isNew ? 'font-semibold text-blue-700' : 'text-gray-700'}`}>
+                                  {cat.name}
+                                </span>
+                                {cat.isNew && (
+                                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
+                                    New
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {!cat.isNew && (
+                              <div className="flex space-x-1">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="w-7 h-7 p-0"
+                                  onClick={() => moveCategoryUp(index)}
+                                  disabled={index === 0}
+                                >
+                                  <ChevronUp className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="w-7 h-7 p-0"
+                                  onClick={() => moveCategoryDown(index)}
+                                  disabled={index === categoryOrderList.length - 1 || (index === categoryOrderList.length - 2 && categoryOrderList[categoryOrderList.length - 1].isNew)}
+                                >
+                                  <ChevronDownIcon className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 text-center py-4">
+                        No categories yet. Add your first category name above.
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <div className="flex space-x-2">
