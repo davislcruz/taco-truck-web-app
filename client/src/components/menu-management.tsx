@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, X, Utensils, Camera, ChevronDown } from "lucide-react";
+import { Plus, Edit, Trash2, X, Utensils, Camera, ChevronDown, GlassWater } from "lucide-react";
 import { MenuItem, InsertMenuItem, Category, InsertCategory } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getCategoryIcon } from "@/lib/menu-data";
@@ -659,12 +659,45 @@ export default function MenuManagement() {
                   </p>
                 </div>
                 <div>
-                  <Label htmlFor="category-icon">Icon Name</Label>
-                  <Input
-                    id="category-icon"
-                    placeholder="utensils, coffee, sandwich, etc."
-                    {...categoryForm.register("icon")}
-                  />
+                  <Label htmlFor="category-icon">Category Type</Label>
+                  <Select 
+                    value={categoryForm.watch("icon")} 
+                    onValueChange={(value) => categoryForm.setValue("icon", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category type">
+                        {categoryForm.watch("icon") && (
+                          <div className="flex items-center space-x-2">
+                            {categoryForm.watch("icon") === "utensils" ? (
+                              <>
+                                <Utensils className="h-4 w-4" />
+                                <span>Food</span>
+                              </>
+                            ) : (
+                              <>
+                                <GlassWater className="h-4 w-4" />
+                                <span>Drinks</span>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="utensils">
+                        <div className="flex items-center space-x-2">
+                          <Utensils className="h-4 w-4" />
+                          <span>Food</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="glass-water">
+                        <div className="flex items-center space-x-2">
+                          <GlassWater className="h-4 w-4" />
+                          <span>Drinks</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                   {categoryForm.formState.errors.icon && (
                     <p className="text-sm text-red-600">{categoryForm.formState.errors.icon.message}</p>
                   )}
