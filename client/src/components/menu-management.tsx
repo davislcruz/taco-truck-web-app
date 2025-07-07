@@ -745,7 +745,12 @@ export default function MenuManagement() {
                 {/* Edit All Items in Category */}
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant={items.some(item => editMode[item.id]) ? "default" : "outline"}
+                  className={`transition-all ${
+                    items.some(item => editMode[item.id]) 
+                      ? 'bg-mexican-green text-white hover:bg-mexican-green/90 border-mexican-green' 
+                      : 'hover:bg-gray-50'
+                  }`}
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent category toggle
                     const categoryItems = items.map(item => item.id);
@@ -762,6 +767,12 @@ export default function MenuManagement() {
                       toast({
                         title: "Edit mode enabled",
                         description: `All ${category} items can now be edited`,
+                        duration: 2000,
+                      });
+                    } else {
+                      toast({
+                        title: "Edit mode disabled",
+                        description: `${category} items are no longer editable`,
                         duration: 2000,
                       });
                     }
