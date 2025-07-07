@@ -710,12 +710,12 @@ export default function MenuManagement() {
                   })}
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800">
+                  <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                     {categoryLabels[category] || category}
+                    <span className="text-sm text-gray-500 font-normal">
+                      ({items.length} {items.length === 1 ? 'item' : 'items'})
+                    </span>
                   </h3>
-                  <p className="text-sm text-gray-500">
-                    {items.length} {items.length === 1 ? 'item' : 'items'}
-                  </p>
                 </div>
               </div>
               
