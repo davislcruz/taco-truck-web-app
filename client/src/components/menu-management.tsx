@@ -92,21 +92,17 @@ export default function MenuManagement() {
 
   // Functions to handle category reordering
   const moveCategoryUp = (index: number) => {
-    console.log(`Moving category up from index ${index}`);
     if (index > 0) {
       const newList = [...categoryOrderList];
       [newList[index], newList[index - 1]] = [newList[index - 1], newList[index]];
-      console.log('New list after move up:', newList);
       setCategoryOrderList(newList);
     }
   };
 
   const moveCategoryDown = (index: number) => {
-    console.log(`Moving category down from index ${index}`);
     if (index < categoryOrderList.length - 1) {
       const newList = [...categoryOrderList];
       [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
-      console.log('New list after move down:', newList);
       setCategoryOrderList(newList);
     }
   };
@@ -147,24 +143,39 @@ export default function MenuManagement() {
     if (translation && translation.trim()) {
       const newId = generateSlug(translation);
       
-      // Remove any existing new category entries
-      const withoutNew = categoryOrderList.filter(cat => !cat.isNew);
-      
-      // Add the new category at the end with highlighting
-      setCategoryOrderList([
-        ...withoutNew,
-        {
-          id: newId,
-          name: translation,
-          icon: icon || "utensils",
-          isNew: true
+      setCategoryOrderList(prev => {
+        // Check if a new category already exists
+        const existingNewIndex = prev.findIndex(cat => cat.isNew);
+        
+        if (existingNewIndex >= 0) {
+          // Update existing new category in place, preserving its position
+          const updated = [...prev];
+          updated[existingNewIndex] = {
+            id: newId,
+            name: translation,
+            icon: icon || "utensils",
+            isNew: true
+          };
+          return updated;
+        } else {
+          // Add new category at the end only if it doesn't exist
+          const withoutNew = prev.filter(cat => !cat.isNew);
+          return [
+            ...withoutNew,
+            {
+              id: newId,
+              name: translation,
+              icon: icon || "utensils",
+              isNew: true
+            }
+          ];
         }
-      ]);
+      });
     } else {
       // Remove new category if name is cleared
       setCategoryOrderList(prev => prev.filter(cat => !cat.isNew));
     }
-  }, [categoryForm.watch("translation"), categoryForm.watch("icon"), categoryOrderList]);
+  }, [categoryForm.watch("translation"), categoryForm.watch("icon")]);
 
   // Menu item mutations
   const createMutation = useMutation({
