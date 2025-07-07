@@ -108,6 +108,7 @@ The application uses three main tables:
 
 ```
 Changelog:
+- July 7, 2025. Implemented automatic placeholder item creation - every category now always contains at least one food item, prevents empty categories by creating "New Item" placeholders automatically when categories are created, includes database initialization to ensure existing categories get placeholders
 - July 7, 2025. Implemented automatic edit mode for newly created category items - placeholder items in new categories now automatically expand and enter edit mode, allowing immediate editing without additional clicks, fully functional auto-edit system with proper timing and state management
 - July 7, 2025. Fixed visual category ordering system - new categories can now be reordered using up/down arrows before creation, resolved useEffect dependency loop that was causing position reset, categories maintain their moved position correctly
 - July 6, 2025. Implemented precise positional insertion system for menu items - plus buttons now insert items exactly where clicked using custom order tracking arrays, works for beginning, middle, and end positions with persistent placement

@@ -35,6 +35,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const categoryData = insertCategorySchema.parse(req.body);
       const category = await storage.createCategory(categoryData);
+      
+      // Create a placeholder item for the new category
+      const placeholderItem = {
+        name: "New Item",
+        translation: "Click to edit",
+        category: category.name,
+        price: "0.00",
+        description: "Add description here",
+        image: "",
+        availability: true,
+        customizable: true,
+        meats: [],
+        toppings: [],
+        sizes: []
+      };
+      
+      await storage.createMenuItem(placeholderItem);
       res.status(201).json(category);
     } catch (error: any) {
       res.status(400).json({ message: error.message });

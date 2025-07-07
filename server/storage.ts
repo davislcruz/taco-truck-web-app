@@ -70,6 +70,7 @@ export class MemStorage implements IStorage {
     this.initializeCategories();
     this.initializeMenuItems();
     this.initializeDefaultAdmin();
+    this.ensureAllCategoriesHaveItems();
   }
 
   private initializeCategories() {
@@ -202,6 +203,35 @@ export class MemStorage implements IStorage {
       role: "owner" as const
     };
     this.users.set(defaultAdmin.id, defaultAdmin);
+  }
+
+  private ensureAllCategoriesHaveItems() {
+    const categories = Array.from(this.categories.values());
+    const menuItems = Array.from(this.menuItems.values());
+    
+    for (const category of categories) {
+      const itemsInCategory = menuItems.filter(item => item.category === category.name);
+      
+      if (itemsInCategory.length === 0) {
+        // Create a placeholder item for this category
+        const placeholderItem: MenuItem = {
+          id: this.currentMenuItemId++,
+          name: "New Item",
+          translation: "Click to edit",
+          category: category.name,
+          price: "0.00",
+          description: "Add description here",
+          image: "",
+          availability: true,
+          customizable: true,
+          meats: [],
+          toppings: [],
+          sizes: []
+        };
+        
+        this.menuItems.set(placeholderItem.id, placeholderItem);
+      }
+    }
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -396,38 +426,108 @@ export class DatabaseStorage implements IStorage {
         await this.createCategory(category);
       }
 
-      // Create default menu items
+      // Create default menu items for each category
       const defaultMenuItems = [
         {
           name: "De Carnitas",
-          translation: "Pulled Pork",
+          translation: "Pulled Pork Tacos",
           category: "tacos",
-          price: "2.50",
-          description: "Slow-cooked pork shoulder with onions and cilantro",
-          image: "",
+          price: "12.99",
+          description: "Three soft corn tortillas with slow-cooked pulled pork",
+          image: "https://images.unsplash.com/photo-1624300629298-e9de39c13be5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
           availability: true,
           customizable: true,
-          meats: ["carnitas", "asada", "pollo", "pastor"],
-          toppings: ["onions", "cilantro", "salsa", "lime"],
+          meats: ["Carnitas", "Al Pastor", "Carne Asada", "Pollo"],
+          toppings: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime"],
           sizes: []
         },
         {
-          name: "De Asada",
-          translation: "Grilled Beef",
-          category: "tacos",
-          price: "2.75",
-          description: "Grilled beef with traditional seasonings",
-          image: "",
+          name: "De Pollo",
+          translation: "Chicken Burrito",
+          category: "burritos",
+          price: "11.99",
+          description: "Large flour tortilla with seasoned chicken, rice, and beans",
+          image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
           availability: true,
           customizable: true,
-          meats: ["carnitas", "asada", "pollo", "pastor"],
-          toppings: ["onions", "cilantro", "salsa", "lime"],
+          meats: ["Pollo", "Carnitas", "Carne Asada", "Al Pastor"],
+          toppings: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Tomatoes"],
           sizes: []
+        },
+        {
+          name: "Torta Ahogada",
+          translation: "Drowned Sandwich",
+          category: "tortas",
+          price: "10.99",
+          description: "Traditional Mexican sandwich drowned in spicy red sauce",
+          image: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Carnitas", "Pollo", "Carne Asada"],
+          toppings: ["Beans", "Pickled Onions", "Avocado", "Lettuce", "Tomato", "Spicy Red Sauce"],
+          sizes: []
+        },
+        {
+          name: "Semita Tradicional",
+          translation: "Traditional Semita",
+          category: "semitas",
+          price: "9.99",
+          description: "Mexican-style sandwich with your choice of meat and toppings",
+          image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Pollo", "Carnitas", "Al Pastor"],
+          toppings: ["Beans", "Avocado", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo"],
+          sizes: []
+        },
+        {
+          name: "Agua de Jamaica",
+          translation: "Hibiscus Water",
+          category: "bebidas",
+          price: "3.99",
+          description: "Refreshing hibiscus flower drink",
+          image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: [],
+          toppings: [],
+          sizes: ["Small", "Medium", "Large"]
         }
       ];
 
       for (const item of defaultMenuItems) {
         await this.createMenuItem(item);
+      }
+    }
+
+    // Ensure every category has at least one placeholder item
+    await this.ensureAllCategoriesHaveItems();
+  }
+
+  private async ensureAllCategoriesHaveItems() {
+    const categories = await this.getAllCategories();
+    const menuItems = await this.getAllMenuItems();
+    
+    for (const category of categories) {
+      const itemsInCategory = menuItems.filter(item => item.category === category.name);
+      
+      if (itemsInCategory.length === 0) {
+        // Create a placeholder item for this category
+        const placeholderItem = {
+          name: "New Item",
+          translation: "Click to edit",
+          category: category.name,
+          price: "0.00",
+          description: "Add description here",
+          image: "",
+          availability: true,
+          customizable: true,
+          meats: [],
+          toppings: [],
+          sizes: []
+        };
+        
+        await this.createMenuItem(placeholderItem);
       }
     }
   }
