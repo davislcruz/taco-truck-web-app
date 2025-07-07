@@ -308,13 +308,35 @@ export default function MenuManagement() {
   const createCategoryMutation = useMutation({
     mutationFn: async (data: InsertCategory) => {
       const response = await apiRequest("POST", "/api/categories", data);
-      return response.json();
+      const category = await response.json();
+      
+      // Automatically create a placeholder menu item for the new category
+      const placeholderItem = {
+        name: "New Item",
+        translation: "Click to edit",
+        category: category.name,
+        price: "0.00",
+        description: "Add description...",
+        image: "",
+        meats: [],
+        toppings: [],
+        sizes: []
+      };
+      
+      await apiRequest("POST", "/api/menu", placeholderItem);
+      return category;
     },
-    onSuccess: () => {
+    onSuccess: (newCategory) => {
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      toast({ title: "Category created successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["/api/menu"] });
+      toast({ title: "Category created with starter item!" });
       setIsCategoryDialogOpen(false);
       categoryForm.reset();
+      
+      // Enable edit mode for all items in the new category after a short delay
+      setTimeout(() => {
+        // This will be handled by the useEffect when menu items update
+      }, 100);
     },
     onError: (error: any) => {
       toast({
