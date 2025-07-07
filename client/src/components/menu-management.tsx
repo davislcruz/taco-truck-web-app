@@ -794,7 +794,7 @@ export default function MenuManagement() {
                   <Label>Category Display Order</Label>
                   <div className="border rounded-lg p-3 max-h-60 overflow-y-auto bg-gray-50">
                     <p className="text-xs text-gray-600 mb-3">
-                      Arrange categories in your preferred order. Use ↑↓ arrows to reorder. New category appears highlighted and can be moved before saving.
+                      Preview your category order below. Use ↑↓ arrows to reorder. Click "Create" to save the highlighted category to your menu.
                     </p>
                     {categoryOrderList.length > 0 ? (
                       <div className="space-y-2">
