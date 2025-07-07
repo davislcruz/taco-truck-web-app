@@ -893,7 +893,10 @@ export default function MenuManagement() {
 
 
       {/* Menu Items Section */}
-      {Object.entries(groupedItems).map(([category, items]) => (
+      {categories.map((categoryData) => {
+        const items = groupedItems[categoryData.name] || [];
+        const category = categoryData.name;
+        return (
         <Card key={category} className="border border-gray-200 shadow-sm bg-white">
           <CardContent className="p-3">
             {/* Category Header - Clickable */}
@@ -1300,7 +1303,8 @@ export default function MenuManagement() {
             </div>
           </CardContent>
         </Card>
-      ))}
+        );
+      })}
 
       {menuItems.length === 0 && !isLoading && (
         <div className="text-center py-8">
