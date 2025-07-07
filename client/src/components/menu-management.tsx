@@ -805,11 +805,6 @@ export default function MenuManagement() {
                                 <span className={`text-sm ${cat.isNew ? 'font-semibold text-blue-800' : 'text-gray-700'}`}>
                                   {cat.name}
                                 </span>
-                                {cat.isNew && (
-                                  <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-300 animate-bounce">
-                                    New - Click arrows to reorder
-                                  </Badge>
-                                )}
                               </div>
                             </div>
                             
