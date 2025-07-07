@@ -4,6 +4,10 @@ import createMemoryStore from "memorystore";
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
 
+const scryptAsync = promisify(scrypt);
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+
 const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
@@ -35,7 +39,7 @@ export interface IStorage {
   updateOrderStatus(orderId: string, status: string): Promise<Order | undefined>;
   searchOrdersByPhone(phone: string): Promise<Order[]>;
 
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 }
 
 export class MemStorage implements IStorage {
@@ -47,7 +51,7 @@ export class MemStorage implements IStorage {
   private currentCategoryId: number;
   private currentMenuItemId: number;
   private currentOrderId: number;
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 
   constructor() {
     this.users = new Map();
@@ -353,4 +357,205 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  sessionStore: session.Store;
+
+  constructor() {
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    });
+    this.initializeDatabase();
+  }
+
+  private async initializeDatabase() {
+    // Check if admin user exists
+    const adminUser = await this.getUserByUsername("admin");
+    if (!adminUser) {
+      // Create default admin user
+      const hashedPassword = await this.hashPassword("admin123");
+      await this.createUser({
+        username: "admin",
+        password: hashedPassword,
+        role: "owner"
+      });
+    }
+
+    // Check if categories exist
+    const existingCategories = await this.getAllCategories();
+    if (existingCategories.length === 0) {
+      // Create default categories
+      const defaultCategories = [
+        { name: "tacos", translation: "Tacos", icon: "utensils", order: 0 },
+        { name: "burritos", translation: "Burritos", icon: "utensils", order: 1 },
+        { name: "tortas", translation: "Tortas", icon: "utensils", order: 2 },
+        { name: "semitas", translation: "Semitas", icon: "utensils", order: 3 },
+        { name: "bebidas", translation: "Bebidas", icon: "glass-water", order: 4 }
+      ];
+
+      for (const category of defaultCategories) {
+        await this.createCategory(category);
+      }
+
+      // Create default menu items
+      const defaultMenuItems = [
+        {
+          name: "De Carnitas",
+          translation: "Pulled Pork",
+          category: "tacos",
+          price: "2.50",
+          description: "Slow-cooked pork shoulder with onions and cilantro",
+          image: "",
+          availability: true,
+          customizable: true,
+          meats: ["carnitas", "asada", "pollo", "pastor"],
+          toppings: ["onions", "cilantro", "salsa", "lime"],
+          sizes: []
+        },
+        {
+          name: "De Asada",
+          translation: "Grilled Beef",
+          category: "tacos",
+          price: "2.75",
+          description: "Grilled beef with traditional seasonings",
+          image: "",
+          availability: true,
+          customizable: true,
+          meats: ["carnitas", "asada", "pollo", "pastor"],
+          toppings: ["onions", "cilantro", "salsa", "lime"],
+          sizes: []
+        }
+      ];
+
+      for (const item of defaultMenuItems) {
+        await this.createMenuItem(item);
+      }
+    }
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const salt = randomBytes(16).toString('hex');
+    const hashedPassword = await scryptAsync(password, salt, 64) as Buffer;
+    return `${salt}:${hashedPassword.toString('hex')}`;
+  }
+
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async getAllCategories(): Promise<Category[]> {
+    return await db.select().from(categories).orderBy(categories.order);
+  }
+
+  async getCategoryById(id: number): Promise<Category | undefined> {
+    const [category] = await db.select().from(categories).where(eq(categories.id, id));
+    return category || undefined;
+  }
+
+  async createCategory(data: InsertCategory): Promise<Category> {
+    const [category] = await db
+      .insert(categories)
+      .values(data)
+      .returning();
+    return category;
+  }
+
+  async updateCategory(id: number, data: InsertCategory): Promise<Category | null> {
+    const [category] = await db
+      .update(categories)
+      .set(data)
+      .where(eq(categories.id, id))
+      .returning();
+    return category || null;
+  }
+
+  async deleteCategory(id: number): Promise<boolean> {
+    const result = await db.delete(categories).where(eq(categories.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async getAllMenuItems(): Promise<MenuItem[]> {
+    return await db.select().from(menuItems);
+  }
+
+  async getMenuItemsByCategory(category: string): Promise<MenuItem[]> {
+    return await db.select().from(menuItems).where(eq(menuItems.category, category));
+  }
+
+  async getMenuItemById(id: number): Promise<MenuItem | undefined> {
+    const [item] = await db.select().from(menuItems).where(eq(menuItems.id, id));
+    return item || undefined;
+  }
+
+  async createMenuItem(data: InsertMenuItem): Promise<MenuItem> {
+    const [item] = await db
+      .insert(menuItems)
+      .values(data)
+      .returning();
+    return item;
+  }
+
+  async updateMenuItem(id: number, data: InsertMenuItem): Promise<MenuItem | null> {
+    const [item] = await db
+      .update(menuItems)
+      .set(data)
+      .where(eq(menuItems.id, id))
+      .returning();
+    return item || null;
+  }
+
+  async deleteMenuItem(id: number): Promise<boolean> {
+    const result = await db.delete(menuItems).where(eq(menuItems.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async createOrder(insertOrder: InsertOrder): Promise<Order> {
+    const [order] = await db
+      .insert(orders)
+      .values(insertOrder)
+      .returning();
+    return order;
+  }
+
+  async getAllOrders(): Promise<Order[]> {
+    return await db.select().from(orders);
+  }
+
+  async getOrderById(id: number): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order || undefined;
+  }
+
+  async getOrderByOrderId(orderId: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.orderId, orderId));
+    return order || undefined;
+  }
+
+  async updateOrderStatus(orderId: string, status: string): Promise<Order | undefined> {
+    const [order] = await db
+      .update(orders)
+      .set({ status })
+      .where(eq(orders.orderId, orderId))
+      .returning();
+    return order || undefined;
+  }
+
+  async searchOrdersByPhone(phone: string): Promise<Order[]> {
+    return await db.select().from(orders).where(eq(orders.phone, phone));
+  }
+}
+
+export const storage = new DatabaseStorage();
