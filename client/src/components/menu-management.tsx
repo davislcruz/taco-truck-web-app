@@ -51,12 +51,22 @@ export default function MenuManagement() {
   const [editMode, setEditMode] = useState<{[key: number]: boolean}>({});
   const [customOrder, setCustomOrder] = useState<Record<string, number[]>>({});
   const [expandedItems, setExpandedItems] = useState<{[key: number]: boolean}>({});
+  // Initialize all categories as expanded by default
+  const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>({});
 
   // Toggle item expansion
   const toggleItemExpansion = (itemId: number) => {
     setExpandedItems(prev => ({
       ...prev,
       [itemId]: !prev[itemId]
+    }));
+  };
+
+  // Toggle category expansion
+  const toggleCategoryExpansion = (category: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
     }));
   };
 
@@ -710,8 +720,11 @@ export default function MenuManagement() {
       {Object.entries(groupedItems).map(([category, items]) => (
         <Card key={category} className="border border-gray-200 shadow-sm bg-white">
           <CardContent className="p-3">
-            {/* Category Header */}
-            <div className="flex items-center justify-between mb-3">
+            {/* Category Header - Clickable */}
+            <div 
+              className="flex items-center justify-between mb-3 cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors"
+              onClick={() => toggleCategoryExpansion(category)}
+            >
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-mexican-green/10 rounded-lg">
                   {React.createElement(getCategoryIcon(categories.find(c => c.name === category)?.icon || 'utensils'), {
@@ -728,12 +741,13 @@ export default function MenuManagement() {
                 </div>
               </div>
               
-              <div className="flex space-x-2">
+              <div className="flex items-center space-x-2">
                 {/* Edit All Items in Category */}
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent category toggle
                     const categoryItems = items.map(item => item.id);
                     const hasAnyEditMode = categoryItems.some(id => editMode[id]);
                     const newEditMode = { ...editMode };
@@ -762,7 +776,8 @@ export default function MenuManagement() {
                     size="sm"
                     variant="outline"
                     className="text-red-600 hover:text-red-700"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent category toggle
                       // Handle category deletion logic here
                       toast({
                         title: "Delete category",
@@ -774,11 +789,23 @@ export default function MenuManagement() {
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 )}
+                
+                {/* Category Expand/Collapse indicator */}
+                <ChevronDown 
+                  className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                    expandedCategories[category] !== false ? 'rotate-180' : ''
+                  }`}
+                />
               </div>
             </div>
             
-            {/* Menu Items List */}
-            <div className="space-y-2">
+            {/* Menu Items List - Collapsible */}
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              expandedCategories[category] !== false 
+                ? 'max-h-[2000px] opacity-100' 
+                : 'max-h-0 opacity-0'
+            }`}>
+              <div className="space-y-2 pt-2">
               {/* Plus button at the beginning when edit mode is active and category has items */}
               {items.length > 0 && items.some(i => editMode[i.id]) && (
                 <div className="flex justify-center -mb-2 relative z-10">
@@ -1082,6 +1109,7 @@ export default function MenuManagement() {
                   )}
                 </React.Fragment>
             ))}
+              </div>
             </div>
           </CardContent>
         </Card>
