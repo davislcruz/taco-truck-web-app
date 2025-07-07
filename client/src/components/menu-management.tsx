@@ -116,12 +116,9 @@ export default function MenuManagement() {
   useEffect(() => {
     if (justCreatedCategory && menuItems && menuItems.length > 0) {
       const newCategoryItems = menuItems.filter(item => item.category === justCreatedCategory);
-      console.log('Looking for items in category:', justCreatedCategory);
-      console.log('Found items:', newCategoryItems);
       
       if (newCategoryItems.length > 0) {
         newCategoryItems.forEach(item => {
-          console.log('Enabling edit mode for item:', item.id);
           setEditMode(prev => ({ ...prev, [item.id]: true }));
           setExpandedItems(prev => ({ ...prev, [item.id]: true }));
         });
