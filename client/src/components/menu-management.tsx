@@ -55,6 +55,7 @@ export default function MenuManagement() {
   const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>({});
   const [categoryOrderList, setCategoryOrderList] = useState<Array<{id: string, name: string, icon: string, isNew?: boolean}>>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [justCreatedCategory, setJustCreatedCategory] = useState<string | null>(null);
 
   // Toggle item expansion
   const toggleItemExpansion = (itemId: number) => {
@@ -110,6 +111,19 @@ export default function MenuManagement() {
   const { data: menuItems = [], isLoading } = useQuery<MenuItem[]>({
     queryKey: ["/api/menu"],
   });
+
+  // Auto-enable edit mode for newly created category items
+  useEffect(() => {
+    if (justCreatedCategory && menuItems) {
+      const newCategoryItems = menuItems.filter(item => item.category === justCreatedCategory);
+      newCategoryItems.forEach(item => {
+        setEditMode(prev => ({ ...prev, [item.id]: true }));
+        setExpandedItems(prev => ({ ...prev, [item.id]: true }));
+      });
+      // Clear the flag after processing
+      setJustCreatedCategory(null);
+    }
+  }, [menuItems, justCreatedCategory]);
 
   const form = useForm<MenuItemFormData>({
     resolver: zodResolver(menuItemFormSchema),
@@ -333,10 +347,8 @@ export default function MenuManagement() {
       setIsCategoryDialogOpen(false);
       categoryForm.reset();
       
-      // Enable edit mode for all items in the new category after a short delay
-      setTimeout(() => {
-        // This will be handled by the useEffect when menu items update
-      }, 100);
+      // Flag this category for auto-edit mode when menu items load
+      setJustCreatedCategory(newCategory.name);
     },
     onError: (error: any) => {
       toast({
