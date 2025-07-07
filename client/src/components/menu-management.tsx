@@ -92,17 +92,21 @@ export default function MenuManagement() {
 
   // Functions to handle category reordering
   const moveCategoryUp = (index: number) => {
+    console.log(`Moving category up from index ${index}`);
     if (index > 0) {
       const newList = [...categoryOrderList];
       [newList[index], newList[index - 1]] = [newList[index - 1], newList[index]];
+      console.log('New list after move up:', newList);
       setCategoryOrderList(newList);
     }
   };
 
   const moveCategoryDown = (index: number) => {
+    console.log(`Moving category down from index ${index}`);
     if (index < categoryOrderList.length - 1) {
       const newList = [...categoryOrderList];
       [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
+      console.log('New list after move down:', newList);
       setCategoryOrderList(newList);
     }
   };
