@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, X, Utensils, Camera } from "lucide-react";
+import { Plus, Edit, Trash2, X, Utensils, Camera, ChevronDown } from "lucide-react";
 import { MenuItem, InsertMenuItem, Category, InsertCategory } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getCategoryIcon } from "@/lib/menu-data";
@@ -923,9 +923,11 @@ export default function MenuManagement() {
                         
                         {/* Expand/Collapse indicator */}
                         {!editMode[item.id] && (
-                          <div className="text-gray-400 transition-transform duration-200 transform">
-                            {expandedItems[item.id] ? '−' : '+'}
-                          </div>
+                          <ChevronDown 
+                            className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                              expandedItems[item.id] ? 'rotate-180' : ''
+                            }`}
+                          />
                         )}
                       </div>
 
