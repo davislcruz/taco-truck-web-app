@@ -788,7 +788,7 @@ export default function MenuManagement() {
                       {editingCategory ? "Edit Category" : "Create a new menu category"}
                     </span>
                     
-                    <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-3">
+                    <form id="category-form" onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-3">
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <Label htmlFor="category-translation">Category Name</Label>
@@ -912,37 +912,42 @@ export default function MenuManagement() {
                   </div>
                 </div>
                 
-                <div className="flex justify-between pt-1 border-t border-gray-200">
-                  <div className="flex space-x-2">
-                    <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
-                      Cancel
-                    </Button>
-                    {editingCategory && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => {
-                          if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
-                            handleDeleteCategory(editingCategory.id);
-                          }
-                        }}
-                        disabled={deleteCategoryMutation.isPending}
-                      >
-                        <Trash2 className="h-3 w-3 mr-1" />
-                        Delete
-                      </Button>
-                    )}
-                  </div>
-                  <Button
-                    type="submit"
-                    className="bg-mexican-green hover:bg-green-600"
-                    disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
-                  >
-                    {editingCategory ? "Update" : "Create"}
-                  </Button>
-                </div>
+                {/* Bottom spacing for absolute buttons */}
+                <div className="h-16"></div>
                     </form>
+                  </div>
+                  
+                  {/* Absolutely positioned buttons at bottom */}
+                  <div className="absolute bottom-3 left-6 right-6 flex justify-between border-t border-gray-200 pt-3 bg-white">
+                    <div className="flex space-x-2">
+                      <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
+                        Cancel
+                      </Button>
+                      {editingCategory && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => {
+                            if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
+                              handleDeleteCategory(editingCategory.id);
+                            }
+                          }}
+                          disabled={deleteCategoryMutation.isPending}
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Delete
+                        </Button>
+                      )}
+                    </div>
+                    <Button
+                      type="submit"
+                      form="category-form"
+                      className="bg-mexican-green hover:bg-green-600"
+                      disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
+                    >
+                      {editingCategory ? "Update" : "Create"}
+                    </Button>
                   </div>
                 </div>
               </div>
