@@ -912,7 +912,7 @@ export default function MenuManagement() {
                   </div>
                 </div>
                 
-                <div className="flex justify-between pt-4 border-t border-gray-200">
+                <div className="flex justify-between pt-3 border-t border-gray-200">
                   <div className="flex space-x-2">
                     <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
                       Cancel
