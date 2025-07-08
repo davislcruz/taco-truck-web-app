@@ -761,7 +761,7 @@ export default function MenuManagement() {
                 Manage Categories
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md max-h-[95vh] overflow-y-auto">
+            <DialogContent className="max-w-md h-[700px] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   {editingCategory ? "Edit Category" : "Create a new menu category"}
@@ -827,7 +827,7 @@ export default function MenuManagement() {
                 </div>
                 <div>
                   <Label>Category Display Order</Label>
-                  <div className="border rounded-lg p-3 max-h-80 overflow-y-auto bg-gray-50">
+                  <div className="border rounded-lg p-3 max-h-96 overflow-y-auto bg-gray-50">
                     <p className="text-xs text-gray-600 mb-3">
                       Preview your category order below. Use ↑↓ arrows to reorder. Click "Create" to save the highlighted category to your menu.
                     </p>
