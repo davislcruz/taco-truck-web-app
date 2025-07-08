@@ -762,7 +762,7 @@ export default function MenuManagement() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md h-[700px] overflow-y-auto gap-0 p-6 pt-3">
-              <DialogHeader className="p-0 space-y-0 pb-0">
+              <DialogHeader className="p-0 space-y-0 pb-0 mb-0">
                 <DialogTitle className="text-base font-medium leading-none mb-0">
                   {editingCategory ? "Edit Category" : "Create a new menu category"}
                 </DialogTitle>
