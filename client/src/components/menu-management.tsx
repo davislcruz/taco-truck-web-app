@@ -911,7 +911,8 @@ export default function MenuManagement() {
                     )}
                   </div>
                 </div>
-                <div className="flex justify-between">
+                
+                <div className="flex justify-between pt-4 border-t border-gray-200">
                   <div className="flex space-x-2">
                     <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
                       Cancel
@@ -938,9 +939,9 @@ export default function MenuManagement() {
                     className="bg-mexican-green hover:bg-green-600"
                     disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
                   >
-                        {editingCategory ? "Update" : "Create"}
-                      </Button>
-                    </div>
+                    {editingCategory ? "Update" : "Create"}
+                  </Button>
+                </div>
                     </form>
                   </div>
                 </div>
