@@ -768,61 +768,62 @@ export default function MenuManagement() {
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-4">
-                <div>
-                  <Label htmlFor="category-translation">Category Name</Label>
-                  <Input
-                    id="category-translation"
-                    placeholder="e.g., Tacos, Burritos, Bebidas Especiales"
-                    {...categoryForm.register("translation")}
-                  />
-                  {categoryForm.formState.errors.translation && (
-                    <p className="text-sm text-red-600">{categoryForm.formState.errors.translation.message}</p>
-                  )}
-
-                </div>
-                <div>
-                  <Label htmlFor="category-icon">Category Type</Label>
-                  <Select 
-                    value={categoryForm.watch("icon")} 
-                    onValueChange={(value) => categoryForm.setValue("icon", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category type">
-                        {categoryForm.watch("icon") && (
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <Label htmlFor="category-translation">Category Name</Label>
+                    <Input
+                      id="category-translation"
+                      placeholder="e.g., Tacos, Burritos, Bebidas Especiales"
+                      {...categoryForm.register("translation")}
+                    />
+                    {categoryForm.formState.errors.translation && (
+                      <p className="text-sm text-red-600">{categoryForm.formState.errors.translation.message}</p>
+                    )}
+                  </div>
+                  <div className="w-32">
+                    <Label htmlFor="category-icon">Category Type</Label>
+                    <Select 
+                      value={categoryForm.watch("icon")} 
+                      onValueChange={(value) => categoryForm.setValue("icon", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type">
+                          {categoryForm.watch("icon") && (
+                            <div className="flex items-center space-x-1">
+                              {categoryForm.watch("icon") === "utensils" ? (
+                                <>
+                                  <Utensils className="h-4 w-4" />
+                                  <span>Food</span>
+                                </>
+                              ) : (
+                                <>
+                                  <GlassWater className="h-4 w-4" />
+                                  <span>Drinks</span>
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="utensils">
                           <div className="flex items-center space-x-2">
-                            {categoryForm.watch("icon") === "utensils" ? (
-                              <>
-                                <Utensils className="h-4 w-4" />
-                                <span>Food</span>
-                              </>
-                            ) : (
-                              <>
-                                <GlassWater className="h-4 w-4" />
-                                <span>Drinks</span>
-                              </>
-                            )}
+                            <Utensils className="h-4 w-4" />
+                            <span>Food</span>
                           </div>
-                        )}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="utensils">
-                        <div className="flex items-center space-x-2">
-                          <Utensils className="h-4 w-4" />
-                          <span>Food</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="glass-water">
-                        <div className="flex items-center space-x-2">
-                          <GlassWater className="h-4 w-4" />
-                          <span>Drinks</span>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {categoryForm.formState.errors.icon && (
-                    <p className="text-sm text-red-600">{categoryForm.formState.errors.icon.message}</p>
-                  )}
+                        </SelectItem>
+                        <SelectItem value="glass-water">
+                          <div className="flex items-center space-x-2">
+                            <GlassWater className="h-4 w-4" />
+                            <span>Drinks</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {categoryForm.formState.errors.icon && (
+                      <p className="text-sm text-red-600">{categoryForm.formState.errors.icon.message}</p>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <Label>Category Display Order</Label>
