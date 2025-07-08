@@ -762,7 +762,7 @@ export default function MenuManagement() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md h-[700px] overflow-y-auto gap-0 p-6 pt-3">
-              <DialogTitle className="text-base font-medium leading-none mb-3">
+              <DialogTitle className="text-base font-medium leading-none">
                 {editingCategory ? "Edit Category" : "Create a new menu category"}
               </DialogTitle>
               <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-3">
