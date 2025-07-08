@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, X, Utensils, Camera, ChevronDown, GlassWater, ChevronUp, ChevronDown as ChevronDownIcon } from "lucide-react";
 import { MenuItem, InsertMenuItem, Category, InsertCategory } from "@shared/schema";
@@ -766,6 +766,9 @@ export default function MenuManagement() {
                 <DialogTitle>
                   {editingCategory ? "Edit Category" : "Create a new menu category"}
                 </DialogTitle>
+                <DialogDescription>
+                  {editingCategory ? "Modify the category details and reorder if needed." : "Add a new category to organize your menu items."}
+                </DialogDescription>
               </DialogHeader>
               <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-4">
                 <div className="flex gap-4">
