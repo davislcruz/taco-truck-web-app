@@ -832,7 +832,7 @@ export default function MenuManagement() {
                       Preview your category order below. Use ↑↓ arrows to reorder. Click "Create" to save the highlighted category to your menu.
                     </p>
                     {categoryOrderList.length > 0 ? (
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         {categoryOrderList.map((cat, index) => (
                           <div 
                             key={cat.id} 
