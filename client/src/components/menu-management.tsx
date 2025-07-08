@@ -779,9 +779,7 @@ export default function MenuManagement() {
                   {categoryForm.formState.errors.translation && (
                     <p className="text-sm text-red-600">{categoryForm.formState.errors.translation.message}</p>
                   )}
-                  <p className="text-xs text-gray-500 mt-1">
-                    Internal ID will be auto-generated (e.g., "bebidas-especiales")
-                  </p>
+
                 </div>
                 <div>
                   <Label htmlFor="category-icon">Category Type</Label>
