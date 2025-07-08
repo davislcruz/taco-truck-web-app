@@ -783,12 +783,12 @@ export default function MenuManagement() {
                   </button>
                   
                   {/* Content */}
-                  <div className="px-6 pt-6 pb-2">
+                  <div className="px-6 pt-6 pb-2 flex flex-col h-full">
                     <span className="text-base font-medium block mb-4 text-center">
                       {editingCategory ? "Edit Category" : "Create a new menu category"}
                     </span>
                     
-                    <form id="category-form" onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-3">
+                    <form id="category-form" onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="flex flex-col h-full space-y-3">
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <Label htmlFor="category-translation">Category Name</Label>
@@ -846,9 +846,9 @@ export default function MenuManagement() {
                     )}
                   </div>
                 </div>
-                <div>
+                <div className="flex flex-col flex-1">
                   <Label>Category Display Order</Label>
-                  <div className="border rounded-lg p-3 max-h-96 overflow-y-auto bg-gray-50">
+                  <div className="border rounded-lg p-3 flex-1 overflow-y-auto bg-gray-50 mb-16">
                     <p className="text-xs text-gray-600 mb-3">
                       Preview your category order below. Use ↑↓ arrows to reorder. Click "Create" to save the highlighted category to your menu.
                     </p>
@@ -911,9 +911,7 @@ export default function MenuManagement() {
                     )}
                   </div>
                 </div>
-                
-                {/* Bottom spacing for absolute buttons */}
-                <div className="h-16"></div>
+
                     </form>
                   </div>
                   
