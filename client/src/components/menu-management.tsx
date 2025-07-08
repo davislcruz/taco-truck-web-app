@@ -754,18 +754,41 @@ export default function MenuManagement() {
             </DialogContent>
           </Dialog>
           
-          <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Plus className="h-4 w-4 mr-2" />
-                Manage Categories
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md h-[700px] overflow-y-auto gap-0 p-6 pt-3">
-              <h2 className="text-base font-medium leading-none m-0 p-0">
-                {editingCategory ? "Edit Category" : "Create a new menu category"}
-              </h2>
-              <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-3">
+          <div>
+            <Button 
+              variant="outline"
+              onClick={() => setIsCategoryDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Manage Categories
+            </Button>
+            
+            {/* Custom Modal */}
+            {isCategoryDialogOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center">
+                {/* Backdrop */}
+                <div 
+                  className="absolute inset-0 bg-black/50" 
+                  onClick={() => setIsCategoryDialogOpen(false)}
+                />
+                
+                {/* Modal Content */}
+                <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md h-[700px] overflow-y-auto">
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setIsCategoryDialogOpen(false)}
+                    className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                  
+                  {/* Content */}
+                  <div className="p-6">
+                    <span className="text-base font-medium block mb-4">
+                      {editingCategory ? "Edit Category" : "Create a new menu category"}
+                    </span>
+                    
+                    <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-3">
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <Label htmlFor="category-translation">Category Name</Label>
@@ -915,12 +938,15 @@ export default function MenuManagement() {
                     className="bg-mexican-green hover:bg-green-600"
                     disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
                   >
-                    {editingCategory ? "Update" : "Create"}
-                  </Button>
+                        {editingCategory ? "Update" : "Create"}
+                      </Button>
+                    </div>
+                    </form>
+                  </div>
                 </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
