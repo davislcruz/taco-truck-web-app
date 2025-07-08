@@ -783,7 +783,7 @@ export default function MenuManagement() {
                   </button>
                   
                   {/* Content */}
-                  <div className="p-6">
+                  <div className="px-6 pt-6 pb-2">
                     <span className="text-base font-medium block mb-4 text-center">
                       {editingCategory ? "Edit Category" : "Create a new menu category"}
                     </span>
