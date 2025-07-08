@@ -762,12 +762,12 @@ export default function MenuManagement() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md h-[700px] overflow-y-auto">
-              <DialogHeader className="p-0 space-y-0">
-                <DialogTitle className="text-lg">
+              <DialogHeader className="p-0 space-y-0 mb-3">
+                <DialogTitle className="text-base font-medium">
                   {editingCategory ? "Edit Category" : "Create a new menu category"}
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-3 mt-4">
+              <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-3">
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <Label htmlFor="category-translation">Category Name</Label>
