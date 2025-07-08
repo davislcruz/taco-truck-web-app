@@ -918,7 +918,7 @@ export default function MenuManagement() {
                   </div>
                   
                   {/* Absolutely positioned buttons at bottom */}
-                  <div className="absolute bottom-3 left-6 right-6 flex justify-between border-t border-gray-200 pt-3 bg-white">
+                  <div className="absolute bottom-3 left-6 right-6 flex justify-between pt-3 bg-white">
                     <div className="flex space-x-2">
                       <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
                         Cancel
