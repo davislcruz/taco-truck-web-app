@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { X, Search, LogOut, Clock, Phone, FileText, Menu, ChefHat, Eye } from "lucide-react";
+import { X, Search, LogOut, Clock, Phone, FileText, Menu, ChefHat, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Order } from "@shared/schema";
@@ -177,8 +177,8 @@ export default function OwnerDashboardPage() {
                 }}
                 className="mr-2"
               >
-                <Eye className="h-4 w-4 mr-2" />
-                View Customer Page
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
               </Button>
               <Button
                 variant="outline"
