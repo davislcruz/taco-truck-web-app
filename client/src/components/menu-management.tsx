@@ -1182,29 +1182,31 @@ export default function MenuManagement() {
                   <Edit className="h-3 w-3" />
                 </Button>
                 
-                {/* Delete Category */}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-8 h-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent category toggle
-                    const categoryData = categories.find(cat => cat.name === category);
-                    if (categoryData) {
-                      if (items.length > 0) {
-                        if (confirm(`Are you sure you want to delete the "${categoryData.translation}" category? This will also delete all ${items.length} items in this category. This action cannot be undone.`)) {
-                          handleDeleteCategory(categoryData.id);
-                        }
-                      } else {
-                        if (confirm(`Are you sure you want to delete the "${categoryData.translation}" category?`)) {
-                          handleDeleteCategory(categoryData.id);
+                {/* Delete Category - Only show in edit mode */}
+                {items.some(i => editMode[i.id]) && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-8 h-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent category toggle
+                      const categoryData = categories.find(cat => cat.name === category);
+                      if (categoryData) {
+                        if (items.length > 0) {
+                          if (confirm(`Are you sure you want to delete the "${categoryData.translation}" category? This will also delete all ${items.length} items in this category. This action cannot be undone.`)) {
+                            handleDeleteCategory(categoryData.id);
+                          }
+                        } else {
+                          if (confirm(`Are you sure you want to delete the "${categoryData.translation}" category?`)) {
+                            handleDeleteCategory(categoryData.id);
+                          }
                         }
                       }
-                    }
-                  }}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                )}
                 
                 {/* Category Expand/Collapse indicator */}
                 <Button
