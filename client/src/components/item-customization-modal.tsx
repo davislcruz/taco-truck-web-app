@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -6,8 +7,16 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { X, Plus, Minus } from "lucide-react";
-import { MenuItem } from "@shared/schema";
+import { MenuItem, Category } from "@shared/schema";
 import { CartItem } from "@/pages/home-page";
+
+// Define ingredient interface
+interface Ingredient {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  price: number;
+}
 
 interface ItemCustomizationModalProps {
   item: MenuItem;
@@ -24,12 +33,46 @@ export default function ItemCustomizationModal({
   const [selectedMeat, setSelectedMeat] = useState(item.meats?.[0] || "");
   const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState(item.sizes?.[0] || "");
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+
+  // Fetch categories to get ingredients for this item's category
+  const { data: categories = [] } = useQuery<Category[]>({
+    queryKey: ["/api/categories"],
+  });
+
+  // Find the category and its ingredients
+  const categoryData = useMemo(() => {
+    return categories.find(cat => cat.name === item.category);
+  }, [categories, item.category]);
+
+  const ingredients = useMemo(() => {
+    if (!categoryData?.ingredients) return [];
+    return categoryData.ingredients as Ingredient[];
+  }, [categoryData]);
+
+  // Initialize selected ingredients with default ingredients when ingredients change
+  useEffect(() => {
+    if (ingredients.length > 0) {
+      const defaultIngredients = ingredients
+        .filter(ing => ing.isDefault)
+        .map(ing => ing.id);
+      setSelectedIngredients(defaultIngredients);
+    }
+  }, [ingredients]);
 
   const calculatePrice = () => {
     let basePrice = parseFloat(item.price);
     let extraCost = 0;
 
-    // Calculate extra costs from toppings
+    // Calculate extra costs from ingredients
+    selectedIngredients.forEach(ingredientId => {
+      const ingredient = ingredients.find(ing => ing.id === ingredientId);
+      if (ingredient && !ingredient.isDefault) {
+        extraCost += ingredient.price;
+      }
+    });
+
+    // Calculate extra costs from old toppings system (fallback)
     selectedToppings.forEach(topping => {
       const match = topping.match(/\(\+\$(\d+)\)/);
       if (match) {
@@ -45,6 +88,14 @@ export default function ItemCustomizationModal({
       setSelectedToppings(prev => [...prev, topping]);
     } else {
       setSelectedToppings(prev => prev.filter(t => t !== topping));
+    }
+  };
+
+  const handleIngredientChange = (ingredientId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedIngredients(prev => [...prev, ingredientId]);
+    } else {
+      setSelectedIngredients(prev => prev.filter(id => id !== ingredientId));
     }
   };
 
@@ -141,8 +192,51 @@ export default function ItemCustomizationModal({
             </div>
           )}
 
-          {/* Toppings Selection */}
-          {item.toppings && item.toppings.length > 0 && (
+          {/* Ingredients Selection */}
+          {ingredients.length > 0 && (
+            <div>
+              <h4 className="font-semibold mb-3">Customize your ingredients:</h4>
+              <div className="space-y-2">
+                {ingredients.map((ingredient) => {
+                  const isSelected = selectedIngredients.includes(ingredient.id);
+                  const isExtra = !ingredient.isDefault;
+                  
+                  return (
+                    <div key={ingredient.id} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={ingredient.id}
+                          checked={isSelected}
+                          onCheckedChange={(checked) => 
+                            handleIngredientChange(ingredient.id, checked as boolean)
+                          }
+                        />
+                        <Label 
+                          htmlFor={ingredient.id}
+                          className={isExtra ? "text-orange-600 font-medium" : ""}
+                        >
+                          {ingredient.name}
+                        </Label>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {ingredient.isDefault ? (
+                          <span className="text-green-600">Free</span>
+                        ) : (
+                          <span className="text-orange-600">+${ingredient.price.toFixed(2)}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-2 text-xs text-gray-500">
+                Default ingredients are free. Uncheck to remove them. Extra ingredients have additional charges.
+              </div>
+            </div>
+          )}
+
+          {/* Fallback Toppings Selection (for items without ingredient system) */}
+          {ingredients.length === 0 && item.toppings && item.toppings.length > 0 && (
             <div>
               <h4 className="font-semibold mb-3">Select toppings:</h4>
               <div className="space-y-2">
@@ -159,7 +253,7 @@ export default function ItemCustomizationModal({
                       />
                       <Label 
                         htmlFor={topping}
-                        className={isExtra ? "warm-orange font-medium" : ""}
+                        className={isExtra ? "text-orange-600 font-medium" : ""}
                       >
                         {topping}
                       </Label>
