@@ -77,7 +77,7 @@ export default function ItemCustomizationModal({
           </Button>
         </div>
 
-        <CardContent className="p-6 space-y-6">
+        <CardContent className="p-6 space-y-6 pb-24">
           {/* Item Image and Description */}
           <div>
             <img 
