@@ -640,8 +640,7 @@ export default function MenuManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Menu Management</h2>
+      <div className="flex justify-end items-center">
         <div className="space-x-2">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
