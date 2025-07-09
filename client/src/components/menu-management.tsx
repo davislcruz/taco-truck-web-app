@@ -67,6 +67,8 @@ export default function MenuManagement() {
   const [expandedItems, setExpandedItems] = useState<{[key: number]: boolean}>({});
   // Initialize all categories as expanded by default
   const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>({});
+  const [originalValues, setOriginalValues] = useState<{[key: number]: MenuItem}>({});
+  const [pendingChanges, setPendingChanges] = useState<{[key: number]: Partial<MenuItem>}>({});
   const [categoryOrderList, setCategoryOrderList] = useState<Array<{id: string, name: string, icon: string, isNew?: boolean}>>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [justCreatedCategory, setJustCreatedCategory] = useState<string | null>(null);
@@ -89,6 +91,102 @@ export default function MenuManagement() {
       ...prev,
       [category]: !prev[category]
     }));
+  };
+
+  // Save all pending changes for items in a category
+  const saveCategoryChanges = (categoryItems: MenuItem[]) => {
+    categoryItems.forEach(item => {
+      const changes = pendingChanges[item.id];
+      if (changes) {
+        const updateData: InsertMenuItem = {
+          name: changes.name || item.name,
+          translation: changes.translation || item.translation,
+          category: changes.category || item.category,
+          price: changes.price || item.price,
+          description: changes.description || item.description,
+          image: changes.image || item.image,
+          meats: changes.meats || item.meats,
+          toppings: changes.toppings || item.toppings,
+          sizes: changes.sizes || item.sizes,
+        };
+        updateMutation.mutate({ id: item.id, data: updateData });
+      }
+    });
+    
+    // Clear pending changes for these items
+    setPendingChanges(prev => {
+      const newPending = { ...prev };
+      categoryItems.forEach(item => {
+        delete newPending[item.id];
+      });
+      return newPending;
+    });
+
+    // Clear original values for these items
+    setOriginalValues(prev => {
+      const newOriginal = { ...prev };
+      categoryItems.forEach(item => {
+        delete newOriginal[item.id];
+      });
+      return newOriginal;
+    });
+  };
+
+  // Cancel changes and revert to original values
+  const cancelCategoryChanges = (categoryItems: MenuItem[]) => {
+    categoryItems.forEach(item => {
+      const original = originalValues[item.id];
+      if (original) {
+        // Revert any inline editing
+        setInlineEditing(prev => {
+          const newInline = { ...prev };
+          Object.keys(newInline).forEach(key => {
+            if (key.startsWith(`${item.id}-`)) {
+              delete newInline[key];
+            }
+          });
+          return newInline;
+        });
+
+        // Clear temp values
+        setTempValues(prev => {
+          const newTemp = { ...prev };
+          Object.keys(newTemp).forEach(key => {
+            if (key.startsWith(`${item.id}-`)) {
+              delete newTemp[key];
+            }
+          });
+          return newTemp;
+        });
+      }
+    });
+
+    // Clear pending changes
+    setPendingChanges(prev => {
+      const newPending = { ...prev };
+      categoryItems.forEach(item => {
+        delete newPending[item.id];
+      });
+      return newPending;
+    });
+
+    // Clear original values
+    setOriginalValues(prev => {
+      const newOriginal = { ...prev };
+      categoryItems.forEach(item => {
+        delete newOriginal[item.id];
+      });
+      return newOriginal;
+    });
+  };
+
+  // Helper function to get current value (pending changes or original)
+  const getCurrentValue = (item: MenuItem, field: keyof MenuItem) => {
+    const pendingChange = pendingChanges[item.id];
+    if (pendingChange && pendingChange[field] !== undefined) {
+      return pendingChange[field];
+    }
+    return item[field];
   };
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
@@ -559,6 +657,15 @@ export default function MenuManagement() {
   // Inline editing functions
   const startInlineEdit = (itemId: number, field: string, currentValue: any) => {
     if (!editMode[itemId]) return; // Only allow editing if edit mode is enabled for this item
+    
+    // Store original value if not already stored
+    if (!originalValues[itemId]) {
+      const item = menuItems.find(item => item.id === itemId);
+      if (item) {
+        setOriginalValues(prev => ({ ...prev, [itemId]: item }));
+      }
+    }
+    
     const key = `${itemId}-${field}`;
     setInlineEditing(prev => ({ ...prev, [key]: true }));
     setTempValues(prev => ({ ...prev, [key]: currentValue }));
@@ -576,8 +683,14 @@ export default function MenuManagement() {
     const item = menuItems.find(item => item.id === itemId);
     
     if (item && newValue !== undefined && newValue !== item[field as keyof MenuItem]) {
-      const updatedData = { ...item, [field]: newValue };
-      updateMutation.mutate({ id: itemId, data: updatedData });
+      // Store the change in pending changes instead of immediately saving
+      setPendingChanges(prev => ({
+        ...prev,
+        [itemId]: {
+          ...prev[itemId],
+          [field]: newValue
+        }
+      }));
     }
     
     setInlineEditing(prev => ({ ...prev, [key]: false }));
@@ -1144,43 +1257,88 @@ export default function MenuManagement() {
               
               <div className="flex items-center space-x-2">
                 {/* Edit All Items in Category */}
-                <Button
-                  size="sm"
-                  variant={items.some(item => editMode[item.id]) ? "default" : "outline"}
-                  className={`w-8 h-8 p-0 transition-all ${
-                    items.some(item => editMode[item.id]) 
-                      ? 'bg-mexican-green text-white hover:bg-mexican-green/90 border-mexican-green' 
-                      : 'hover:bg-gray-50'
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent category toggle
-                    const categoryItems = items.map(item => item.id);
-                    const hasAnyEditMode = categoryItems.some(id => editMode[id]);
-                    const newEditMode = { ...editMode };
-                    
-                    categoryItems.forEach(id => {
-                      newEditMode[id] = !hasAnyEditMode;
-                    });
-                    
-                    setEditMode(newEditMode);
-                    
-                    if (!hasAnyEditMode) {
+                {!items.some(item => editMode[item.id]) ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-8 h-8 p-0 hover:bg-gray-50"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent category toggle
+                      const categoryItems = items.map(item => item.id);
+                      const newEditMode = { ...editMode };
+                      
+                      categoryItems.forEach(id => {
+                        newEditMode[id] = true;
+                      });
+                      
+                      setEditMode(newEditMode);
+                      
                       toast({
                         title: "Edit mode enabled",
                         description: `All ${category} items can now be edited`,
                         duration: 2000,
                       });
-                    } else {
-                      toast({
-                        title: "Edit mode disabled",
-                        description: `${category} items are no longer editable`,
-                        duration: 2000,
-                      });
-                    }
-                  }}
-                >
-                  <Edit className="h-3 w-3" />
-                </Button>
+                    }}
+                  >
+                    <Edit className="h-3 w-3" />
+                  </Button>
+                ) : (
+                  <>
+                    {/* Save Changes Button */}
+                    <Button
+                      size="sm"
+                      variant="default"
+                      className="w-8 h-8 p-0 bg-mexican-green text-white hover:bg-mexican-green/90 border-mexican-green"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent category toggle
+                        saveCategoryChanges(items);
+                        
+                        // Exit edit mode for all items in category
+                        const categoryItems = items.map(item => item.id);
+                        const newEditMode = { ...editMode };
+                        categoryItems.forEach(id => {
+                          newEditMode[id] = false;
+                        });
+                        setEditMode(newEditMode);
+                        
+                        toast({
+                          title: "Changes saved",
+                          description: `All ${category} items have been saved`,
+                          duration: 2000,
+                        });
+                      }}
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    
+                    {/* Cancel Changes Button */}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-8 h-8 p-0 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent category toggle
+                        cancelCategoryChanges(items);
+                        
+                        // Exit edit mode for all items in category
+                        const categoryItems = items.map(item => item.id);
+                        const newEditMode = { ...editMode };
+                        categoryItems.forEach(id => {
+                          newEditMode[id] = false;
+                        });
+                        setEditMode(newEditMode);
+                        
+                        toast({
+                          title: "Changes cancelled",
+                          description: `All ${category} edits have been discarded`,
+                          duration: 2000,
+                        });
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </>
+                )}
                 
                 {/* Delete Category - Only show in edit mode */}
                 {items.some(i => editMode[i.id]) && (
@@ -1344,11 +1502,11 @@ export default function MenuManagement() {
                               onClick={(e) => {
                                 if (editMode[item.id]) {
                                   e.stopPropagation();
-                                  startInlineEdit(item.id, 'name', item.name);
+                                  startInlineEdit(item.id, 'name', getCurrentValue(item, 'name'));
                                 }
                               }}
                             >
-                              {item.name}
+                              {getCurrentValue(item, 'name')}
                             </h4>
                           )}
                           
@@ -1370,11 +1528,11 @@ export default function MenuManagement() {
                               onClick={(e) => {
                                 if (editMode[item.id]) {
                                   e.stopPropagation();
-                                  startInlineEdit(item.id, 'price', item.price);
+                                  startInlineEdit(item.id, 'price', getCurrentValue(item, 'price'));
                                 }
                               }}
                             >
-                              ${parseFloat(item.price).toFixed(2)}
+                              ${parseFloat(getCurrentValue(item, 'price') as string).toFixed(2)}
                             </Badge>
                           )}
                         </div>
@@ -1410,10 +1568,10 @@ export default function MenuManagement() {
                           <div className={`w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative group ${
                             editMode[item.id] ? 'cursor-pointer' : ''
                           }`}>
-                            {item.image ? (
+                            {getCurrentValue(item, 'image') ? (
                               <img 
-                                src={item.image} 
-                                alt={item.name}
+                                src={getCurrentValue(item, 'image') as string} 
+                                alt={getCurrentValue(item, 'name') as string}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
@@ -1442,7 +1600,7 @@ export default function MenuManagement() {
                                   /* Hover overlay */
                                   <div 
                                     className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-                                    onClick={() => startInlineEdit(item.id, 'image', item.image)}
+                                    onClick={() => startInlineEdit(item.id, 'image', getCurrentValue(item, 'image'))}
                                   >
                                     <div className="text-white text-center">
                                       <Camera className="h-4 w-4 mx-auto mb-1" />
@@ -1477,11 +1635,11 @@ export default function MenuManagement() {
                                 onClick={(e) => {
                                   if (editMode[item.id]) {
                                     e.stopPropagation();
-                                    startInlineEdit(item.id, 'translation', item.translation || '');
+                                    startInlineEdit(item.id, 'translation', getCurrentValue(item, 'translation') || '');
                                   }
                                 }}
                               >
-                                {item.translation || 'Click to add translation...'}
+                                {getCurrentValue(item, 'translation') || 'Click to add translation...'}
                               </p>
                             )}
                             
@@ -1506,11 +1664,11 @@ export default function MenuManagement() {
                                 onClick={(e) => {
                                   if (editMode[item.id]) {
                                     e.stopPropagation();
-                                    startInlineEdit(item.id, 'description', item.description || '');
+                                    startInlineEdit(item.id, 'description', getCurrentValue(item, 'description') || '');
                                   }
                                 }}
                               >
-                                {item.description || 'Click to add description...'}
+                                {getCurrentValue(item, 'description') || 'Click to add description...'}
                               </p>
                             )}
                           </div>
