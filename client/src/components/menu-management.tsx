@@ -1148,7 +1148,7 @@ export default function MenuManagement() {
                 <Button
                   size="sm"
                   variant={items.some(item => editMode[item.id]) ? "default" : "outline"}
-                  className={`transition-all ${
+                  className={`w-8 h-8 p-0 transition-all ${
                     items.some(item => editMode[item.id]) 
                       ? 'bg-mexican-green text-white hover:bg-mexican-green/90 border-mexican-green' 
                       : 'hover:bg-gray-50'
@@ -1187,7 +1187,7 @@ export default function MenuManagement() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="w-8 h-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent category toggle
                     const categoryData = categories.find(cat => cat.name === category);
