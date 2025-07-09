@@ -1204,11 +1204,24 @@ export default function MenuManagement() {
                 )}
                 
                 {/* Category Expand/Collapse indicator */}
-                <ChevronDown 
-                  className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
-                    expandedCategories[category] !== false ? 'rotate-180' : ''
-                  }`}
-                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-8 h-8 p-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpandedCategories(prev => ({
+                      ...prev,
+                      [category]: prev[category] === false ? true : false
+                    }));
+                  }}
+                >
+                  <ChevronDown 
+                    className={`h-3 w-3 transition-transform duration-200 ${
+                      expandedCategories[category] !== false ? 'rotate-180' : ''
+                    }`}
+                  />
+                </Button>
               </div>
             </div>
             
@@ -1363,11 +1376,21 @@ export default function MenuManagement() {
                         
                         {/* Expand/Collapse indicator */}
                         {!editMode[item.id] && (
-                          <ChevronDown 
-                            className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
-                              expandedItems[item.id] ? 'rotate-180' : ''
-                            }`}
-                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-8 h-8 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleItemExpansion(item.id);
+                            }}
+                          >
+                            <ChevronDown 
+                              className={`h-3 w-3 transition-transform duration-200 ${
+                                expandedItems[item.id] ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </Button>
                         )}
                       </div>
 
