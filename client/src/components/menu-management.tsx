@@ -19,10 +19,24 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+// Define ingredient interface
+interface Ingredient {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  price: number;
+}
+
 const categoryFormSchema = z.object({
   translation: z.string().min(1, "Display name is required"),
   icon: z.string().min(1, "Icon is required"),
   order: z.number().min(0),
+  ingredients: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    isDefault: z.boolean(),
+    price: z.number()
+  })).default([]),
 });
 
 const menuItemFormSchema = z.object({
@@ -56,6 +70,10 @@ export default function MenuManagement() {
   const [categoryOrderList, setCategoryOrderList] = useState<Array<{id: string, name: string, icon: string, isNew?: boolean}>>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [justCreatedCategory, setJustCreatedCategory] = useState<string | null>(null);
+  const [categoryIngredients, setCategoryIngredients] = useState<Ingredient[]>([]);
+  const [newIngredientName, setNewIngredientName] = useState("");
+  const [newIngredientPrice, setNewIngredientPrice] = useState("0.00");
+  const [newIngredientIsDefault, setNewIngredientIsDefault] = useState(false);
 
   // Toggle item expansion
   const toggleItemExpansion = (itemId: number) => {
@@ -149,6 +167,7 @@ export default function MenuManagement() {
       translation: "",
       icon: "utensils",
       order: 0,
+      ingredients: [],
     },
   });
 
@@ -451,7 +470,8 @@ export default function MenuManagement() {
       name: generateSlug(data.translation),
       translation: data.translation,
       icon: data.icon,
-      order: data.order
+      order: data.order,
+      ingredients: categoryIngredients
     };
 
     if (editingCategory) {
@@ -472,12 +492,50 @@ export default function MenuManagement() {
 
   const handleEditCategory = (category: Category) => {
     setEditingCategory(category);
+    const existingIngredients = category.ingredients || [];
+    setCategoryIngredients(existingIngredients);
     categoryForm.reset({
       translation: category.translation,
       icon: category.icon,
       order: category.order,
+      ingredients: existingIngredients,
     });
     setIsCategoryDialogOpen(true);
+  };
+
+  // Ingredient management functions
+  const addIngredient = () => {
+    if (newIngredientName.trim()) {
+      const newIngredient: Ingredient = {
+        id: Date.now().toString(),
+        name: newIngredientName.trim(),
+        isDefault: newIngredientIsDefault,
+        price: parseFloat(newIngredientPrice) || 0
+      };
+      
+      const updatedIngredients = [...categoryIngredients, newIngredient];
+      setCategoryIngredients(updatedIngredients);
+      categoryForm.setValue("ingredients", updatedIngredients);
+      
+      // Reset form
+      setNewIngredientName("");
+      setNewIngredientPrice("0.00");
+      setNewIngredientIsDefault(false);
+    }
+  };
+
+  const removeIngredient = (ingredientId: string) => {
+    const updatedIngredients = categoryIngredients.filter(ing => ing.id !== ingredientId);
+    setCategoryIngredients(updatedIngredients);
+    categoryForm.setValue("ingredients", updatedIngredients);
+  };
+
+  const updateIngredient = (ingredientId: string, field: keyof Ingredient, value: any) => {
+    const updatedIngredients = categoryIngredients.map(ing => 
+      ing.id === ingredientId ? { ...ing, [field]: value } : ing
+    );
+    setCategoryIngredients(updatedIngredients);
+    categoryForm.setValue("ingredients", updatedIngredients);
   };
 
   const handleDeleteCategory = (id: number) => {
@@ -490,6 +548,10 @@ export default function MenuManagement() {
     setIsCategoryDialogOpen(false);
     setEditingCategory(null);
     categoryForm.reset();
+    setCategoryIngredients([]);
+    setNewIngredientName("");
+    setNewIngredientPrice("0.00");
+    setNewIngredientIsDefault(false);
     // Reset the category order list to remove any "new" items
     setCategoryOrderList(prev => prev.filter(cat => !cat.isNew));
   };
@@ -846,6 +908,104 @@ export default function MenuManagement() {
                     )}
                   </div>
                 </div>
+                
+                {/* Ingredient Configuration Section */}
+                <div className="space-y-3">
+                  <Label>Ingredient Configuration</Label>
+                  <div className="border rounded-lg p-3 bg-gray-50">
+                    <p className="text-xs text-gray-600 mb-3">
+                      Configure default and extra ingredients for this category. Default ingredients are included at no extra charge. Extras cost additional.
+                    </p>
+                    
+                    {/* Add Ingredient Form */}
+                    <div className="space-y-2 mb-3">
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Ingredient name"
+                          value={newIngredientName}
+                          onChange={(e) => setNewIngredientName(e.target.value)}
+                          className="flex-1"
+                        />
+                        <Input
+                          placeholder="$0.00"
+                          value={newIngredientPrice}
+                          onChange={(e) => setNewIngredientPrice(e.target.value)}
+                          className="w-20"
+                        />
+                        <Button
+                          type="button"
+                          onClick={addIngredient}
+                          disabled={!newIngredientName.trim()}
+                          className="px-3 py-1 h-auto"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="new-ingredient-default"
+                          checked={newIngredientIsDefault}
+                          onChange={(e) => setNewIngredientIsDefault(e.target.checked)}
+                          className="rounded"
+                        />
+                        <label htmlFor="new-ingredient-default" className="text-sm text-gray-700">
+                          Default ingredient (included at no charge)
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Ingredient List */}
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {categoryIngredients.map((ingredient) => (
+                        <div key={ingredient.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={ingredient.isDefault}
+                              onChange={(e) => updateIngredient(ingredient.id, 'isDefault', e.target.checked)}
+                              className="rounded"
+                            />
+                            <input
+                              type="text"
+                              value={ingredient.name}
+                              onChange={(e) => updateIngredient(ingredient.id, 'name', e.target.value)}
+                              className="border-none bg-transparent text-sm font-medium focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                            />
+                            <span className="text-xs text-gray-500">
+                              {ingredient.isDefault ? '(default)' : '(extra)'}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm">$</span>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={ingredient.price}
+                              onChange={(e) => updateIngredient(ingredient.id, 'price', parseFloat(e.target.value) || 0)}
+                              className="w-16 text-sm border rounded px-1 py-0.5"
+                            />
+                            <Button
+                              type="button"
+                              onClick={() => removeIngredient(ingredient.id)}
+                              variant="outline"
+                              size="sm"
+                              className="w-6 h-6 p-0"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                      {categoryIngredients.length === 0 && (
+                        <p className="text-sm text-gray-500 text-center py-2">
+                          No ingredients configured yet
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="flex flex-col flex-1">
                   <Label>Category Display Order</Label>
                   <div className="border rounded-lg p-3 flex-1 overflow-y-auto bg-gray-50 mb-16">

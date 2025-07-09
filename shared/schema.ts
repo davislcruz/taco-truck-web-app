@@ -15,6 +15,7 @@ export const categories = pgTable("categories", {
   translation: text("translation").notNull(),
   icon: text("icon").notNull(),
   order: integer("order").notNull().default(0),
+  ingredients: jsonb("ingredients").default('[]'),
 });
 
 export const menuItems = pgTable("menu_items", {
