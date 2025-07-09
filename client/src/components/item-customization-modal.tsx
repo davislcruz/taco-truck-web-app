@@ -65,8 +65,8 @@ export default function ItemCustomizationModal({
   const totalPrice = calculatePrice();
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-4">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-4 pt-8">
+      <Card className="w-full max-w-2xl max-h-[calc(100vh-120px)] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
           <div>
             <h3 className="text-xl font-bold dark-gray">{item.name}</h3>
@@ -77,7 +77,7 @@ export default function ItemCustomizationModal({
           </Button>
         </div>
 
-        <CardContent className="p-6 space-y-6 pb-24">
+        <CardContent className="p-6 space-y-6">
           {/* Item Image and Description */}
           <div>
             <img 
