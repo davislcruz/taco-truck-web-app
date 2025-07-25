@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Define ingredient interface
 interface Ingredient {
@@ -55,21 +57,24 @@ type CategoryFormData = z.infer<typeof categoryFormSchema>;
 type MenuItemFormData = z.infer<typeof menuItemFormSchema>;
 
 export default function MenuManagement() {
+  // Tab state for category modal
+  const [activeTab, setActiveTab] = useState<'ingredients' | 'sort'>('ingredients');
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [inlineEditing, setInlineEditing] = useState<{[key: string]: boolean}>({});
-  const [tempValues, setTempValues] = useState<{[key: string]: any}>({});
-  const [editMode, setEditMode] = useState<{[key: number]: boolean}>({});
+  const [inlineEditing, setInlineEditing] = useState<{ [key: string]: boolean }>({});
+  const [tempValues, setTempValues] = useState<{ [key: string]: any }>({});
+  const [editMode, setEditMode] = useState<{ [key: number]: boolean }>({});
   const [customOrder, setCustomOrder] = useState<Record<string, number[]>>({});
-  const [expandedItems, setExpandedItems] = useState<{[key: number]: boolean}>({});
+  const [expandedItems, setExpandedItems] = useState<{ [key: number]: boolean }>({});
   // Initialize all categories as expanded by default
-  const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>({});
-  const [originalValues, setOriginalValues] = useState<{[key: number]: MenuItem}>({});
-  const [pendingChanges, setPendingChanges] = useState<{[key: number]: Partial<MenuItem>}>({});
-  const [categoryOrderList, setCategoryOrderList] = useState<Array<{id: string, name: string, icon: string, isNew?: boolean}>>([]);
+  const [expandedCategories, setExpandedCategories] = useState<{ [key: string]: boolean }>({});
+  const [originalValues, setOriginalValues] = useState<{ [key: number]: MenuItem }>({});
+  const [pendingChanges, setPendingChanges] = useState<{ [key: number]: Partial<MenuItem> }>({});
+  const [categoryOrderList, setCategoryOrderList] = useState<Array<{ id: string, name: string, icon: string, isNew?: boolean }>>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [justCreatedCategory, setJustCreatedCategory] = useState<string | null>(null);
   const [categoryIngredients, setCategoryIngredients] = useState<Ingredient[]>([]);
@@ -112,7 +117,7 @@ export default function MenuManagement() {
         updateMutation.mutate({ id: item.id, data: updateData });
       }
     });
-    
+
     // Clear pending changes for these items
     setPendingChanges(prev => {
       const newPending = { ...prev };
@@ -232,7 +237,7 @@ export default function MenuManagement() {
   useEffect(() => {
     if (justCreatedCategory && menuItems && menuItems.length > 0) {
       const newCategoryItems = menuItems.filter(item => item.category === justCreatedCategory);
-      
+
       if (newCategoryItems.length > 0) {
         newCategoryItems.forEach(item => {
           setEditMode(prev => ({ ...prev, [item.id]: true }));
@@ -273,14 +278,14 @@ export default function MenuManagement() {
   useEffect(() => {
     const translation = categoryForm.watch("translation");
     const icon = categoryForm.watch("icon");
-    
+
     if (translation && translation.trim()) {
       const newId = generateSlug(translation);
-      
+
       setCategoryOrderList(prev => {
         // Check if a new category already exists
         const existingNewIndex = prev.findIndex(cat => cat.isNew);
-        
+
         if (existingNewIndex >= 0) {
           // Update existing new category in place, preserving its position
           const updated = [...prev];
@@ -318,12 +323,12 @@ export default function MenuManagement() {
       const { insertAfterIndex, ...serverData } = data;
       const response = await apiRequest("POST", "/api/menu", serverData);
       const newItem = await response.json();
-      
+
       // Update custom order if insertion position was specified
       if (typeof insertAfterIndex === 'number') {
         setCustomOrder(prev => {
           const categoryOrder = prev[data.category] || [];
-          
+
           // If no custom order exists yet, we need to build it from the existing items
           if (categoryOrder.length === 0) {
             // Get current menu items for this category (excluding the new item)
@@ -331,9 +336,9 @@ export default function MenuManagement() {
               .filter(item => item.category === data.category)
               .sort((a, b) => a.id - b.id)
               .map(item => item.id);
-            
+
             let newOrder = [...currentCategoryItems];
-            
+
             if (insertAfterIndex === -1) {
               // Insert at beginning
               newOrder.unshift(newItem.id);
@@ -342,7 +347,7 @@ export default function MenuManagement() {
               const insertAt = Math.min(insertAfterIndex + 1, newOrder.length);
               newOrder.splice(insertAt, 0, newItem.id);
             }
-            
+
             return {
               ...prev,
               [data.category]: newOrder
@@ -350,7 +355,7 @@ export default function MenuManagement() {
           } else {
             // Use existing custom order
             const newOrder = [...categoryOrder];
-            
+
             if (insertAfterIndex === -1) {
               // Insert at beginning
               newOrder.unshift(newItem.id);
@@ -359,7 +364,7 @@ export default function MenuManagement() {
               const insertAt = Math.min(insertAfterIndex + 1, newOrder.length);
               newOrder.splice(insertAt, 0, newItem.id);
             }
-            
+
             return {
               ...prev,
               [data.category]: newOrder
@@ -367,7 +372,7 @@ export default function MenuManagement() {
           }
         });
       }
-      
+
       return newItem;
     },
     onSuccess: (newItem: MenuItem) => {
@@ -375,7 +380,7 @@ export default function MenuManagement() {
       toast({ title: "Menu item created successfully!" });
       setIsDialogOpen(false);
       form.reset();
-      
+
       // Automatically put new item in edit mode if it was created via plus button
       if (newItem.name === "New Item" && newItem.translation === "Click to edit") {
         setEditMode(prev => ({ ...prev, [newItem.id]: true }));
@@ -425,7 +430,7 @@ export default function MenuManagement() {
         });
         return updated;
       });
-      
+
       queryClient.invalidateQueries({ queryKey: ["/api/menu"] });
       toast({ title: "Menu item deleted successfully!" });
     },
@@ -443,7 +448,7 @@ export default function MenuManagement() {
     mutationFn: async (data: InsertCategory) => {
       const response = await apiRequest("POST", "/api/categories", data);
       const category = await response.json();
-      
+
       // Automatically create a placeholder menu item for the new category
       const placeholderItem = {
         name: "New Item",
@@ -456,7 +461,7 @@ export default function MenuManagement() {
         toppings: [],
         sizes: []
       };
-      
+
       await apiRequest("POST", "/api/menu", placeholderItem);
       return category;
     },
@@ -466,7 +471,7 @@ export default function MenuManagement() {
       toast({ title: "Category created with starter item!" });
       setIsCategoryDialogOpen(false);
       categoryForm.reset();
-      
+
       // Flag this category for auto-edit mode when menu items load
       setJustCreatedCategory(newCategory.name);
     },
@@ -578,19 +583,20 @@ export default function MenuManagement() {
       // For new categories, use the position in the visual order list
       const newCategoryIndex = categoryOrderList.findIndex(cat => cat.isNew);
       const finalOrder = newCategoryIndex >= 0 ? newCategoryIndex : categoryOrderList.length;
-      
+
       const finalData = {
         ...categoryData,
         order: finalOrder
       };
-      
+
       createCategoryMutation.mutate(finalData);
     }
   };
 
   const handleEditCategory = (category: Category) => {
     setEditingCategory(category);
-    const existingIngredients = category.ingredients || [];
+    // Ensure existingIngredients is always an array
+    const existingIngredients = Array.isArray(category.ingredients) ? category.ingredients : [];
     setCategoryIngredients(existingIngredients);
     categoryForm.reset({
       translation: category.translation,
@@ -610,11 +616,11 @@ export default function MenuManagement() {
         isDefault: newIngredientIsDefault,
         price: parseFloat(newIngredientPrice) || 0
       };
-      
+
       const updatedIngredients = [...categoryIngredients, newIngredient];
       setCategoryIngredients(updatedIngredients);
       categoryForm.setValue("ingredients", updatedIngredients);
-      
+
       // Reset form
       setNewIngredientName("");
       setNewIngredientPrice("0.00");
@@ -629,7 +635,7 @@ export default function MenuManagement() {
   };
 
   const updateIngredient = (ingredientId: string, field: keyof Ingredient, value: any) => {
-    const updatedIngredients = categoryIngredients.map(ing => 
+    const updatedIngredients = categoryIngredients.map(ing =>
       ing.id === ingredientId ? { ...ing, [field]: value } : ing
     );
     setCategoryIngredients(updatedIngredients);
@@ -657,7 +663,7 @@ export default function MenuManagement() {
   // Inline editing functions
   const startInlineEdit = (itemId: number, field: string, currentValue: any) => {
     if (!editMode[itemId]) return; // Only allow editing if edit mode is enabled for this item
-    
+
     // Store original value if not already stored
     if (!originalValues[itemId]) {
       const item = menuItems.find(item => item.id === itemId);
@@ -665,7 +671,7 @@ export default function MenuManagement() {
         setOriginalValues(prev => ({ ...prev, [itemId]: item }));
       }
     }
-    
+
     const key = `${itemId}-${field}`;
     setInlineEditing(prev => ({ ...prev, [key]: true }));
     setTempValues(prev => ({ ...prev, [key]: currentValue }));
@@ -681,7 +687,7 @@ export default function MenuManagement() {
     const key = `${itemId}-${field}`;
     const newValue = tempValues[key];
     const item = menuItems.find(item => item.id === itemId);
-    
+
     if (item && newValue !== undefined && newValue !== item[field as keyof MenuItem]) {
       // Store the change in pending changes instead of immediately saving
       setPendingChanges(prev => ({
@@ -692,7 +698,7 @@ export default function MenuManagement() {
         }
       }));
     }
-    
+
     setInlineEditing(prev => ({ ...prev, [key]: false }));
     setTempValues(prev => ({ ...prev, [key]: undefined }));
   };
@@ -723,12 +729,12 @@ export default function MenuManagement() {
     Object.keys(grouped).forEach(category => {
       const items = grouped[category];
       const categoryOrder = customOrder[category];
-      
+
       if (categoryOrder && categoryOrder.length > 0) {
         // Use custom order if available
         const orderedItems: MenuItem[] = [];
         const remainingItems = [...items];
-        
+
         // First, add items in the specified order
         categoryOrder.forEach(itemId => {
           const itemIndex = remainingItems.findIndex(item => item.id === itemId);
@@ -736,706 +742,197 @@ export default function MenuManagement() {
             orderedItems.push(remainingItems.splice(itemIndex, 1)[0]);
           }
         });
-        
+
         // Then add any remaining items (not in custom order) at the end
         remainingItems.sort((a, b) => a.id - b.id);
         orderedItems.push(...remainingItems);
-        
+
         grouped[category] = orderedItems;
       } else {
         // Default sorting by ID for creation order
         items.sort((a, b) => a.id - b.id);
       }
     });
-    
+
     return grouped;
   }, [menuItems, customOrder]);
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end items-center">
-        <div className="space-x-2">
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingItem ? "Edit Menu Item" : "Add New Menu Item"}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Name (Spanish)</Label>
-                  <Input
-                    id="name"
-                    {...form.register("name")}
-                    placeholder="e.g., De Carnitas"
-                  />
-                  {form.formState.errors.name && (
-                    <p className="text-sm text-red-600">{form.formState.errors.name.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="translation">Translation (English)</Label>
-                  <Input
-                    id="translation"
-                    {...form.register("translation")}
-                    placeholder="e.g., Pulled Pork Tacos"
-                  />
-                  {form.formState.errors.translation && (
-                    <p className="text-sm text-red-600">{form.formState.errors.translation.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select onValueChange={(value) => form.setValue("category", value)} value={form.watch("category")}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <div key={category.id} className="flex items-center justify-between px-2 py-1 hover:bg-gray-50">
-                          <SelectItem value={category.name} className="flex-1">
-                            <div className="flex items-center">
-                              {React.createElement(getCategoryIcon(category.icon), { className: "h-4 w-4 mr-2" })}
-                              {category.translation}
-                            </div>
-                          </SelectItem>
-                          <div className="flex space-x-1">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 w-6 p-0 hover:bg-gray-200"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleEditCategory(category);
-                              }}
-                            >
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 w-6 p-0 hover:bg-red-100 text-red-600"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
-                                  handleDeleteCategory(category.id);
-                                }
-                              }}
-                              disabled={deleteCategoryMutation.isPending}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="border-t mt-1 pt-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="w-full justify-start text-left"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setIsCategoryDialogOpen(true);
-                          }}
-                        >
-                          <Plus className="h-3 w-3 mr-2" />
-                          Add New Category
-                        </Button>
-                      </div>
-                    </SelectContent>
-                  </Select>
-                  {form.formState.errors.category && (
-                    <p className="text-sm text-red-600">{form.formState.errors.category.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="price">Price ($)</Label>
-                  <Input
-                    id="price"
-                    {...form.register("price")}
-                    placeholder="12.99"
-                  />
-                  {form.formState.errors.price && (
-                    <p className="text-sm text-red-600">{form.formState.errors.price.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    {...form.register("description")}
-                    placeholder="Brief description of the dish"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="image">Image URL</Label>
-                  <Input
-                    id="image"
-                    {...form.register("image")}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="meats">Available Meats (comma-separated)</Label>
-                  <Input
-                    id="meats"
-                    {...form.register("meats")}
-                    placeholder="Carnitas, Al Pastor, Carne Asada"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="toppings">Available Toppings (comma-separated)</Label>
-                  <Input
-                    id="toppings"
-                    {...form.register("toppings")}
-                    placeholder="Onions, Cilantro, Salsa Verde"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="sizes">Available Sizes (comma-separated)</Label>
-                  <Input
-                    id="sizes"
-                    {...form.register("sizes")}
-                    placeholder="Small, Medium, Large"
-                  />
-                </div>
-
-                <div className="flex justify-between">
-                  <Button type="button" variant="outline" onClick={handleDialogClose}>
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="bg-mexican-green hover:bg-green-600"
-                    disabled={createMutation.isPending || updateMutation.isPending}
-                  >
-                    {editingItem ? "Update" : "Create"}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-          
-          <div>
-            <Button 
-              variant="outline"
-              onClick={() => setIsCategoryDialogOpen(true)}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Manage Categories
-            </Button>
-            
-            {/* Custom Modal */}
-            {isCategoryDialogOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center">
-                {/* Backdrop */}
-                <div 
-                  className="absolute inset-0 bg-black/50" 
-                  onClick={() => setIsCategoryDialogOpen(false)}
-                />
-                
-                {/* Modal Content */}
-                <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md h-[700px] overflow-y-auto">
-                  {/* Close Button */}
-                  <button
-                    onClick={() => setIsCategoryDialogOpen(false)}
-                    className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                  
-                  {/* Content */}
-                  <div className="px-6 pt-6 pb-2 flex flex-col h-full">
-                    <span className="text-base font-medium block mb-4 text-center">
-                      {editingCategory ? "Edit Category" : "Create a new menu category"}
-                    </span>
-                    
-                    <form id="category-form" onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="flex flex-col h-full space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <Label htmlFor="category-translation">Category Name</Label>
-                    <Input
-                      id="category-translation"
-                      placeholder="e.g., Tacos, Burritos, Bebidas Especiales"
-                      {...categoryForm.register("translation")}
-                    />
-                    {categoryForm.formState.errors.translation && (
-                      <p className="text-sm text-red-600">{categoryForm.formState.errors.translation.message}</p>
-                    )}
-                  </div>
-                  <div className="w-32">
-                    <Label htmlFor="category-icon">Category Type</Label>
-                    <Select 
-                      value={categoryForm.watch("icon")} 
-                      onValueChange={(value) => categoryForm.setValue("icon", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type">
-                          {categoryForm.watch("icon") && (
-                            <div className="flex items-center space-x-1">
-                              {categoryForm.watch("icon") === "utensils" ? (
-                                <>
-                                  <Utensils className="h-4 w-4" />
-                                  <span>Food</span>
-                                </>
-                              ) : (
-                                <>
-                                  <GlassWater className="h-4 w-4" />
-                                  <span>Drinks</span>
-                                </>
-                              )}
-                            </div>
-                          )}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="utensils">
-                          <div className="flex items-center space-x-2">
-                            <Utensils className="h-4 w-4" />
-                            <span>Food</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="glass-water">
-                          <div className="flex items-center space-x-2">
-                            <GlassWater className="h-4 w-4" />
-                            <span>Drinks</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {categoryForm.formState.errors.icon && (
-                      <p className="text-sm text-red-600">{categoryForm.formState.errors.icon.message}</p>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Ingredient Configuration Section */}
-                <div className="space-y-3">
-                  <Label>Ingredient Configuration</Label>
-                  <div className="border rounded-lg p-3 bg-gray-50">
-                    <p className="text-xs text-gray-600 mb-3">
-                      Configure default and extra ingredients for this category. Default ingredients are included at no extra charge. Extras cost additional.
-                    </p>
-                    
-                    {/* Add Ingredient Form */}
-                    <div className="space-y-2 mb-3">
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Ingredient name"
-                          value={newIngredientName}
-                          onChange={(e) => setNewIngredientName(e.target.value)}
-                          className="flex-1"
-                        />
-                        <Input
-                          placeholder="$0.00"
-                          value={newIngredientPrice}
-                          onChange={(e) => setNewIngredientPrice(e.target.value)}
-                          className="w-20"
-                        />
-                        <Button
-                          type="button"
-                          onClick={addIngredient}
-                          disabled={!newIngredientName.trim()}
-                          className="px-3 py-1 h-auto"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="new-ingredient-default"
-                          checked={newIngredientIsDefault}
-                          onChange={(e) => setNewIngredientIsDefault(e.target.checked)}
-                          className="rounded"
-                        />
-                        <label htmlFor="new-ingredient-default" className="text-sm text-gray-700">
-                          Default ingredient (included at no charge)
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Ingredient List */}
-                    <div className="space-y-2 max-h-32 overflow-y-auto">
-                      {categoryIngredients.map((ingredient) => (
-                        <div key={ingredient.id} className="flex items-center justify-between p-2 bg-white rounded border">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              checked={ingredient.isDefault}
-                              onChange={(e) => updateIngredient(ingredient.id, 'isDefault', e.target.checked)}
-                              className="rounded"
-                            />
-                            <input
-                              type="text"
-                              value={ingredient.name}
-                              onChange={(e) => updateIngredient(ingredient.id, 'name', e.target.value)}
-                              className="border-none bg-transparent text-sm font-medium focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
-                            />
-                            <span className="text-xs text-gray-500">
-                              {ingredient.isDefault ? '(default)' : '(extra)'}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm">$</span>
-                            <input
-                              type="number"
-                              step="0.01"
-                              value={ingredient.price}
-                              onChange={(e) => updateIngredient(ingredient.id, 'price', parseFloat(e.target.value) || 0)}
-                              className="w-16 text-sm border rounded px-1 py-0.5"
-                            />
-                            <Button
-                              type="button"
-                              onClick={() => removeIngredient(ingredient.id)}
-                              variant="outline"
-                              size="sm"
-                              className="w-6 h-6 p-0"
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                      {categoryIngredients.length === 0 && (
-                        <p className="text-sm text-gray-500 text-center py-2">
-                          No ingredients configured yet
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex flex-col flex-1">
-                  <Label>Category Display Order</Label>
-                  <div className="border rounded-lg p-3 flex-1 overflow-y-auto bg-gray-50 mb-16">
-                    <p className="text-xs text-gray-600 mb-3">
-                      Preview your category order below. Use ↑↓ arrows to reorder. Click "Create" to save the highlighted category to your menu.
-                    </p>
-                    {categoryOrderList.length > 0 ? (
-                      <div className="space-y-1">
-                        {categoryOrderList.map((cat, index) => (
-                          <div 
-                            key={cat.id} 
-                            className={`flex items-center justify-between p-2 rounded border transition-all duration-300 ${
-                              cat.isNew 
-                                ? 'bg-blue-50 border-blue-400 shadow-sm ring-2 ring-blue-200 ring-opacity-50' 
-                                : 'bg-white border-gray-200 hover:border-gray-300'
-                            }`}
-                          >
-                            <div className="flex items-center space-x-3">
-                              <span className="text-sm font-medium text-gray-500 w-6">
-                                {index + 1}.
-                              </span>
-                              <div className="flex items-center space-x-2">
-                                {cat.icon === "utensils" ? (
-                                  <Utensils className="h-4 w-4 text-gray-600" />
-                                ) : (
-                                  <GlassWater className="h-4 w-4 text-gray-600" />
-                                )}
-                                <span className={`text-sm ${cat.isNew ? 'font-semibold text-blue-800' : 'text-gray-700'}`}>
-                                  {cat.name}
-                                </span>
-                              </div>
-                            </div>
-                            
-                            <div className="flex space-x-1">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                className="w-7 h-7 p-0"
-                                onClick={() => moveCategoryUp(index)}
-                                disabled={index === 0}
-                              >
-                                <ChevronUp className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                className="w-7 h-7 p-0"
-                                onClick={() => moveCategoryDown(index)}
-                                disabled={index === categoryOrderList.length - 1}
-                              >
-                                <ChevronDownIcon className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-500 text-center py-4">
-                        No categories yet. Add your first category name above.
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                    </form>
-                  </div>
-                  
-                  {/* Absolutely positioned buttons at bottom */}
-                  <div className="absolute bottom-3 left-6 right-6 flex justify-between pt-3 bg-white">
-                    <div className="flex space-x-2">
-                      <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
-                        Cancel
-                      </Button>
-                      {editingCategory && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => {
-                            if (confirm("Are you sure you want to delete this category? Note: You cannot delete a category that still contains menu items.")) {
-                              handleDeleteCategory(editingCategory.id);
-                            }
-                          }}
-                          disabled={deleteCategoryMutation.isPending}
-                        >
-                          <Trash2 className="h-3 w-3 mr-1" />
-                          Delete
-                        </Button>
-                      )}
-                    </div>
-                    <Button
-                      type="submit"
-                      form="category-form"
-                      className="bg-mexican-green hover:bg-green-600"
-                      disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
-                    >
-                      {editingCategory ? "Update" : "Create"}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-
-      {/* Menu Items Section */}
       {categories.map((categoryData) => {
         const items = groupedItems[categoryData.name] || [];
         const category = categoryData.name;
         return (
-        <Card key={category} className="border border-gray-200 shadow-sm bg-white">
-          <CardContent className="p-3">
-            {/* Category Header - Clickable */}
-            <div 
-              className="flex items-center justify-between mb-3 cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors"
-              onClick={() => toggleCategoryExpansion(category)}
-            >
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-mexican-green/10 rounded-lg">
-                  {React.createElement(getCategoryIcon(categories.find(c => c.name === category)?.icon || 'utensils'), {
-                    className: "h-5 w-5 text-mexican-green"
-                  })}
+          <Card key={category} className="border border-gray-200 shadow-sm bg-white">
+            <CardContent className="p-3">
+              {/* Category Header - Clickable */}
+              <div
+                className="flex items-center justify-between mb-3 cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors"
+                onClick={() => toggleCategoryExpansion(category)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-mexican-green/10 rounded-lg">
+                    {React.createElement(getCategoryIcon(categories.find(c => c.name === category)?.icon || 'utensils'), {
+                      className: "h-5 w-5 text-mexican-green"
+                    })}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                      {categoryLabels[category] || category}
+                      <span className="text-sm text-gray-500 font-normal">
+                        ({items.length} {items.length === 1 ? 'item' : 'items'})
+                      </span>
+                    </h3>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                    {categoryLabels[category] || category}
-                    <span className="text-sm text-gray-500 font-normal">
-                      ({items.length} {items.length === 1 ? 'item' : 'items'})
-                    </span>
-                  </h3>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                {/* Edit All Items in Category */}
-                {!items.some(item => editMode[item.id]) ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-8 h-8 p-0 hover:bg-gray-50"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent category toggle
-                      const categoryItems = items.map(item => item.id);
-                      const newEditMode = { ...editMode };
-                      
-                      categoryItems.forEach(id => {
-                        newEditMode[id] = true;
-                      });
-                      
-                      setEditMode(newEditMode);
-                      
-                      toast({
-                        title: "Edit mode enabled",
-                        description: `All ${category} items can now be edited`,
-                        duration: 2000,
-                      });
-                    }}
-                  >
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                ) : (
-                  <>
-                    {/* Save Changes Button */}
+
+                <div className="flex items-center space-x-2">
+                  {/* Edit All Items in Category */}
+                  {!items.some(item => editMode[item.id]) ? (
                     <Button
                       size="sm"
-                      variant="default"
-                      className="w-8 h-8 p-0 bg-mexican-green text-white hover:bg-mexican-green/90 border-mexican-green"
+                      variant="outline"
+                      className="w-8 h-8 p-0 hover:bg-gray-50"
                       onClick={(e) => {
                         e.stopPropagation(); // Prevent category toggle
-                        saveCategoryChanges(items);
-                        
-                        // Exit edit mode for all items in category
                         const categoryItems = items.map(item => item.id);
                         const newEditMode = { ...editMode };
+
                         categoryItems.forEach(id => {
-                          newEditMode[id] = false;
+                          newEditMode[id] = true;
                         });
+
                         setEditMode(newEditMode);
-                        
+
                         toast({
-                          title: "Changes saved",
-                          description: `All ${category} items have been saved`,
+                          title: "Edit mode enabled",
+                          description: `All ${category} items can now be edited`,
                           duration: 2000,
                         });
                       }}
                     >
                       <Edit className="h-3 w-3" />
                     </Button>
-                    
-                    {/* Cancel Changes Button */}
+                  ) : (
+                    <>
+                      {/* Save Changes Button */}
+                      <Button
+                        size="sm"
+                        variant="default"
+                        className="w-8 h-8 p-0 bg-mexican-green text-white hover:bg-mexican-green/90 border-mexican-green"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent category toggle
+                          saveCategoryChanges(items);
+
+                          // Exit edit mode for all items in category
+                          const categoryItems = items.map(item => item.id);
+                          const newEditMode = { ...editMode };
+                          categoryItems.forEach(id => {
+                            newEditMode[id] = false;
+                          });
+                          setEditMode(newEditMode);
+
+                          toast({
+                            title: "Changes saved",
+                            description: `All ${category} items have been saved`,
+                            duration: 2000,
+                          });
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+
+                      {/* Cancel Changes Button */}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-8 h-8 p-0 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent category toggle
+                          cancelCategoryChanges(items);
+
+                          // Exit edit mode for all items in category
+                          const categoryItems = items.map(item => item.id);
+                          const newEditMode = { ...editMode };
+                          categoryItems.forEach(id => {
+                            newEditMode[id] = false;
+                          });
+                          setEditMode(newEditMode);
+
+                          toast({
+                            title: "Changes cancelled",
+                            description: `All ${category} edits have been discarded`,
+                            duration: 2000,
+                          });
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </>
+                  )}
+
+                  {/* Delete Category - Only show in edit mode */}
+                  {items.some(i => editMode[i.id]) && (
                     <Button
                       size="sm"
                       variant="outline"
-                      className="w-8 h-8 p-0 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                      className="w-8 h-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                       onClick={(e) => {
                         e.stopPropagation(); // Prevent category toggle
-                        cancelCategoryChanges(items);
-                        
-                        // Exit edit mode for all items in category
-                        const categoryItems = items.map(item => item.id);
-                        const newEditMode = { ...editMode };
-                        categoryItems.forEach(id => {
-                          newEditMode[id] = false;
-                        });
-                        setEditMode(newEditMode);
-                        
-                        toast({
-                          title: "Changes cancelled",
-                          description: `All ${category} edits have been discarded`,
-                          duration: 2000,
-                        });
-                      }}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </>
-                )}
-                
-                {/* Delete Category - Only show in edit mode */}
-                {items.some(i => editMode[i.id]) && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-8 h-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent category toggle
-                      const categoryData = categories.find(cat => cat.name === category);
-                      if (categoryData) {
-                        if (items.length > 0) {
-                          if (confirm(`Are you sure you want to delete the "${categoryData.translation}" category? This will also delete all ${items.length} items in this category. This action cannot be undone.`)) {
-                            handleDeleteCategory(categoryData.id);
-                          }
-                        } else {
-                          if (confirm(`Are you sure you want to delete the "${categoryData.translation}" category?`)) {
-                            handleDeleteCategory(categoryData.id);
+                        const categoryData = categories.find(cat => cat.name === category);
+                        if (categoryData) {
+                          if (items.length > 0) {
+                            if (confirm(`Are you sure you want to delete the "${categoryData.translation}" category? This will also delete all ${items.length} items in this category. This action cannot be undone.`)) {
+                              handleDeleteCategory(categoryData.id);
+                            }
+                          } else {
+                            if (confirm(`Are you sure you want to delete the "${categoryData.translation}" category?`)) {
+                              handleDeleteCategory(categoryData.id);
+                            }
                           }
                         }
-                      }
-                    }}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                )}
-                
-                {/* Category Expand/Collapse indicator */}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-8 h-8 p-0"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setExpandedCategories(prev => ({
-                      ...prev,
-                      [category]: prev[category] === false ? true : false
-                    }));
-                  }}
-                >
-                  <ChevronDown 
-                    className={`h-3 w-3 transition-transform duration-200 ${
-                      expandedCategories[category] !== false ? 'rotate-180' : ''
-                    }`}
-                  />
-                </Button>
-              </div>
-            </div>
-            
-            {/* Menu Items List - Collapsible */}
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-              expandedCategories[category] !== false 
-                ? 'max-h-[2000px] opacity-100' 
-                : 'max-h-0 opacity-0'
-            }`}>
-              <div className="space-y-2 pt-2">
-              {/* Plus button at the beginning when edit mode is active and category has items */}
-              {items.length > 0 && items.some(i => editMode[i.id]) && (
-                <div className="flex justify-center -mb-2 relative z-10">
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  )}
+
+                  {/* Category Expand/Collapse indicator */}
                   <Button
                     size="sm"
                     variant="outline"
-                    className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
-                    onClick={() => {
-                      // Create a new item at the beginning of the category
-                      const placeholderItem = {
-                        name: "New Item",
-                        translation: "Click to edit",
-                        category: category,
-                        price: "0.00",
-                        description: "Add description...",
-                        image: "",
-                        meats: [],
-                        toppings: [],
-                        sizes: [],
-                        insertAfterIndex: -1, // Insert at the beginning
-                      };
-                      createMutation.mutate(placeholderItem);
+                    className="w-8 h-8 p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedCategories(prev => ({
+                        ...prev,
+                        [category]: prev[category] === false ? true : false
+                      }));
                     }}
-                    disabled={createMutation.isPending}
                   >
-                    <Plus className="h-3 w-3 text-gray-500" />
+                    <ChevronDown
+                      className={`h-3 w-3 transition-transform duration-200 ${expandedCategories[category] !== false ? 'rotate-180' : ''
+                        }`}
+                    />
                   </Button>
                 </div>
-              )}
-              
-              {items.map((item, index) => (
-                <React.Fragment key={item.id}>
-                  {/* Plus button before each card (except first) when edit mode is active */}
-                  {index > 0 && items.some(i => editMode[i.id]) && (
-                    <div className="flex justify-center -mt-2 -mb-2 relative z-10">
+              </div>
+
+              {/* Menu Items List - Collapsible */}
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedCategories[category] !== false
+                  ? 'max-h-[2000px] opacity-100'
+                  : 'max-h-0 opacity-0'
+                }`}>
+                <div className="space-y-2 pt-2">
+                  {/* Plus button at the beginning when edit mode is active and category has items */}
+                  {items.length > 0 && items.some(i => editMode[i.id]) && (
+                    <div className="flex justify-center -mb-2 relative z-10">
                       <Button
                         size="sm"
                         variant="outline"
                         className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
                         onClick={() => {
-                          // Create a new item with placeholder data at specific position
+                          // Create a new item at the beginning of the category
                           const placeholderItem = {
                             name: "New Item",
                             translation: "Click to edit",
@@ -1446,7 +943,7 @@ export default function MenuManagement() {
                             meats: [],
                             toppings: [],
                             sizes: [],
-                            insertAfterIndex: index - 1, // Insert after the previous item
+                            insertAfterIndex: -1, // Insert at the beginning
                           };
                           createMutation.mutate(placeholderItem);
                         }}
@@ -1456,262 +953,288 @@ export default function MenuManagement() {
                       </Button>
                     </div>
                   )}
-                
-                  <Card 
-                    className="group relative cursor-pointer transition-all duration-200 hover:shadow-md"
-                    onClick={() => !editMode[item.id] && toggleItemExpansion(item.id)}
-                  >
-                    <CardContent className="p-4">
-                      {/* Delete button in corner when edit mode is active */}
-                      {editMode[item.id] && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="absolute top-2 right-2 text-red-600 hover:text-red-700 bg-white hover:bg-red-50 border-red-200 w-8 h-8 p-0 rounded-full shadow-sm z-10"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(item.id);
-                          }}
-                          disabled={deleteMutation.isPending}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      )}
-                      
-                      {/* Collapsed view - Always show title and price */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          {/* Editable Name - Collapsed */}
-                          {inlineEditing[`${item.id}-name`] ? (
-                            <Input
-                              value={tempValues[`${item.id}-name`] || ''}
-                              onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-name`]: e.target.value }))}
-                              onKeyDown={(e) => handleKeyPress(e, item.id, 'name')}
-                              onBlur={() => saveInlineEdit(item.id, 'name')}
-                              className="font-semibold h-7 text-sm"
-                              autoFocus
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                          ) : (
-                            <h4 
-                              className={`font-semibold px-1 py-0.5 rounded transition-all ${
-                                editMode[item.id] 
-                                  ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
-                                  : 'cursor-default'
-                              }`}
-                              onClick={(e) => {
-                                if (editMode[item.id]) {
-                                  e.stopPropagation();
-                                  startInlineEdit(item.id, 'name', getCurrentValue(item, 'name'));
-                                }
-                              }}
-                            >
-                              {getCurrentValue(item, 'name')}
-                            </h4>
-                          )}
-                          
-                          {/* Editable Price - Collapsed */}
-                          {inlineEditing[`${item.id}-price`] ? (
-                            <Input
-                              value={tempValues[`${item.id}-price`] || ''}
-                              onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-price`]: e.target.value }))}
-                              onKeyDown={(e) => handleKeyPress(e, item.id, 'price')}
-                              onBlur={() => saveInlineEdit(item.id, 'price')}
-                              className="h-7 text-sm w-20"
-                              autoFocus
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                          ) : (
-                            <Badge 
-                              variant="outline" 
-                              className={`transition-all ${editMode[item.id] ? 'cursor-pointer hover:bg-gray-100 border-dashed border-blue-300 bg-blue-50' : 'cursor-default'}`}
-                              onClick={(e) => {
-                                if (editMode[item.id]) {
-                                  e.stopPropagation();
-                                  startInlineEdit(item.id, 'price', getCurrentValue(item, 'price'));
-                                }
-                              }}
-                            >
-                              ${parseFloat(getCurrentValue(item, 'price') as string).toFixed(2)}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        {/* Expand/Collapse indicator */}
-                        {!editMode[item.id] && (
+
+                  {items.map((item, index) => (
+                    <React.Fragment key={item.id}>
+                      {/* Plus button before each card (except first) when edit mode is active */}
+                      {index > 0 && items.some(i => editMode[i.id]) && (
+                        <div className="flex justify-center -mt-2 -mb-2 relative z-10">
                           <Button
                             size="sm"
                             variant="outline"
-                            className="w-8 h-8 p-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleItemExpansion(item.id);
+                            className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
+                            onClick={() => {
+                              // Create a new item with placeholder data at specific position
+                              const placeholderItem = {
+                                name: "New Item",
+                                translation: "Click to edit",
+                                category: category,
+                                price: "0.00",
+                                description: "Add description...",
+                                image: "",
+                                meats: [],
+                                toppings: [],
+                                sizes: [],
+                                insertAfterIndex: index - 1, // Insert after the previous item
+                              };
+                              createMutation.mutate(placeholderItem);
                             }}
+                            disabled={createMutation.isPending}
                           >
-                            <ChevronDown 
-                              className={`h-3 w-3 transition-transform duration-200 ${
-                                expandedItems[item.id] ? 'rotate-180' : ''
-                              }`}
-                            />
+                            <Plus className="h-3 w-3 text-gray-500" />
                           </Button>
-                        )}
-                      </div>
+                        </div>
+                      )}
 
-                      {/* Expanded content - Show when expanded OR in edit mode */}
-                      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                        expandedItems[item.id] || editMode[item.id] 
-                          ? 'max-h-[500px] opacity-100 mt-4' 
-                          : 'max-h-0 opacity-0'
-                      }`}>
-                        <div className="flex space-x-4">
-                          {/* Food Image */}
-                          <div className={`w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative group ${
-                            editMode[item.id] ? 'cursor-pointer' : ''
-                          }`}>
-                            {getCurrentValue(item, 'image') ? (
-                              <img 
-                                src={getCurrentValue(item, 'image') as string} 
-                                alt={getCurrentValue(item, 'name') as string}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                <Utensils className="h-8 w-8" />
-                              </div>
+                      <Card
+                        className="group relative cursor-pointer transition-all duration-200 hover:shadow-md"
+                        onClick={() => !editMode[item.id] && toggleItemExpansion(item.id)}
+                      >
+                        <CardContent className="p-4">
+                          {/* Delete button in corner when edit mode is active */}
+                          {editMode[item.id] && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="absolute top-2 right-2 text-red-600 hover:text-red-700 bg-white hover:bg-red-50 border-red-200 w-8 h-8 p-0 rounded-full shadow-sm z-10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(item.id);
+                              }}
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
+
+                          {/* Collapsed view - Always show title and price */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              {/* Editable Name - Collapsed */}
+                              {inlineEditing[`${item.id}-name`] ? (
+                                <Input
+                                  value={tempValues[`${item.id}-name`] || ''}
+                                  onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-name`]: e.target.value }))}
+                                  onKeyDown={(e) => handleKeyPress(e, item.id, 'name')}
+                                  onBlur={() => saveInlineEdit(item.id, 'name')}
+                                  className="font-semibold h-7 text-sm"
+                                  autoFocus
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                              ) : (
+                                <h4
+                                  className={`font-semibold px-1 py-0.5 rounded transition-all ${editMode[item.id]
+                                      ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50'
+                                      : 'cursor-default'
+                                    }`}
+                                  onClick={(e) => {
+                                    if (editMode[item.id]) {
+                                      e.stopPropagation();
+                                      startInlineEdit(item.id, 'name', getCurrentValue(item, 'name'));
+                                    }
+                                  }}
+                                >
+                                  {getCurrentValue(item, 'name')}
+                                </h4>
+                              )}
+
+                              {/* Editable Price - Collapsed */}
+                              {inlineEditing[`${item.id}-price`] ? (
+                                <Input
+                                  value={tempValues[`${item.id}-price`] || ''}
+                                  onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-price`]: e.target.value }))}
+                                  onKeyDown={(e) => handleKeyPress(e, item.id, 'price')}
+                                  onBlur={() => saveInlineEdit(item.id, 'price')}
+                                  className="h-7 text-sm w-20"
+                                  autoFocus
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                              ) : (
+                                <Badge
+                                  variant="outline"
+                                  className={`transition-all ${editMode[item.id] ? 'cursor-pointer hover:bg-gray-100 border-dashed border-blue-300 bg-blue-50' : 'cursor-default'}`}
+                                  onClick={(e) => {
+                                    if (editMode[item.id]) {
+                                      e.stopPropagation();
+                                      startInlineEdit(item.id, 'price', getCurrentValue(item, 'price'));
+                                    }
+                                  }}
+                                >
+                                  ${parseFloat(getCurrentValue(item, 'price') as string).toFixed(2)}
+                                </Badge>
+                              )}
+                            </div>
+
+                            {/* Expand/Collapse indicator */}
+                            {!editMode[item.id] && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-8 h-8 p-0"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleItemExpansion(item.id);
+                                }}
+                              >
+                                <ChevronDown
+                                  className={`h-3 w-3 transition-transform duration-200 ${expandedItems[item.id] ? 'rotate-180' : ''
+                                    }`}
+                                />
+                              </Button>
                             )}
-                            
-                            {/* Hover overlay - only shown in edit mode */}
-                            {editMode[item.id] && (
-                              <>
-                                {/* Image editing input */}
-                                {inlineEditing[`${item.id}-image`] ? (
-                                  <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-2">
-                                    <Input
-                                      value={tempValues[`${item.id}-image`] || ''}
-                                      onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-image`]: e.target.value }))}
-                                      onKeyDown={(e) => handleKeyPress(e, item.id, 'image')}
-                                      onBlur={() => saveInlineEdit(item.id, 'image')}
-                                      placeholder="Image URL..."
-                                      className="text-xs h-6 bg-white"
-                                      autoFocus
-                                    />
-                                  </div>
+                          </div>
+
+                          {/* Expanded content - Show when expanded OR in edit mode */}
+                          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedItems[item.id] || editMode[item.id]
+                              ? 'max-h-[500px] opacity-100 mt-4'
+                              : 'max-h-0 opacity-0'
+                            }`}>
+                            <div className="flex space-x-4">
+                              {/* Food Image */}
+                              <div className={`w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative group ${editMode[item.id] ? 'cursor-pointer' : ''
+                                }`}>
+                                {getCurrentValue(item, 'image') ? (
+                                  <img
+                                    src={getCurrentValue(item, 'image') as string}
+                                    alt={getCurrentValue(item, 'name') as string}
+                                    className="w-full h-full object-cover"
+                                  />
                                 ) : (
-                                  /* Hover overlay */
-                                  <div 
-                                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-                                    onClick={() => startInlineEdit(item.id, 'image', getCurrentValue(item, 'image'))}
-                                  >
-                                    <div className="text-white text-center">
-                                      <Camera className="h-4 w-4 mx-auto mb-1" />
-                                      <span className="text-xs font-medium">Change Image</span>
-                                    </div>
+                                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                    <Utensils className="h-8 w-8" />
                                   </div>
                                 )}
-                              </>
-                            )}
+
+                                {/* Hover overlay - only shown in edit mode */}
+                                {editMode[item.id] && (
+                                  <>
+                                    {/* Image editing input */}
+                                    {inlineEditing[`${item.id}-image`] ? (
+                                      <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-2">
+                                        <Input
+                                          value={tempValues[`${item.id}-image`] || ''}
+                                          onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-image`]: e.target.value }))}
+                                          onKeyDown={(e) => handleKeyPress(e, item.id, 'image')}
+                                          onBlur={() => saveInlineEdit(item.id, 'image')}
+                                          placeholder="Image URL..."
+                                          className="text-xs h-6 bg-white"
+                                          autoFocus
+                                        />
+                                      </div>
+                                    ) : (
+                                      /* Hover overlay */
+                                      <div
+                                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+                                        onClick={() => startInlineEdit(item.id, 'image', getCurrentValue(item, 'image'))}
+                                      >
+                                        <div className="text-white text-center">
+                                          <Camera className="h-4 w-4 mx-auto mb-1" />
+                                          <span className="text-xs font-medium">Change Image</span>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+
+                              {/* Item Details - Only show in expanded view */}
+                              <div className="flex-1">
+                                {/* Editable Translation */}
+                                {inlineEditing[`${item.id}-translation`] ? (
+                                  <Input
+                                    value={tempValues[`${item.id}-translation`] || ''}
+                                    onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-translation`]: e.target.value }))}
+                                    onKeyDown={(e) => handleKeyPress(e, item.id, 'translation')}
+                                    onBlur={() => saveInlineEdit(item.id, 'translation')}
+                                    className="text-sm h-7 mb-1"
+                                    autoFocus
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                ) : (
+                                  <p
+                                    className={`text-sm text-gray-600 mb-1 px-1 py-0.5 rounded min-h-[20px] transition-all ${editMode[item.id]
+                                        ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50'
+                                        : 'cursor-default'
+                                      }`}
+                                    onClick={(e) => {
+                                      if (editMode[item.id]) {
+                                        e.stopPropagation();
+                                        startInlineEdit(item.id, 'translation', getCurrentValue(item, 'translation') || '');
+                                      }
+                                    }}
+                                  >
+                                    {getCurrentValue(item, 'translation') || 'Click to add translation...'}
+                                  </p>
+                                )}
+
+                                {/* Editable Description */}
+                                {inlineEditing[`${item.id}-description`] ? (
+                                  <Textarea
+                                    value={tempValues[`${item.id}-description`] || ''}
+                                    onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-description`]: e.target.value }))}
+                                    onKeyDown={(e) => handleKeyPress(e, item.id, 'description')}
+                                    onBlur={() => saveInlineEdit(item.id, 'description')}
+                                    className="text-xs h-16 resize-none"
+                                    autoFocus
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                ) : (
+                                  <p
+                                    className={`text-xs text-gray-500 mb-2 px-1 py-0.5 rounded min-h-[20px] transition-all ${editMode[item.id]
+                                        ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50'
+                                        : 'cursor-default'
+                                      }`}
+                                    onClick={(e) => {
+                                      if (editMode[item.id]) {
+                                        e.stopPropagation();
+                                        startInlineEdit(item.id, 'description', getCurrentValue(item, 'description') || '');
+                                      }
+                                    }}
+                                  >
+                                    {getCurrentValue(item, 'description') || 'Click to add description...'}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                          
-                          {/* Item Details - Only show in expanded view */}
-                          <div className="flex-1">
-                            {/* Editable Translation */}
-                            {inlineEditing[`${item.id}-translation`] ? (
-                              <Input
-                                value={tempValues[`${item.id}-translation`] || ''}
-                                onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-translation`]: e.target.value }))}
-                                onKeyDown={(e) => handleKeyPress(e, item.id, 'translation')}
-                                onBlur={() => saveInlineEdit(item.id, 'translation')}
-                                className="text-sm h-7 mb-1"
-                                autoFocus
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                            ) : (
-                              <p 
-                                className={`text-sm text-gray-600 mb-1 px-1 py-0.5 rounded min-h-[20px] transition-all ${
-                                  editMode[item.id] 
-                                    ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
-                                    : 'cursor-default'
-                                }`}
-                                onClick={(e) => {
-                                  if (editMode[item.id]) {
-                                    e.stopPropagation();
-                                    startInlineEdit(item.id, 'translation', getCurrentValue(item, 'translation') || '');
-                                  }
-                                }}
-                              >
-                                {getCurrentValue(item, 'translation') || 'Click to add translation...'}
-                              </p>
-                            )}
-                            
-                            {/* Editable Description */}
-                            {inlineEditing[`${item.id}-description`] ? (
-                              <Textarea
-                                value={tempValues[`${item.id}-description`] || ''}
-                                onChange={(e) => setTempValues(prev => ({ ...prev, [`${item.id}-description`]: e.target.value }))}
-                                onKeyDown={(e) => handleKeyPress(e, item.id, 'description')}
-                                onBlur={() => saveInlineEdit(item.id, 'description')}
-                                className="text-xs h-16 resize-none"
-                                autoFocus
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                            ) : (
-                              <p 
-                                className={`text-xs text-gray-500 mb-2 px-1 py-0.5 rounded min-h-[20px] transition-all ${
-                                  editMode[item.id] 
-                                    ? 'cursor-pointer hover:bg-gray-100 border border-dashed border-blue-300 bg-blue-50' 
-                                    : 'cursor-default'
-                                }`}
-                                onClick={(e) => {
-                                  if (editMode[item.id]) {
-                                    e.stopPropagation();
-                                    startInlineEdit(item.id, 'description', getCurrentValue(item, 'description') || '');
-                                  }
-                                }}
-                              >
-                                {getCurrentValue(item, 'description') || 'Click to add description...'}
-                              </p>
-                            )}
-                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Plus button after last card when edit mode is active */}
+                      {index === items.length - 1 && items.some(i => editMode[i.id]) && (
+                        <div className="flex justify-center -mt-2 pt-2 relative z-10">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
+                            onClick={() => {
+                              // Create a new item with placeholder data at end of list
+                              const placeholderItem = {
+                                name: "New Item",
+                                translation: "Click to edit",
+                                category: category,
+                                price: "0.00",
+                                description: "Add description...",
+                                image: "",
+                                meats: [],
+                                toppings: [],
+                                sizes: [],
+                                insertAfterIndex: index, // Insert after the current (last) item
+                              };
+                              createMutation.mutate(placeholderItem);
+                            }}
+                            disabled={createMutation.isPending}
+                          >
+                            <Plus className="h-3 w-3 text-gray-500" />
+                          </Button>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                
-                  {/* Plus button after last card when edit mode is active */}
-                  {index === items.length - 1 && items.some(i => editMode[i.id]) && (
-                    <div className="flex justify-center -mt-2 pt-2 relative z-10">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="w-8 h-8 p-0 rounded-full border-dashed border-gray-300 hover:border-mexican-green hover:bg-mexican-green/10 transition-colors bg-white shadow-sm"
-                        onClick={() => {
-                          // Create a new item with placeholder data at end of list
-                          const placeholderItem = {
-                            name: "New Item",
-                            translation: "Click to edit",
-                            category: category,
-                            price: "0.00",
-                            description: "Add description...",
-                            image: "",
-                            meats: [],
-                            toppings: [],
-                            sizes: [],
-                            insertAfterIndex: index, // Insert after the current (last) item
-                          };
-                          createMutation.mutate(placeholderItem);
-                        }}
-                        disabled={createMutation.isPending}
-                      >
-                        <Plus className="h-3 w-3 text-gray-500" />
-                      </Button>
-                    </div>
-                  )}
-                </React.Fragment>
-            ))}
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
         );
       })}
 

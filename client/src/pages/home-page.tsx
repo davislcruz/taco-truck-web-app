@@ -125,53 +125,6 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-amber-900 via-red-800 to-orange-900 text-white py-8 overflow-hidden mt-14">
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-          <div className="flex justify-center items-center">
-            {/* Centered Location Card */}
-            <div className="space-y-4 flex flex-col items-center justify-center">
-              {/* Location Card with Aztec Border */}
-              <div className="bg-gradient-to-br from-amber-800/40 to-red-900/40 backdrop-blur-sm rounded-lg p-5 border-2 border-yellow-400/30 relative overflow-hidden text-center max-w-md w-full" data-location>
-                
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center mb-2">
-                    <MapPin className="h-5 w-5 mr-1.5 text-yellow-300" />
-                    <span className="text-amber-100 text-sm font-medium"> 
-                      <span className="text-base font-bold text-yellow-300">Location: </span>Philadelphia, 4133 G St
-                    </span>
-                  </div>
-                  <span className="text-amber-200 text-sm">Mon-Sat: 11AM-8PM</span>
-                </div>
-                
-                <div className="flex flex-row gap-3 mt-4 justify-center">
-                  <Button
-                    onClick={scrollToMenu}
-                    className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-xl transform hover:scale-105 transition-all border-2 border-yellow-400"
-                  >
-                    Ver Menú
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="border-2 border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black py-2 px-4 rounded-lg font-semibold transition-all"
-                    onClick={() => window.open('tel:+1234567890')}
-                  >
-                    <Phone className="h-4 w-4 mr-2" />
-                    (123) 456-7890
-                  </Button>
-                </div>
-                
-              </div>
-              
-              
-              
-              
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Menu Section */}
       <MenuSection
         menuItems={menuItems || []}
