@@ -759,6 +759,108 @@ export default function MenuManagement() {
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end mb-4">
+        <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="default"
+              size="lg"
+              className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 shadow-lg"
+              onClick={() => setIsCategoryDialogOpen(true)}
+            >
+              + Create Category
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create New Category</DialogTitle>
+              <DialogDescription>
+                Add a new menu category, set its icon, order, and ingredients.
+              </DialogDescription>
+            </DialogHeader>
+            {/* Category creation form */}
+            <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-4">
+              <div className="flex flex-1 gap-4">
+                <div className="flex-1 flex flex-col">
+                  <Label className="mb-1">Category Name</Label>
+                  <Input {...categoryForm.register("translation")} placeholder="Category name..." className="h-8 px-2 text-sm border rounded-md" />
+                </div>
+                <div className="flex flex-col w-32">
+                  <Label className="mb-1">Type</Label>
+                  <Select value={categoryForm.watch("icon")} onValueChange={val => categoryForm.setValue("icon", val)}>
+                    <SelectTrigger
+                      className="h-8 px-2 text-sm border rounded-md flex items-center w-full focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:border-black data-[state=open]:ring-2 data-[state=open]:ring-black data-[state=open]:ring-offset-2 data-[state=open]:border-black"
+                    >
+                      <SelectValue placeholder="Select icon" />
+                      {/* Add focus ring styling */}
+                      <style jsx>{`
+                        .type-select:focus {
+                          outline: 2px solid #000;
+                          outline-offset: 2px;
+                        }
+                      `}</style>
+                    </SelectTrigger>
+                    <SelectContent className="w-32">
+                      <SelectItem value="utensils">
+                        <div className="flex items-center gap-2">
+                          <Utensils className="h-5 w-5 text-green-700" />
+                          <span className="text-sm">Food</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="glassWater">
+                        <div className="flex items-center gap-2">
+                          <GlassWater className="h-5 w-5 text-green-700" />
+                          <span className="text-sm">Drink</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label>Order</Label>
+                <div className="bg-gray-50 rounded-md border p-2 mt-1">
+                  {categoryOrderList.map((cat, idx) => (
+                    <div key={cat.id} className={cat.isNew ? "flex items-center justify-between py-1 bg-blue-50 border border-blue-300 border-dotted rounded" : "flex items-center justify-between py-1"}>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 text-center text-xs text-gray-500 font-bold">{idx + 1}</span>
+                        {/* Show icon for each category, always show drink icon for 'bebidas' */}
+                        {cat.name.toLowerCase() === "bebidas" ? (
+                          <GlassWater className="h-4 w-4 text-green-700" />
+                        ) : cat.icon === "utensils" ? (
+                          <Utensils className="h-4 w-4 text-green-700" />
+                        ) : cat.icon === "glassWater" ? (
+                          <GlassWater className="h-4 w-4 text-green-700" />
+                        ) : null}
+                        <span className={cat.isNew ? "font-bold text-blue-700 flex items-center gap-1" : ""}>
+                          {cat.name}
+                          {cat.isNew && (
+                            <span className="ml-1 text-xs bg-blue-600 text-white rounded px-1 py-0.5 font-semibold">NEW</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button type="button" size="icon" variant="ghost" className="p-1" disabled={idx === 0} onClick={() => moveCategoryUp(idx)}>
+                          <ChevronUp className="h-4 w-4" />
+                        </Button>
+                        <Button type="button" size="icon" variant="ghost" className="p-1" disabled={idx === categoryOrderList.length - 1} onClick={() => moveCategoryDown(idx)}>
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Close flex row div */}
+              {/* Ingredient management UI can be added here if needed */}
+              <div className="flex justify-end gap-2 mt-4">
+                <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>Cancel</Button>
+                <Button type="submit" variant="default" className="bg-green-600 text-white">Create</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
       {categories.map((categoryData) => {
         const items = groupedItems[categoryData.name] || [];
         const category = categoryData.name;

@@ -1,19 +1,3 @@
-import { useState, useEffect } from "react";
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { MenuItem } from "@shared/schema";
-import { CartItem } from "@/pages/home-page";
-import { Utensils, Coffee, Sandwich, ChevronLeft, ChevronRight } from "lucide-react";
-
-interface MenuSectionProps {
-  menuItems: MenuItem[];
-  onItemSelect: (item: MenuItem) => void;
-  cart: CartItem[];
-}
-
 const categoryIcons: Record<string, React.ReactNode> = {
   tacos: <Utensils className="h-4 w-4" />,
   burritos: <Utensils className="h-4 w-4" />,
@@ -34,11 +18,33 @@ const categoryTaglines: Record<string, string> = {
   tacos: "CON CEBOLLA Y CILANTRO / WITH ONIONS & CILANTRO",
   burritos: "CON FRIJOLES, ARROS, LECHUGA, QUESO, PICO DE GALLO Y CREMA",
 };
+import { useState, useEffect } from "react";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { MenuItem } from "@shared/schema";
+import { CartItem } from "@/pages/home-page";
+import { Utensils, Coffee, Sandwich, ChevronLeft, ChevronRight } from "lucide-react";
+
+interface MenuSectionProps {
+  menuItems: MenuItem[];
+  onItemSelect: (item: MenuItem) => void;
+  cart: CartItem[];
+}
 
 export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSectionProps) {
+  // State hooks and derived values
+  // Placeholder handler for creating a new category
+  const handleCreateCategory = () => {
+    // TODO: Replace with modal or actual logic
+    alert('Create Menu Category clicked!');
+  };
   const [currentItemIndexes, setCurrentItemIndexes] = useState<Record<string, number>>({});
   const [bodyWidth, setBodyWidth] = useState<number>(0);
   const [cardWidth, setCardWidth] = useState<number>(452);
+  const [cardsPerView, setCardsPerView] = useState<number>(1);
   const [dragState, setDragState] = useState<{
     isDragging: boolean;
     startX: number;
@@ -54,36 +60,28 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
   });
 
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
-  
 
-
-  // Calculate body/html width on mount and resize
-  React.useEffect(() => {
+  useEffect(() => {
     const calculateDimensions = () => {
       const bodyWidth = document.body.offsetWidth;
-      const htmlWidth = document.documentElement.offsetWidth;
       const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const documentWidth = document.documentElement.scrollWidth;
-      
       setBodyWidth(bodyWidth);
-      
-      // Set responsive card width
-      const newCardWidth = viewportWidth < 491 ? 280 : 452; // Fixed 280px for small screens, 452px for larger
+      // Card width stays fixed for now
+      const newCardWidth = viewportWidth < 491 ? 280 : 452;
       setCardWidth(newCardWidth);
-      
-      // Log screen size to console
-      console.log(`Screen Size: ${viewportWidth}x${viewportHeight}`);
-      console.log(`Body Width: ${bodyWidth}px, HTML Width: ${htmlWidth}px, Document Width: ${documentWidth}px`);
-      console.log(`Card Width: ${newCardWidth}px`);
 
+      // Responsive cards per view
+      if (viewportWidth < 992) {
+        setCardsPerView(1); // mobile + small tablets
+      } else if (viewportWidth >= 992 && viewportWidth < 1460) {
+        setCardsPerView(2); // large tablets
+      } else {
+        setCardsPerView(3); // desktop
+      }
     };
 
     calculateDimensions();
-    
-    // Recalculate on window resize
     window.addEventListener('resize', calculateDimensions);
-    
     return () => window.removeEventListener('resize', calculateDimensions);
   }, []);
 
@@ -91,8 +89,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
   const handleButtonPrevItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
-    
-    // Update the index instantly
     setCurrentItemIndexes(prev => {
       const currentIndex = prev[category] ?? 0;
       return {
@@ -105,8 +101,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
   const handleButtonNextItem = (category: string) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     if (filteredItems.length <= 1) return;
-    
-    // Update the index instantly
     setCurrentItemIndexes(prev => {
       const currentIndex = prev[category] ?? 0;
       return {
@@ -119,17 +113,14 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
   const handleDotNavigation = (category: string, index: number) => {
     const filteredItems = menuItems.filter(item => item.category === category);
     const currentIndex = currentItemIndexes[category] ?? 0;
-    
     if (index === currentIndex || filteredItems.length <= 1) return;
-    
-    // Update the index instantly
     setCurrentItemIndexes(prev => ({
       ...prev,
       [category]: index
     }));
   };
 
-  // Manual drag functions - completely separate from button navigation
+  // Manual drag functions
   const handleManualDragStart = (category: string, startX: number) => {
     setDragState(prev => ({
       ...prev,
@@ -161,14 +152,10 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
       }));
       return;
     }
-
-    // Calculate drag distance correctly
-    const dragDistance = dragState.currentX; // This is already the delta from handleManualDragMove
-    const threshold = Math.max(cardWidth * 0.15, 50); // 15% of card width, minimum 50px
-    
+    const dragDistance = dragState.currentX;
+    const threshold = Math.max(cardWidth * 0.15, 50);
     if (Math.abs(dragDistance) > threshold) {
       if (dragDistance > 0) {
-        // Dragged right - go to previous item
         setCurrentItemIndexes(prev => {
           const currentIndex = prev[category] ?? 0;
           return {
@@ -177,7 +164,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
           };
         });
       } else {
-        // Dragged left - go to next item
         setCurrentItemIndexes(prev => {
           const currentIndex = prev[category] ?? 0;
           return {
@@ -187,8 +173,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         });
       }
     }
-    
-    // Simple reset for manual drag - no fancy animation
     setDragState(prev => ({
       ...prev,
       isDragging: false,
@@ -206,7 +190,6 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
 
   const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!dragState.isDragging || !dragState.category) return;
-    
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     handleManualDragMove(clientX);
   };
@@ -259,63 +242,34 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
         </Button>
       </div>
     </CardContent>
-  );
+  ); // End of renderCardContent
 
   return (
     <section id="menu-section" className="py-4 lg:py-4 mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1800px] mx-auto px-1 sm:px-1.5 lg:px-2">
         <h3 className="text-2xl md:text-3xl font-bold text-center dark-gray">
           Our Menu / Nuestro Menú
         </h3>
-
+        {/* Removed owner-only button from customer view */}
         {/* All Category Carousels */}
         <div className="space-y-6 mb-28">
           {categories.map((category) => {
             const filteredItems = menuItems.filter(item => item.category === category);
             const currentItemIndex = currentItemIndexes[category] || 0;
             const currentItem = filteredItems[currentItemIndex];
-
             if (!currentItem) return null;
-
-            // Calculate which items to show for sliding animation
-            const getDragInfo = () => {
-              const prevIndex = currentItemIndex === 0 ? filteredItems.length - 1 : currentItemIndex - 1;
-              const nextIndex = currentItemIndex === filteredItems.length - 1 ? 0 : currentItemIndex + 1;
-              
-              if (dragState.isDragging && dragState.category === category) {
-                // Use the stored deltaX directly from manual drag functions
-                const deltaX = dragState.currentX;
-                
-                return {
-                  deltaX,
-                  prevItem: filteredItems.length > 1 ? filteredItems[prevIndex] : null,
-                  nextItem: filteredItems.length > 1 ? filteredItems[nextIndex] : null,
-                  isDragging: true
-                };
-              }
-              
-              // Always show prev/next items for smooth transitions
-              return { 
-                deltaX: 0, 
-                prevItem: filteredItems.length > 1 ? filteredItems[prevIndex] : null,
-                nextItem: filteredItems.length > 1 ? filteredItems[nextIndex] : null,
-                isDragging: false 
-              };
-            };
-
-            const dragInfo = getDragInfo();
-            
             const getTransitionClass = () => {
-              if (dragInfo.isDragging && !dragState.isTransitioning) return '';
+              if (dragState.isDragging && !dragState.isTransitioning) return '';
               return dragState.isTransitioning ? 'transition-transform duration-500 ease-in-out' : '';
             };
-
+            let firstVisibleIndex = currentItemIndex;
+            if (firstVisibleIndex > filteredItems.length - cardsPerView) {
+              firstVisibleIndex = Math.max(filteredItems.length - cardsPerView, 0);
+            }
             return (
-              <div key={category} className="max-w-2xl mx-auto">
-                {/* Category Title with Navigation - Flex Container */}
-                <div className="flex items-center justify-between mx-auto" style={{ width: `${cardWidth}px` }}>
-                  {/* Left Arrow Button */}
-                  {filteredItems.length > 1 ? (
+              <div key={category} className="w-full mx-auto">
+                <div className="flex items-center justify-center mx-auto" style={{ width: `${cardWidth * cardsPerView}px` }}>
+                  {filteredItems.length > cardsPerView ? (
                     <Button
                       variant="outline"
                       size="icon"
@@ -328,18 +282,14 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
                   ) : (
-                    <div className="w-10 h-10" /> // Spacer to maintain layout balance
+                    <div className="w-10 h-10" />
                   )}
-
-                  {/* Title Container */}
-                  <div className="text-center flex-1 mx-4">
-                    <h2 className="text-2xl font-bold my-0 text-red-600">
+                  <div className="flex-1 flex justify-center items-center mx-4">
+                    <h2 className="text-2xl font-bold my-0 text-red-600 text-center w-full">
                       {categoryLabels[category] || category}
                     </h2>
                   </div>
-
-                  {/* Right Arrow Button */}
-                  {filteredItems.length > 1 ? (
+                  {filteredItems.length > cardsPerView ? (
                     <Button
                       variant="outline"
                       size="icon"
@@ -352,11 +302,9 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   ) : (
-                    <div className="w-10 h-10" /> // Spacer to maintain layout balance
+                    <div className="w-10 h-10" />
                   )}
                 </div>
-                
-                {/* Category Tagline - Sibling Container */}
                 {categoryTaglines[category] && (
                   <div className="text-xs text-green-600 text-center my-0 mt-[11px] mb-[11px]">
                     {categoryTaglines[category].includes('/') ? (
@@ -368,18 +316,31 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                     )}
                   </div>
                 )}
-                <div className="relative mx-auto" style={{ width: `${cardWidth}px` }}>
-                  {/* Price Badge - positioned outside overflow container */}
-                  <Badge variant="secondary" className="absolute top-0 right-0 mexican-red text-white text-sm px-3 py-1 z-30 border border-gray-300 shadow-lg mt-[-14px] mb-[-14px] ml-[-14px] mr-[-14px]">
-                    ${parseFloat(currentItem.price).toFixed(2)}
-                  </Badge>
-                  
-                  <div className="overflow-hidden">
-                    <div 
+                <div className="relative mx-auto" style={{ width: `${cardWidth * cardsPerView}px` }}>
+                  <div
+                    className="overflow-hidden"
+                    style={{
+                      width:
+                        cardsPerView === 1
+                          ? cardWidth * cardsPerView + 68 - 45
+                          : cardsPerView === 2
+                            ? cardWidth * cardsPerView + 68 - 20
+                            : cardWidth * cardsPerView + 68,
+                      marginLeft:
+                        cardsPerView === 1
+                          ? -(68 / 2) + 34
+                          : cardsPerView === 2
+                            ? -(68 / 2) + 22
+                            : -(68 / 2) + 10
+                    }}
+                  >
+                    <div
                       className={`flex ${getTransitionClass()}`}
                       style={{
-                        transform: `translateX(${filteredItems.length === 1 ? '0px' : -cardWidth + (dragInfo.isDragging ? dragInfo.deltaX : 0)}px)`,
-                        width: filteredItems.length === 1 ? `${cardWidth}px` : `${cardWidth * 3}px` // Single item vs three cards
+                        transform: `translateX(-${firstVisibleIndex * (cardWidth + 24)}px)`,
+                        width: `${filteredItems.length * cardWidth + (filteredItems.length - 1) * 24 + 20}px`, // add 24px margin per card except last, plus 20px for badge
+                        minHeight: '100%',
+                        alignItems: 'stretch'
                       }}
                       onMouseDown={(e) => handleDragStart(e, category)}
                       onMouseMove={handleDragMove}
@@ -389,35 +350,43 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
                       onTouchMove={handleDragMove}
                       onTouchEnd={handleDragEnd}
                     >
-                      {/* Previous Item */}
-                      {dragInfo.prevItem && (
-                        <div className="flex-shrink-0 relative" style={{ width: `${cardWidth}px` }}>
-                          <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
-                            {renderCardContent(dragInfo.prevItem, category)}
-                          </Card>
+                      {filteredItems.map((item, idx) => (
+                        <div
+                          key={item.name + idx}
+                          className="flex-shrink-0"
+                          style={{
+                            width: `${cardWidth}px`,
+                            position: 'relative',
+                            paddingTop: '28px',
+                            overflow: 'visible',
+                            marginRight: idx !== filteredItems.length - 1 ? '24px' : '0' // 24px gap except last card
+                          }}
+                        >
+                          <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'visible' }}>
+                            {(idx >= firstVisibleIndex && idx < firstVisibleIndex + cardsPerView) ? (
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  top: '-18px',
+                                  right: '-18px',
+                                  zIndex: 30
+                                }}
+                              >
+                                <Badge variant="secondary" className="mexican-red text-white text-sm px-3 py-1 border border-gray-300 shadow-lg pointer-events-none">
+                                  ${parseFloat(item.price).toFixed(2)}
+                                </Badge>
+                              </div>
+                            ) : null}
+                            <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing h-full flex flex-col">
+                              {renderCardContent(item, category)}
+                            </Card>
+                          </div>
                         </div>
-                      )}
-                      
-                      {/* Current Item */}
-                      <div className="flex-shrink-0 relative" style={{ width: `${cardWidth}px` }}>
-                        <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
-                          {renderCardContent(currentItem, category)}
-                        </Card>
-                      </div>
-                      
-                      {/* Next Item */}
-                      {dragInfo.nextItem && (
-                        <div className="flex-shrink-0 relative" style={{ width: `${cardWidth}px` }}>
-                          <Card className="overflow-hidden hover:shadow-lg transition-shadow select-none cursor-grab active:cursor-grabbing">
-                            {renderCardContent(dragInfo.nextItem, category)}
-                          </Card>
-                        </div>
-                      )}
+                      ))}
                     </div>
                   </div>
                 </div>
-                {/* Navigation Dots */}
-                {filteredItems.length > 1 && (
+                {filteredItems.length > cardsPerView && (
                   <div className="flex items-center justify-center mt-[5px] mb-[5px]">
                     <div className="flex space-x-2">
                       {filteredItems.map((_, index) => (
