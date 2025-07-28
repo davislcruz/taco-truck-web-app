@@ -53,6 +53,7 @@ export function MenuItemCard({
   };
 
   const handleInlineEdit = (field: string, currentValue: any) => {
+    if (!isEditMode) return;
     const key = `${item.id}-${field}`;
     onStartInlineEditing(key, currentValue);
   };
@@ -75,13 +76,14 @@ export function MenuItemCard({
 
   // Helper to get editable field styling - easy to change globally
   const getEditableFieldStyles = (options: { isBlock?: boolean; textSize?: string } = {}) => {
-    const baseClasses = "px-1 py-0.5 rounded transition-colors cursor-pointer";
+    const baseClasses = "px-1 py-0.5 rounded transition-colors";
+    const cursorClass = isEditMode ? "cursor-pointer" : "cursor-default";
     const blockClass = options.isBlock ? "block" : "";
     const editModeClasses = isEditMode 
       ? "bg-blue-50 border-2 border-dashed border-blue-300 hover:bg-blue-100" 
-      : "hover:bg-gray-100";
+      : "";
     
-    return `${baseClasses} ${blockClass} ${editModeClasses} ${options.textSize || ""}`;
+    return `${baseClasses} ${cursorClass} ${blockClass} ${editModeClasses} ${options.textSize || ""}`;
   };
 
   // Helper to get field placeholder text
@@ -97,6 +99,7 @@ export function MenuItemCard({
     textSize?: string;
     displayValue?: any; // For processed values like arrays
     fieldLabel?: string; // For better placeholder text
+    fixedWidth?: boolean; // For image URL field
   } = {}) => {
     const key = `${item.id}-${field}`;
     const isEditing = inlineEditing[key];
@@ -106,6 +109,12 @@ export function MenuItemCard({
     // If currently being edited, show input/textarea
     if (isEditing) {
       const Component = options.isTextarea ? Textarea : Input;
+      const inputClassName = options.isTextarea 
+        ? "min-h-[60px]" 
+        : options.fixedWidth 
+          ? "w-full" 
+          : "";
+      
       return (
         <Component
           value={tempValues[key] || ''}
@@ -113,17 +122,21 @@ export function MenuItemCard({
           onKeyDown={(e) => handleInlineKeyDown(e, field)}
           onBlur={() => handleInlineBlur(field)}
           autoFocus
-          className={options.isTextarea ? "min-h-[60px]" : ""}
+          className={inputClassName}
         />
       );
     }
     
     // Show clickable field for editing
+    const spanClassName = options.fixedWidth 
+      ? `${getEditableFieldStyles(options)} truncate w-full block`
+      : getEditableFieldStyles(options);
+    
     return (
       <span
         onClick={() => handleInlineEdit(field, rawValue)}
-        className={getEditableFieldStyles(options)}
-        title={isEditMode ? "Click to edit this field" : "Enter edit mode to edit this field"}
+        className={spanClassName}
+        title={isEditMode ? `Click to edit this field${rawValue ? ': ' + rawValue : ''}` : `Enter edit mode to edit this field${rawValue ? ': ' + rawValue : ''}`}
       >
         {getFieldPlaceholder(fieldLabel, displayValue)}
       </span>
@@ -150,12 +163,19 @@ export function MenuItemCard({
             <CardTitle className="text-lg">
               {renderField('name', getDisplayValue('name'), { fieldLabel: 'name' })}
             </CardTitle>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-xs">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <Badge variant="outline" className="text-xs flex-shrink-0">
                 {item.category}
               </Badge>
+              {getDisplayValue('ingredients') && Array.isArray(getDisplayValue('ingredients')) && getDisplayValue('ingredients').length > 0 && (
+                <div className="flex-1 min-w-0">
+                  <span className="text-xs text-gray-500 truncate block">
+                    {getDisplayValue('ingredients').join(', ')}
+                  </span>
+                </div>
+              )}
               {isEditMode && (
-                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-300">
+                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-300 flex-shrink-0">
                   ✏️ Edit Mode
                 </Badge>
               )}
@@ -191,7 +211,13 @@ export function MenuItemCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={onEdit}
+                  onClick={() => {
+                    // If card is collapsed, expand it first
+                    if (!isExpanded) {
+                      onToggleExpanded();
+                    }
+                    onEdit();
+                  }}
                   className="p-1"
                   title="Toggle edit mode"
                 >
@@ -214,71 +240,91 @@ export function MenuItemCard({
       
       {isExpanded && (
         <CardContent className="pt-0">
-          <div className="space-y-3">
-            <div>
-              <label className="text-sm font-medium text-gray-600">Translation</label>
-              <div className="mt-1">
-                {renderField('translation', getDisplayValue('translation'), { 
-                  isBlock: true, 
-                  fieldLabel: 'translation' 
-                })}
-              </div>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-600">Description</label>
-              <div className="mt-1">
-                {renderField('description', getDisplayValue('description'), { 
-                  isTextarea: true, 
-                  isBlock: true, 
-                  fieldLabel: 'description' 
-                })}
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="flex gap-4">
+            {/* Left side - Image */}
+            <div className="flex-shrink-0 w-48">
               <div>
-                <label className="text-sm font-medium text-gray-600">Meats</label>
+                <label className="text-sm font-medium text-gray-600">Image</label>
                 <div className="mt-1">
-                  {renderField('meats', 
-                    Array.isArray(item.meats) ? item.meats.join(', ') : item.meats || '', 
-                    { 
-                      isBlock: true, 
-                      textSize: 'text-sm',
-                      displayValue: Array.isArray(item.meats) ? item.meats.join(', ') : item.meats,
-                      fieldLabel: 'meats' 
-                    }
+                  {renderField('image', getDisplayValue('image'), { 
+                    isBlock: true, 
+                    fieldLabel: 'image URL',
+                    fixedWidth: true
+                  })}
+                  {getDisplayValue('image') && (
+                    <div className="mt-2">
+                      <img 
+                        src={getDisplayValue('image')} 
+                        alt={item.name || 'Menu item'} 
+                        className={`w-full h-32 object-cover rounded-lg border transition-all ${
+                          isEditMode 
+                            ? 'cursor-pointer hover:opacity-75 hover:border-blue-300' 
+                            : ''
+                        }`}
+                        onClick={() => isEditMode && handleInlineEdit('image', getDisplayValue('image'))}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                        title={isEditMode ? "Click to edit image URL" : ""}
+                      />
+                    </div>
                   )}
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - All other fields */}
+            <div className="flex-1 space-y-3">
+              <div>
+                <label className="text-sm font-medium text-gray-600">Translation</label>
+                <div className="mt-1">
+                  {renderField('translation', getDisplayValue('translation'), { 
+                    isBlock: true, 
+                    fieldLabel: 'translation' 
+                  })}
                 </div>
               </div>
               
               <div>
-                <label className="text-sm font-medium text-gray-600">Toppings</label>
+                <label className="text-sm font-medium text-gray-600">Description</label>
                 <div className="mt-1">
-                  {renderField('toppings', 
-                    Array.isArray(item.toppings) ? item.toppings.join(', ') : item.toppings || '', 
-                    { 
-                      isBlock: true, 
-                      textSize: 'text-sm',
-                      displayValue: Array.isArray(item.toppings) ? item.toppings.join(', ') : item.toppings,
-                      fieldLabel: 'toppings' 
-                    }
-                  )}
+                  {renderField('description', getDisplayValue('description'), { 
+                    isTextarea: true, 
+                    isBlock: true, 
+                    fieldLabel: 'description' 
+                  })}
                 </div>
               </div>
               
-              <div>
-                <label className="text-sm font-medium text-gray-600">Sizes</label>
-                <div className="mt-1">
-                  {renderField('sizes', 
-                    Array.isArray(item.sizes) ? item.sizes.join(', ') : item.sizes || '', 
-                    { 
-                      isBlock: true, 
-                      textSize: 'text-sm',
-                      displayValue: Array.isArray(item.sizes) ? item.sizes.join(', ') : item.sizes,
-                      fieldLabel: 'sizes' 
-                    }
-                  )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Meats</label>
+                  <div className="mt-1">
+                    {renderField('meats', 
+                      Array.isArray(item.meats) ? item.meats.join(', ') : item.meats || '', 
+                      { 
+                        isBlock: true, 
+                        textSize: 'text-sm',
+                        displayValue: Array.isArray(item.meats) ? item.meats.join(', ') : item.meats,
+                        fieldLabel: 'meats' 
+                      }
+                    )}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Sizes</label>
+                  <div className="mt-1">
+                    {renderField('sizes', 
+                      Array.isArray(item.sizes) ? item.sizes.join(', ') : item.sizes || '', 
+                      { 
+                        isBlock: true, 
+                        textSize: 'text-sm',
+                        displayValue: Array.isArray(item.sizes) ? item.sizes.join(', ') : item.sizes,
+                        fieldLabel: 'sizes' 
+                      }
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

@@ -29,9 +29,9 @@ export const formatPrice = (price: string | number): string => {
   return `$${numPrice.toFixed(2)}`;
 };
 
-export const calculateExtraCost = (toppings: string[]): number => {
-  return toppings.reduce((total, topping) => {
-    const match = topping.match(/\(\+\$(\d+)\)/);
+export const calculateExtraCost = (ingredients: string[]): number => {
+  return ingredients.reduce((total, ingredient) => {
+    const match = ingredient.match(/\(\+\$(\d+)\)/);
     return match ? total + parseFloat(match[1]) : total;
   }, 0);
 };

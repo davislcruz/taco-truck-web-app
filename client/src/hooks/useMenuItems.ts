@@ -47,15 +47,26 @@ export function useMenuItems() {
 
   const updateMenuItemMutation = useMutation({
     mutationFn: async ({ id, ...item }: Partial<MenuItem> & { id: number }) => {
+      console.log("Updating menu item:", id, "with data:", item);
       const res = await apiRequest("PUT", `/api/menu/${id}`, item);
       return res.json() as Promise<MenuItem>;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["menu"] });
       toast({ title: "Menu item updated successfully" });
+      // Exit edit mode only on successful save
+      toggleEditMode(variables.id);
     },
-    onError: () => {
-      toast({ title: "Failed to update menu item", variant: "destructive" });
+    onError: (error: any, variables) => {
+      console.error("Update failed:", error);
+      // Try to get more detailed error message
+      const errorMessage = error?.message || "Failed to update menu item";
+      toast({ 
+        title: "Failed to update menu item", 
+        description: errorMessage,
+        variant: "destructive" 
+      });
+      // Keep edit mode active so user can try again
     },
   });
 
@@ -170,9 +181,16 @@ export function useMenuItems() {
   const saveChanges = (itemId: number) => {
     const changes = pendingChanges[itemId];
     if (changes && Object.keys(changes).length > 0) {
-      updateMenuItemMutation.mutate({ id: itemId, ...changes });
+      const originalItem = originalValues[itemId];
+      if (originalItem) {
+        // Merge changes with original item to ensure all required fields are present
+        const updatedItem = { ...originalItem, ...changes };
+        updateMenuItemMutation.mutate({ id: itemId, ...updatedItem });
+      }
+    } else {
+      // No changes to save, just exit edit mode
+      toggleEditMode(itemId);
     }
-    toggleEditMode(itemId);
   };
 
   const cancelChanges = (itemId: number) => {

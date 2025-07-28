@@ -13,7 +13,7 @@ import { useEffect } from "react";
 export interface CartItem extends MenuItem {
   cartId: string;
   selectedMeat?: string;
-  selectedToppings: string[];
+  selectedIngredients: string[];
   selectedSize?: string;
   quantity: number;
   totalPrice: number;

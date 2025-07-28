@@ -47,7 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         availability: true,
         customizable: true,
         meats: [],
-        toppings: [],
+        ingredients: [],
         sizes: []
       };
       

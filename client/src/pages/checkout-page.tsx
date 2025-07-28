@@ -43,7 +43,7 @@ export default function CheckoutPage() {
       quantity: 2,
       price: 12.99,
       selectedMeat: "Carnitas",
-      selectedToppings: ["Cilantro", "Salsa Verde"]
+      selectedIngredients: ["Cilantro", "Salsa Verde"]
     },
     {
       id: "2", 
@@ -186,9 +186,9 @@ export default function CheckoutPage() {
                       {item.selectedSize && (
                         <p className="text-xs text-gray-400">Size: {item.selectedSize}</p>
                       )}
-                      {item.selectedToppings && item.selectedToppings.length > 0 && (
+                      {item.selectedIngredients && item.selectedIngredients.length > 0 && (
                         <p className="text-xs text-gray-400">
-                          Toppings: {item.selectedToppings.join(", ")}
+                          Ingredients: {item.selectedIngredients.join(", ")}
                         </p>
                       )}
                       <p className="text-sm text-gray-500">Qty: {item.quantity}</p>

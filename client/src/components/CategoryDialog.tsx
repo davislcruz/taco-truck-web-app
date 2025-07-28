@@ -1,14 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronUp, ChevronDown, Utensils, GlassWater, Trash2 } from "lucide-react";
+import { ChevronUp, ChevronDown, Utensils, GlassWater, Trash2, GripVertical } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useCategories } from "@/hooks/useCategories";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import {
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface Ingredient {
   id: string;
@@ -32,60 +52,66 @@ const categoryFormSchema = z.object({
 type CategoryFormData = z.infer<typeof categoryFormSchema>;
 
 export function CategoryDialog() {
-  // Temporary state - will be replaced with useCategories hook later
-  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
-  const [categoryFormTab, setCategoryFormTab] = useState<'order' | 'ingredients'>('order');
-  const [categoryOrderList, setCategoryOrderList] = useState<Array<{ id: string, name: string, icon: string, isNew?: boolean }>>([]);
-  const [categoryIngredients, setCategoryIngredients] = useState<Ingredient[]>([]);
-  const [newIngredientName, setNewIngredientName] = useState("");
-  const [newIngredientPrice, setNewIngredientPrice] = useState("0.00");
-  const [newIngredientIsDefault, setNewIngredientIsDefault] = useState(false);
+  const categoriesHook = useCategories();
+  const {
+    categories,
+    categoriesLoading,
+    isCategoryDialogOpen,
+    setIsCategoryDialogOpen,
+    categoryFormTab,
+    setCategoryFormTab,
+    categoryOrderList,
+    setCategoryOrderList,
+    categoryIngredients,
+    setCategoryIngredients,
+    newIngredientName,
+    setNewIngredientName,
+    newIngredientPrice,
+    setNewIngredientPrice,
+    newIngredientIsDefault,
+    setNewIngredientIsDefault,
+    moveCategoryUp,
+    moveCategoryDown,
+    addIngredient,
+    removeIngredient,
+    handleCategoryDialogClose,
+    createCategory,
+    isCreatingCategory,
+  } = categoriesHook;
 
-  const moveCategoryUp = (index: number) => {
-    if (index === 0) return;
-    setCategoryOrderList(prev => {
-      const newList = [...prev];
-      [newList[index - 1], newList[index]] = [newList[index], newList[index - 1]];
-      return newList;
-    });
-  };
+  // Load existing categories into the order list when dialog opens
+  useEffect(() => {
+    if (isCategoryDialogOpen && categories.length > 0) {
+      const sortedCategories = [...categories]
+        .sort((a, b) => a.order - b.order)
+        .map(cat => ({
+          id: cat.id.toString(),
+          name: cat.translation,
+          icon: cat.icon,
+        }));
+      setCategoryOrderList(sortedCategories);
+    }
+  }, [isCategoryDialogOpen, categories, setCategoryOrderList]);
 
-  const moveCategoryDown = (index: number) => {
-    if (index === categoryOrderList.length - 1) return;
-    setCategoryOrderList(prev => {
-      const newList = [...prev];
-      [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
-      return newList;
-    });
-  };
+  // Drag and drop functionality
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-  const addIngredient = () => {
-    if (!newIngredientName.trim()) return;
-    setCategoryIngredients(prev => [
-      ...prev,
-      {
-        id: Math.random().toString(36).slice(2),
-        name: newIngredientName,
-        price: parseFloat(newIngredientPrice),
-        isDefault: newIngredientIsDefault,
-      },
-    ]);
-    setNewIngredientName("");
-    setNewIngredientPrice("0.00");
-    setNewIngredientIsDefault(false);
-  };
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
 
-  const removeIngredient = (id: string) => {
-    setCategoryIngredients(prev => prev.filter(i => i.id !== id));
-  };
-
-  const handleCategoryDialogClose = () => {
-    setIsCategoryDialogOpen(false);
-    setCategoryFormTab('order');
-    setCategoryIngredients([]);
-    setNewIngredientName("");
-    setNewIngredientPrice("0.00");
-    setNewIngredientIsDefault(false);
+    if (over && active.id !== over.id) {
+      setCategoryOrderList((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
   const categoryForm = useForm<CategoryFormData>({
@@ -99,13 +125,11 @@ export function CategoryDialog() {
   });
 
   const onCategorySubmit = (data: CategoryFormData) => {
-    // TODO: Implement category creation
-    console.log("Creating category:", {
+    createCategory({
       ...data,
       name: data.translation.toLowerCase().replace(/\s+/g, "_"),
       ingredients: categoryIngredients,
     });
-    handleCategoryDialogClose();
   };
 
   return (
@@ -170,6 +194,8 @@ export function CategoryDialog() {
               categoryOrderList={categoryOrderList}
               moveCategoryUp={moveCategoryUp}
               moveCategoryDown={moveCategoryDown}
+              handleDragEnd={handleDragEnd}
+              sensors={sensors}
             />
           )}
           
@@ -191,8 +217,13 @@ export function CategoryDialog() {
             <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
               Cancel
             </Button>
-            <Button type="submit" variant="default" className="bg-green-600 text-white">
-              Create
+            <Button 
+              type="submit" 
+              variant="default" 
+              className="bg-green-600 text-white"
+              disabled={isCreatingCategory}
+            >
+              {isCreatingCategory ? "Creating..." : "Create"}
             </Button>
           </div>
         </form>
@@ -202,39 +233,112 @@ export function CategoryDialog() {
 }
 
 // Sub-components for better organization
-function CategoryOrderTab({ categoryOrderList, moveCategoryUp, moveCategoryDown }: any) {
+function CategoryOrderTab({ categoryOrderList, moveCategoryUp, moveCategoryDown, handleDragEnd, sensors }: any) {
   return (
     <div>
-      <Label>Order</Label>
-      <div className="bg-gray-50 rounded-md border p-2 mt-1">
-        {categoryOrderList.map((cat: any, idx: number) => (
-          <div key={cat.id} className={cat.isNew ? "flex items-center justify-between py-1 bg-blue-50 border border-blue-300 border-dotted rounded" : "flex items-center justify-between py-1"}>
-            <div className="flex items-center gap-2">
-              <span className="w-5 text-center text-xs text-gray-500 font-bold">{idx + 1}</span>
-              {cat.name.toLowerCase() === "bebidas" ? (
-                <GlassWater className="h-4 w-4 text-green-700" />
-              ) : cat.icon === "utensils" ? (
-                <Utensils className="h-4 w-4 text-green-700" />
-              ) : cat.icon === "glassWater" ? (
-                <GlassWater className="h-4 w-4 text-green-700" />
-              ) : null}
-              <span className={cat.isNew ? "font-bold text-blue-700 flex items-center gap-1" : ""}>
-                {cat.name}
-                {cat.isNew && (
-                  <span className="ml-1 text-xs bg-blue-600 text-white rounded px-1 py-0.5 font-semibold">NEW</span>
-                )}
-              </span>
+      <Label>Category Order</Label>
+      <p className="text-sm text-gray-600 mb-2">
+        Drag and drop or use arrows to reorder categories. This affects the display order on the menu.
+      </p>
+      <DndContext 
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="bg-gray-50 rounded-md border p-3 mt-1">
+          <SortableContext 
+            items={categoryOrderList.map((cat: any) => cat.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-2">
+              {categoryOrderList.map((cat: any, idx: number) => (
+                <SortableRow 
+                  key={cat.id}
+                  cat={cat}
+                  idx={idx}
+                  moveCategoryUp={() => moveCategoryUp(idx)}
+                  moveCategoryDown={() => moveCategoryDown(idx)}
+                  isFirst={idx === 0}
+                  isLast={idx === categoryOrderList.length - 1}
+                />
+              ))}
             </div>
-            <div className="flex gap-1">
-              <Button type="button" size="icon" variant="ghost" className="p-1" disabled={idx === 0} onClick={() => moveCategoryUp(idx)}>
-                <ChevronUp className="h-4 w-4" />
-              </Button>
-              <Button type="button" size="icon" variant="ghost" className="p-1" disabled={idx === categoryOrderList.length - 1} onClick={() => moveCategoryDown(idx)}>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        ))}
+          </SortableContext>
+        </div>
+      </DndContext>
+    </div>
+  );
+}
+
+function SortableRow({ cat, idx, moveCategoryUp, moveCategoryDown, isFirst, isLast }: any) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: cat.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center justify-between p-3 bg-white rounded-md border transition-all ${
+        isDragging ? "shadow-lg z-10" : "hover:bg-gray-50"
+      } ${cat.isNew ? "border-blue-300 border-2 border-dashed bg-blue-50" : ""}`}
+    >
+      <div className="flex items-center gap-3">
+        <div 
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-200 rounded"
+        >
+          <GripVertical className="h-4 w-4 text-gray-400" />
+        </div>
+        <span className="w-8 text-center text-sm text-gray-500 font-semibold bg-gray-100 rounded px-2 py-1">
+          {idx + 1}
+        </span>
+        <div className="flex items-center gap-2">
+          {cat.icon === "utensils" ? (
+            <Utensils className="h-5 w-5 text-green-700" />
+          ) : cat.icon === "glassWater" ? (
+            <GlassWater className="h-5 w-5 text-green-700" />
+          ) : null}
+          <span className={`font-medium ${cat.isNew ? "text-blue-700" : "text-gray-900"}`}>
+            {cat.name}
+            {cat.isNew && (
+              <span className="ml-2 text-xs bg-blue-600 text-white rounded px-2 py-1 font-semibold">NEW</span>
+            )}
+          </span>
+        </div>
+      </div>
+      <div className="flex gap-1">
+        <Button 
+          type="button" 
+          size="sm" 
+          variant="outline" 
+          className="p-1 h-8 w-8" 
+          disabled={isFirst} 
+          onClick={moveCategoryUp}
+        >
+          <ChevronUp className="h-4 w-4" />
+        </Button>
+        <Button 
+          type="button" 
+          size="sm" 
+          variant="outline" 
+          className="p-1 h-8 w-8" 
+          disabled={isLast} 
+          onClick={moveCategoryDown}
+        >
+          <ChevronDown className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

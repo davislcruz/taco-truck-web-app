@@ -31,7 +31,7 @@ export default function ItemCustomizationModal({
 }: ItemCustomizationModalProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedMeat, setSelectedMeat] = useState(item.meats?.[0] || "");
-  const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
+  const [selectedIngredientsFallback, setSelectedIngredientsFallback] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState(item.sizes?.[0] || "");
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
 
@@ -72,9 +72,9 @@ export default function ItemCustomizationModal({
       }
     });
 
-    // Calculate extra costs from old toppings system (fallback)
-    selectedToppings.forEach(topping => {
-      const match = topping.match(/\(\+\$(\d+)\)/);
+    // Calculate extra costs from old ingredients fallback system
+    selectedIngredientsFallback.forEach(ingredient => {
+      const match = ingredient.match(/\(\+\$(\d+)\)/);
       if (match) {
         extraCost += parseFloat(match[1]);
       }
@@ -83,11 +83,11 @@ export default function ItemCustomizationModal({
     return (basePrice + extraCost) * quantity;
   };
 
-  const handleToppingChange = (topping: string, checked: boolean) => {
+  const handleIngredientFallbackChange = (ingredient: string, checked: boolean) => {
     if (checked) {
-      setSelectedToppings(prev => [...prev, topping]);
+      setSelectedIngredientsFallback(prev => [...prev, ingredient]);
     } else {
-      setSelectedToppings(prev => prev.filter(t => t !== topping));
+      setSelectedIngredientsFallback(prev => prev.filter(t => t !== ingredient));
     }
   };
 
@@ -104,7 +104,7 @@ export default function ItemCustomizationModal({
       ...item,
       cartId: `${item.id}-${Date.now()}-${Math.random()}`,
       selectedMeat,
-      selectedToppings,
+      selectedIngredients: selectedIngredientsFallback,
       selectedSize,
       quantity,
       totalPrice: calculatePrice(),
@@ -235,27 +235,27 @@ export default function ItemCustomizationModal({
             </div>
           )}
 
-          {/* Fallback Toppings Selection (for items without ingredient system) */}
-          {ingredients.length === 0 && item.toppings && item.toppings.length > 0 && (
+          {/* Fallback Ingredients Selection (for items without ingredient system) */}
+          {ingredients.length === 0 && item.ingredients && item.ingredients.length > 0 && (
             <div>
-              <h4 className="font-semibold mb-3">Select toppings:</h4>
+              <h4 className="font-semibold mb-3">Select ingredients:</h4>
               <div className="space-y-2">
-                {item.toppings.map((topping) => {
-                  const isExtra = topping.includes("(+$");
+                {item.ingredients.map((ingredient) => {
+                  const isExtra = ingredient.includes("(+$");
                   return (
-                    <div key={topping} className="flex items-center space-x-2">
+                    <div key={ingredient} className="flex items-center space-x-2">
                       <Checkbox
-                        id={topping}
-                        checked={selectedToppings.includes(topping)}
+                        id={ingredient}
+                        checked={selectedIngredientsFallback.includes(ingredient)}
                         onCheckedChange={(checked) => 
-                          handleToppingChange(topping, checked as boolean)
+                          handleIngredientFallbackChange(ingredient, checked as boolean)
                         }
                       />
                       <Label 
-                        htmlFor={topping}
+                        htmlFor={ingredient}
                         className={isExtra ? "text-orange-600 font-medium" : ""}
                       >
-                        {topping}
+                        {ingredient}
                       </Label>
                     </div>
                   );

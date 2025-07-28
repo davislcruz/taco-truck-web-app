@@ -98,7 +98,7 @@ export class MemStorage implements IStorage {
         description: "Three soft corn tortillas with slow-cooked pulled pork",
         image: "https://images.unsplash.com/photo-1624300629298-e9de39c13be5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
         meats: ["Carnitas", "Al Pastor", "Carne Asada", "Pollo"],
-        toppings: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime"],
+        ingredients: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime"],
         sizes: null
       },
       {
@@ -109,7 +109,7 @@ export class MemStorage implements IStorage {
         description: "Three soft corn tortillas with marinated grilled beef",
         image: "https://images.unsplash.com/photo-1613514785940-daed07799d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
         meats: ["Carne Asada", "Al Pastor", "Carnitas", "Pollo"],
-        toppings: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime", "Guacamole (+$2)"],
+        ingredients: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime", "Guacamole (+$2)"],
         sizes: null
       },
       {
@@ -120,7 +120,7 @@ export class MemStorage implements IStorage {
         description: "Large flour tortilla with seasoned chicken, rice, and beans",
         image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
         meats: ["Pollo", "Carnitas", "Carne Asada", "Al Pastor"],
-        toppings: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Tomatoes"],
+        ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Tomatoes"],
         sizes: null
       },
       {
@@ -131,7 +131,7 @@ export class MemStorage implements IStorage {
         description: "Loaded burrito with french fries and your choice of meat",
         image: "https://images.unsplash.com/photo-1583053542132-b8fb5a768ba3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
         meats: ["Carne Asada", "Al Pastor", "Carnitas", "Pollo"],
-        toppings: ["French Fries", "Cheese", "Sour Cream", "Guacamole", "Pico de Gallo"],
+        ingredients: ["French Fries", "Cheese", "Sour Cream", "Guacamole", "Pico de Gallo"],
         sizes: null
       },
       {
@@ -142,7 +142,7 @@ export class MemStorage implements IStorage {
         description: "Traditional Mexican sandwich drowned in spicy red sauce",
         image: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
         meats: ["Carnitas", "Pollo", "Carne Asada"],
-        toppings: ["Beans", "Pickled Onions", "Avocado", "Lettuce", "Tomato", "Spicy Red Sauce"],
+        ingredients: ["Beans", "Pickled Onions", "Avocado", "Lettuce", "Tomato", "Spicy Red Sauce"],
         sizes: null
       },
       {
@@ -150,10 +150,10 @@ export class MemStorage implements IStorage {
         translation: "Traditional Semita",
         category: "semitas",
         price: "9.99",
-        description: "Mexican-style sandwich with your choice of meat and toppings",
+        description: "Mexican-style sandwich with your choice of meat and ingredients",
         image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
         meats: ["Pollo", "Carnitas", "Al Pastor"],
-        toppings: ["Beans", "Avocado", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo"],
+        ingredients: ["Beans", "Avocado", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo"],
         sizes: null
       },
       {
@@ -164,7 +164,7 @@ export class MemStorage implements IStorage {
         description: "Refreshing hibiscus flower drink",
         image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
         meats: null,
-        toppings: null,
+        ingredients: null,
         sizes: ["Small", "Medium", "Large"]
       },
       {
@@ -175,7 +175,7 @@ export class MemStorage implements IStorage {
         description: "Creamy rice and cinnamon beverage",
         image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
         meats: null,
-        toppings: null,
+        ingredients: null,
         sizes: ["Small", "Medium", "Large"]
       }
     ];
@@ -225,7 +225,7 @@ export class MemStorage implements IStorage {
           availability: true,
           customizable: true,
           meats: [],
-          toppings: [],
+          ingredients: [],
           sizes: []
         };
         
@@ -314,7 +314,7 @@ export class MemStorage implements IStorage {
       description: data.description || null,
       sizes: data.sizes || null,
       meats: data.meats || null,
-      toppings: data.toppings || null
+      ingredients: data.ingredients || null
     };
     this.menuItems.set(newItem.id, newItem);
     return newItem;
@@ -330,7 +330,7 @@ export class MemStorage implements IStorage {
       description: data.description || null,
       sizes: data.sizes || null,
       meats: data.meats || null,
-      toppings: data.toppings || null
+      ingredients: data.ingredients || null
     };
     this.menuItems.set(id, updatedMenuItem);
     return updatedMenuItem;
@@ -438,7 +438,7 @@ export class DatabaseStorage implements IStorage {
           availability: true,
           customizable: true,
           meats: ["Carnitas", "Al Pastor", "Carne Asada", "Pollo"],
-          toppings: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime"],
+          ingredients: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime"],
           sizes: []
         },
         {
@@ -451,7 +451,7 @@ export class DatabaseStorage implements IStorage {
           availability: true,
           customizable: true,
           meats: ["Pollo", "Carnitas", "Carne Asada", "Al Pastor"],
-          toppings: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Tomatoes"],
+          ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Tomatoes"],
           sizes: []
         },
         {
@@ -464,7 +464,7 @@ export class DatabaseStorage implements IStorage {
           availability: true,
           customizable: true,
           meats: ["Carnitas", "Pollo", "Carne Asada"],
-          toppings: ["Beans", "Pickled Onions", "Avocado", "Lettuce", "Tomato", "Spicy Red Sauce"],
+          ingredients: ["Beans", "Pickled Onions", "Avocado", "Lettuce", "Tomato", "Spicy Red Sauce"],
           sizes: []
         },
         {
@@ -472,12 +472,12 @@ export class DatabaseStorage implements IStorage {
           translation: "Traditional Semita",
           category: "semitas",
           price: "9.99",
-          description: "Mexican-style sandwich with your choice of meat and toppings",
+          description: "Mexican-style sandwich with your choice of meat and ingredients",
           image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
           availability: true,
           customizable: true,
           meats: ["Pollo", "Carnitas", "Al Pastor"],
-          toppings: ["Beans", "Avocado", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo"],
+          ingredients: ["Beans", "Avocado", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo"],
           sizes: []
         },
         {
@@ -490,7 +490,7 @@ export class DatabaseStorage implements IStorage {
           availability: true,
           customizable: true,
           meats: [],
-          toppings: [],
+          ingredients: [],
           sizes: ["Small", "Medium", "Large"]
         }
       ];
@@ -523,7 +523,7 @@ export class DatabaseStorage implements IStorage {
           availability: true,
           customizable: true,
           meats: [],
-          toppings: [],
+          ingredients: [],
           sizes: []
         };
         

@@ -27,7 +27,7 @@ export const menuItems = pgTable("menu_items", {
   description: text("description"),
   image: text("image"),
   meats: text("meats").array(),
-  toppings: text("toppings").array(),
+  ingredients: text("ingredients").array(),
   sizes: text("sizes").array(),
 });
 
