@@ -24,9 +24,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { MenuItem } from "@shared/schema";
+import { MenuItem, Category } from "@shared/schema";
 import { CartItem } from "@/pages/home-page";
 import { Utensils, Coffee, Sandwich, ChevronLeft, ChevronRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface MenuSectionProps {
   menuItems: MenuItem[];
@@ -35,6 +37,15 @@ interface MenuSectionProps {
 }
 
 export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSectionProps) {
+  // Fetch categories from API to get proper ordering
+  const { data: categoriesData = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/categories");
+      return res.json() as Promise<Category[]>;
+    },
+  });
+
   // State hooks and derived values
   // Placeholder handler for creating a new category
   const handleCreateCategory = () => {
@@ -59,7 +70,12 @@ export default function MenuSection({ menuItems, onItemSelect, cart }: MenuSecti
     isTransitioning: false
   });
 
-  const categories = Array.from(new Set(menuItems.map(item => item.category)));
+  // Get categories in the proper order from the API, but only include those that have menu items
+  const menuItemCategories = new Set(menuItems.map(item => item.category));
+  const categories = categoriesData
+    .filter(category => menuItemCategories.has(category.name))
+    .sort((a, b) => a.order - b.order)
+    .map(category => category.name);
 
   useEffect(() => {
     const calculateDimensions = () => {

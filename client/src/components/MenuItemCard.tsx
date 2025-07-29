@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, X, ChevronDown } from "lucide-react";
+import { Edit, ChevronDown, Eye, ChevronUp, EyeOff, Trash2, Check, X } from "lucide-react";
 import { MenuItem } from "@shared/schema";
 // Removed FormField imports - using native Input/Textarea for now
 
@@ -23,8 +23,9 @@ interface MenuItemCardProps {
   onCancelChanges: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  onAddItemBelow: () => void;
   setTempValues: (updater: (prev: Record<string, any>) => Record<string, any>) => void;
+  isNewItem?: boolean;
+  hasBeenSaved?: boolean;
 }
 
 export function MenuItemCard({
@@ -42,14 +43,46 @@ export function MenuItemCard({
   onCancelChanges,
   onEdit,
   onDelete,
-  onAddItemBelow,
   setTempValues,
+  isNewItem = false,
+  hasBeenSaved = true,
 }: MenuItemCardProps) {
   const getDisplayValue = (field: string) => {
     if (pendingChanges[field] !== undefined) {
       return pendingChanges[field];
     }
     return item[field as keyof MenuItem];
+  };
+
+  // Validation for required fields
+  const validateRequiredFields = () => {
+    const name = getDisplayValue('name');
+    const price = getDisplayValue('price');
+    return name && name.trim() !== '' && price && price.toString().trim() !== '';
+  };
+
+  const isValidForSave = validateRequiredFields();
+  
+  
+  const [showSaveMessage, setShowSaveMessage] = useState(false);
+  const [showCancelMessage, setShowCancelMessage] = useState(false);
+  
+  const handleSaveClick = () => {
+    if (!isValidForSave) {
+      setShowSaveMessage(true);
+      setTimeout(() => setShowSaveMessage(false), 3000);
+      return;
+    }
+    onSaveChanges();
+  };
+  
+  const handleCancelClick = () => {
+    if (isNewItem && !hasBeenSaved) {
+      setShowCancelMessage(true);
+      setTimeout(() => setShowCancelMessage(false), 3000);
+      return;
+    }
+    onCancelChanges();
   };
 
   const handleInlineEdit = (field: string, currentValue: any) => {
@@ -144,7 +177,7 @@ export function MenuItemCard({
   };
 
   return (
-    <Card className={`mb-4 transition-all duration-200 ${
+    <Card className={`mb-4 transition-all duration-200 relative ${
       isEditMode 
         ? "border-2 border-blue-400 shadow-lg bg-blue-50/20" 
         : "border border-gray-200 hover:shadow-md"
@@ -188,23 +221,65 @@ export function MenuItemCard({
             </span>
             
             {isEditMode ? (
-              <div className="flex gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onSaveChanges}
-                  className="h-7 px-2 text-xs bg-green-50 hover:bg-green-100"
-                >
-                  Save
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onCancelChanges}
-                  className="h-7 px-2 text-xs"
-                >
-                  Cancel
-                </Button>
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSaveClick}
+                    className={`h-7 px-2 text-xs transition-all ${
+                      isValidForSave 
+                        ? 'bg-green-50 hover:bg-green-100' 
+                        : 'bg-yellow-50 hover:bg-yellow-100 border-yellow-300'
+                    }`}
+                  >
+                    <Check className="h-3 w-3 mr-1" />
+                    Save
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCancelClick}
+                    className={`h-7 px-2 text-xs transition-all ${
+                      isNewItem && !hasBeenSaved 
+                        ? 'bg-yellow-50 hover:bg-yellow-100 border-yellow-300' 
+                        : ''
+                    }`}
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onDelete}
+                    className="h-7 px-2 text-xs text-red-500 hover:text-red-700 border-red-200 hover:bg-red-50"
+                    title="Delete item"
+                  >
+                    <Trash2 className="h-3 w-3 mr-1" />
+                    Delete
+                  </Button>
+                </div>
+                
+                {/* Message for Save button */}
+                {showSaveMessage && (
+                  <div className="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-md border border-amber-200">
+                    <div className="flex items-center gap-2">
+                      <span className="text-amber-500">⚠️</span>
+                      <span>Please fill out the required fields: <strong>Name</strong> and <strong>Price</strong></span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Message for Cancel button */}
+                {showCancelMessage && (
+                  <div className="text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-md border border-blue-200">
+                    <div className="flex items-center gap-2">
+                      <span className="text-blue-500">💡</span>
+                      <span>Save your changes first, then you can cancel. Or use <strong>Delete</strong> to discard this card.</span>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex gap-1">
@@ -218,25 +293,37 @@ export function MenuItemCard({
                     }
                     onEdit();
                   }}
-                  className="p-1"
+                  className="px-2 py-1"
                   title="Toggle edit mode"
                 >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onDelete}
-                  className="p-1 text-red-500 hover:text-red-700"
-                  title="Delete item"
-                >
-                  <Trash2 className="h-4 w-4" />
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit
                 </Button>
               </div>
             )}
           </div>
         </div>
       </CardHeader>
+      
+      {/* Footer teaser when collapsed - makes expansion obvious */}
+      {!isExpanded && (
+        <div 
+          onClick={onToggleExpanded}
+          className={`px-4 py-2 cursor-pointer transition-colors ${
+            isEditMode 
+              ? "bg-blue-50 border-t-2 border-dashed border-blue-300 hover:bg-blue-100"
+              : "bg-gray-50 border-t border-gray-100 hover:bg-gray-100"
+          }`}
+        >
+          <div className={`flex items-center justify-center gap-2 text-sm ${
+            isEditMode ? "text-blue-700" : "text-gray-600"
+          }`}>
+            <Eye className="h-4 w-4" />
+            <span>Click to view description, ingredients, sizes, and more details</span>
+            <ChevronDown className="h-4 w-4" />
+          </div>
+        </div>
+      )}
       
       {isExpanded && (
         <CardContent className="pt-0">
@@ -330,19 +417,22 @@ export function MenuItemCard({
             </div>
           </div>
           
-          <div className="mt-4 flex justify-between items-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onAddItemBelow}
-              className="text-xs"
-            >
-              <Plus className="h-3 w-3 mr-1" />
-              Add Item Below
-            </Button>
-            
-            <div className="text-xs text-gray-500">
-              ID: {item.id}
+          
+          {/* Footer for collapsing when expanded */}
+          <div 
+            onClick={onToggleExpanded}
+            className={`-mx-6 -mb-6 mt-4 px-4 py-2 cursor-pointer transition-colors ${
+              isEditMode 
+                ? "bg-blue-50 border-t-2 border-dashed border-blue-300 hover:bg-blue-100"
+                : "bg-gray-50 border-t border-gray-100 hover:bg-gray-100"
+            }`}
+          >
+            <div className={`flex items-center justify-center gap-2 text-sm ${
+              isEditMode ? "text-blue-700" : "text-gray-600"
+            }`}>
+              <EyeOff className="h-4 w-4" />
+              <span>Click to collapse details</span>
+              <ChevronUp className="h-4 w-4" />
             </div>
           </div>
         </CardContent>
