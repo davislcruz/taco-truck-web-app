@@ -428,6 +428,7 @@ export class DatabaseStorage implements IStorage {
 
       // Create default menu items for each category
       const defaultMenuItems = [
+        // TACOS (4 items)
         {
           name: "De Carnitas",
           translation: "Pulled Pork Tacos",
@@ -442,6 +443,47 @@ export class DatabaseStorage implements IStorage {
           sizes: []
         },
         {
+          name: "De Al Pastor",
+          translation: "Al Pastor Tacos",
+          category: "tacos",
+          price: "13.99",
+          description: "Three soft corn tortillas with marinated pork, pineapple, and onions",
+          image: "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Al Pastor", "Carne Asada", "Carnitas", "Pollo"],
+          ingredients: ["Cebolla (Onions)", "Cilantro", "Piña (Pineapple)", "Salsa Verde", "Salsa Roja", "Lime"],
+          sizes: []
+        },
+        {
+          name: "De Pescado",
+          translation: "Fish Tacos",
+          category: "tacos",
+          price: "14.99",
+          description: "Three soft flour tortillas with grilled tilapia and cabbage slaw",
+          image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Pescado (Fish)", "Camarón (Shrimp)"],
+          ingredients: ["Cabbage Slaw", "Pico de Gallo", "Crema", "Lime", "Chipotle Mayo"],
+          sizes: []
+        },
+        {
+          name: "De Chorizo",
+          translation: "Chorizo Tacos",
+          category: "tacos",
+          price: "13.49",
+          description: "Three soft corn tortillas with spicy Mexican sausage",
+          image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Chorizo", "Al Pastor", "Carnitas"],
+          ingredients: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime", "Queso Fresco"],
+          sizes: []
+        },
+
+        // BURRITOS (4 items)
+        {
           name: "De Pollo",
           translation: "Chicken Burrito",
           category: "burritos",
@@ -454,6 +496,47 @@ export class DatabaseStorage implements IStorage {
           ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Tomatoes"],
           sizes: []
         },
+        {
+          name: "Burrito de Carne Asada",
+          translation: "Grilled Beef Burrito",
+          category: "burritos",
+          price: "13.99",
+          description: "Large flour tortilla with marinated grilled beef, rice, beans, and fresh ingredients",
+          image: "https://images.unsplash.com/photo-1566740933430-b5e70b06d2d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Carne Asada", "Al Pastor", "Carnitas", "Pollo"],
+          ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Pico de Gallo"],
+          sizes: []
+        },
+        {
+          name: "Burrito de Carnitas",
+          translation: "Pulled Pork Burrito",
+          category: "burritos",
+          price: "12.99",
+          description: "Large flour tortilla with slow-cooked pulled pork and traditional sides",
+          image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Carnitas", "Al Pastor", "Carne Asada", "Pollo"],
+          ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Cilantro", "Onions"],
+          sizes: []
+        },
+        {
+          name: "Burrito Vegetariano",
+          translation: "Vegetarian Burrito",
+          category: "burritos",
+          price: "10.99",
+          description: "Large flour tortilla packed with rice, beans, vegetables, and cheese",
+          image: "https://images.unsplash.com/photo-1574343635717-1348761c0d64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: [],
+          ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Tomatoes", "Bell Peppers", "Onions"],
+          sizes: []
+        },
+
+        // TORTAS (4 items)
         {
           name: "Torta Ahogada",
           translation: "Drowned Sandwich",
@@ -468,6 +551,47 @@ export class DatabaseStorage implements IStorage {
           sizes: []
         },
         {
+          name: "Torta de Milanesa",
+          translation: "Breaded Steak Sandwich",
+          category: "tortas",
+          price: "12.99",
+          description: "Mexican sandwich with breaded and fried steak on fresh bolillo bread",
+          image: "https://images.unsplash.com/photo-1619740455993-8c2b8078c3cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Milanesa (Breaded Steak)", "Carnitas", "Pollo"],
+          ingredients: ["Beans", "Avocado", "Lettuce", "Tomato", "Pickled Jalapeños", "Mayo", "Oaxaca Cheese"],
+          sizes: []
+        },
+        {
+          name: "Torta de Pollo",
+          translation: "Chicken Sandwich",
+          category: "tortas",
+          price: "11.99",
+          description: "Mexican sandwich with seasoned grilled chicken and fresh toppings",
+          image: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Pollo", "Carnitas", "Al Pastor"],
+          ingredients: ["Beans", "Avocado", "Lettuce", "Tomato", "Pickled Onions", "Mayo", "Chipotle Mayo (+$0.50)"],
+          sizes: []
+        },
+        {
+          name: "Torta Cubana",
+          translation: "Cuban Style Sandwich",
+          category: "tortas",
+          price: "14.99",
+          description: "Loaded Mexican sandwich with multiple meats and all the fixings",
+          image: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Carnitas", "Chorizo", "Milanesa", "Ham"],
+          ingredients: ["Beans", "Avocado", "Lettuce", "Tomato", "Pickled Jalapeños", "Mayo", "Oaxaca Cheese", "Chipotle Mayo"],
+          sizes: []
+        },
+
+        // SEMITAS (4 items)
+        {
           name: "Semita Tradicional",
           translation: "Traditional Semita",
           category: "semitas",
@@ -481,12 +605,105 @@ export class DatabaseStorage implements IStorage {
           sizes: []
         },
         {
+          name: "Semita de Al Pastor",
+          translation: "Al Pastor Semita",
+          category: "semitas",
+          price: "10.99",
+          description: "Mexican-style sandwich with marinated pork and pineapple",
+          image: "https://images.unsplash.com/photo-1615870216519-2f9fa2adf101?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Al Pastor", "Carnitas", "Pollo"],
+          ingredients: ["Beans", "Avocado", "Pineapple", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo"],
+          sizes: []
+        },
+        {
+          name: "Semita de Carnitas",
+          translation: "Pulled Pork Semita",
+          category: "semitas",
+          price: "10.49",
+          description: "Mexican-style sandwich with slow-cooked pulled pork",
+          image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Carnitas", "Al Pastor", "Pollo"],
+          ingredients: ["Beans", "Avocado", "Pickled Onions", "Lettuce", "Tomato", "Mayo", "Salsa Verde"],
+          sizes: []
+        },
+        {
+          name: "Semita de Chorizo",
+          translation: "Chorizo Semita",
+          category: "semitas",
+          price: "10.99",
+          description: "Mexican-style sandwich with spicy chorizo sausage",
+          image: "https://images.unsplash.com/photo-1608039755401-742074f0548d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: ["Chorizo", "Al Pastor", "Carnitas"],
+          ingredients: ["Beans", "Avocado", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo", "Queso Fresco"],
+          sizes: []
+        },
+
+        // BEBIDAS (5 items)
+        {
           name: "Agua de Jamaica",
           translation: "Hibiscus Water",
           category: "bebidas",
           price: "3.99",
           description: "Refreshing hibiscus flower drink",
           image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: [],
+          ingredients: [],
+          sizes: ["Small", "Medium", "Large"]
+        },
+        {
+          name: "Agua de Tamarindo",
+          translation: "Tamarind Water",
+          category: "bebidas",
+          price: "4.49",
+          description: "Sweet and tangy tamarind flavored refreshing drink",
+          image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: [],
+          ingredients: [],
+          sizes: ["Small", "Medium", "Large"]
+        },
+        {
+          name: "Horchata",
+          translation: "Rice Cinnamon Drink",
+          category: "bebidas",
+          price: "4.99",
+          description: "Creamy rice and cinnamon beverage, a Mexican favorite",
+          image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: [],
+          ingredients: [],
+          sizes: ["Small", "Medium", "Large"]
+        },
+        {
+          name: "Coca-Cola Mexicana",
+          translation: "Mexican Coca-Cola",
+          category: "bebidas",
+          price: "3.49",
+          description: "Authentic Mexican Coca-Cola made with cane sugar in glass bottles",
+          image: "https://images.unsplash.com/photo-1561758033-48d52648ae8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+          availability: true,
+          customizable: true,
+          meats: [],
+          ingredients: [],
+          sizes: ["Bottle"]
+        },
+        {
+          name: "Agua de Limón",
+          translation: "Fresh Limeade",
+          category: "bebidas",
+          price: "4.29",
+          description: "Fresh squeezed lime water with a touch of sweetness",
+          image: "https://images.unsplash.com/photo-1571068316344-75bc76f77890?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
           availability: true,
           customizable: true,
           meats: [],
