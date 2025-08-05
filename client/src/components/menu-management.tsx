@@ -134,10 +134,30 @@ export default function MenuManagement() {
   };
 
 
+  // Demo menu population handler
+  const handlePopulateDemo = async () => {
+    try {
+      const response = await apiRequest("POST", "/api/menu/populate-demo");
+      if (response.ok) {
+        // Refresh the menu items data
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Failed to populate demo menu:", error);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Category Creation Button */}
-      <div className="flex justify-end mb-4">
+      {/* Header with Category Creation and Demo Button */}
+      <div className="flex justify-between items-center mb-4">
+        <Button 
+          onClick={handlePopulateDemo}
+          variant="outline"
+          className="bg-yellow-50 hover:bg-yellow-100 border-yellow-300 text-yellow-700"
+        >
+          🌮 Populate Demo Menu (21 items)
+        </Button>
         <CategoryDialog />
       </div>
 

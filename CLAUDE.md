@@ -49,9 +49,22 @@ Four main entities: `users`, `categories`, `menu_items`, `orders`
 - Requires PostgreSQL database (Docker setup provided in README)
 - Environment variables needed: `DATABASE_URL`, `SESSION_SECRET`
 - Optional Stripe keys for payment testing
+- Default admin credentials: username `admin`, password `admin123`
+
+### Docker Database Setup
+```bash
+docker run --name postgres-taco \
+  -e POSTGRES_DB=taco_truck \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=password \
+  -p 5432:5432 \
+  -d postgres:15
+```
 
 ### Key Files to Understand
 - `shared/schema.ts` - Complete database schema and Zod validation schemas
 - `server/routes.ts` - All API endpoints and business logic
 - `server/storage.ts` - Data access layer
 - `client/src/lib/menu-data.ts` - Mock data and utilities
+- `server/auth.ts` - Authentication logic with Passport.js
+- `server/db.ts` - Database connection setup
