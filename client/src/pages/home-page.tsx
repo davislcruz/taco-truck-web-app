@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingCart, ShieldX, Menu, Phone, MapPin, Home, ChefHat, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useBranding } from "@/hooks/use-branding";
 import { MenuItem } from "@shared/schema";
 import MenuSection from "@/components/menu-section";
 import ItemCustomizationModal from "@/components/item-customization-modal";
@@ -22,6 +23,7 @@ export interface CartItem extends MenuItem {
 export default function HomePage() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
+  const { restaurantName } = useBranding();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
@@ -106,7 +108,7 @@ export default function HomePage() {
                 <ChefHat className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold dark-gray">La Charreada</h1>
+                <h1 className="text-xl font-bold dark-gray">{restaurantName}</h1>
                 <p className="text-xs text-gray-500">Authentic Mexican Food Truck</p>
               </div>
             </div>

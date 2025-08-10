@@ -147,18 +147,57 @@ export default function MenuManagement() {
     }
   };
 
+  // Branding state and handler
+  const [brandingName, setBrandingName] = useState("");
+  const handleUpdateBranding = async () => {
+    if (!brandingName.trim()) return;
+    
+    try {
+      const response = await apiRequest("PUT", "/api/settings/restaurant_name", {
+        value: brandingName.trim()
+      });
+      if (response.ok) {
+        // Refresh the page to show new branding
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Failed to update branding:", error);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header with Category Creation and Demo Button */}
-      <div className="flex justify-between items-center mb-4">
-        <Button 
-          onClick={handlePopulateDemo}
-          variant="outline"
-          className="bg-yellow-50 hover:bg-yellow-100 border-yellow-300 text-yellow-700"
-        >
-          🌮 Populate Demo Menu (21 items)
-        </Button>
-        <CategoryDialog />
+      {/* Header with Demo and Branding Controls */}
+      <div className="space-y-4 mb-6">
+        {/* Demo and Category buttons */}
+        <div className="flex justify-between items-center">
+          <Button 
+            onClick={handlePopulateDemo}
+            variant="outline"
+            className="bg-yellow-50 hover:bg-yellow-100 border-yellow-300 text-yellow-700"
+          >
+            🌮 Populate Demo Menu (21 items)
+          </Button>
+          <CategoryDialog />
+        </div>
+        
+        {/* Branding input */}
+        <div className="flex gap-2 items-center">
+          <Input
+            placeholder="Enter restaurant name (e.g., Menu-App, Joe's Tacos)"
+            value={brandingName}
+            onChange={(e) => setBrandingName(e.target.value)}
+            className="max-w-md"
+          />
+          <Button 
+            onClick={handleUpdateBranding}
+            variant="outline"
+            disabled={!brandingName.trim()}
+            className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700"
+          >
+            Update Branding
+          </Button>
+        </div>
       </div>
 
       {/* Menu Items by Category */}

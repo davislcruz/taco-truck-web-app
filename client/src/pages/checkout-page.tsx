@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useBranding } from "@/hooks/use-branding";
 import { Loader2, ArrowLeft, CreditCard, ChefHat } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,6 +32,7 @@ type CheckoutFormData = z.infer<typeof checkoutSchema>;
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { restaurantName } = useBranding();
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
 
@@ -160,7 +162,7 @@ export default function CheckoutPage() {
               <div className="w-8 h-8 bg-mexican-red rounded-full flex items-center justify-center">
                 <ChefHat className="h-4 w-4 text-white" />
               </div>
-              <span className="font-bold dark-gray">La Charreada</span>
+              <span className="font-bold dark-gray">{restaurantName}</span>
             </div>
           </div>
         </div>

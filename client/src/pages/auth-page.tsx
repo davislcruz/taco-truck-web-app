@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useBranding } from "@/hooks/use-branding";
 import { Loader2, ChefHat, Utensils, ClipboardList } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +23,7 @@ export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { user, loginMutation } = useAuth();
   const { toast } = useToast();
+  const { restaurantName } = useBranding();
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -66,7 +68,7 @@ export default function AuthPage() {
             <div className="w-16 h-16 bg-mexican-red rounded-full flex items-center justify-center mx-auto mb-4">
               <ChefHat className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold dark-gray">La Charreada</h1>
+            <h1 className="text-2xl font-bold dark-gray">{restaurantName}</h1>
             <p className="text-gray-600">Staff Access Portal</p>
           </div>
 

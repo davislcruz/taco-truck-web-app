@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { X, Search, LogOut, Clock, Phone, FileText, Menu, ChefHat, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useBranding } from "@/hooks/use-branding";
 import { Order } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ import { useLocation } from "wouter";
 export default function OwnerDashboardPage() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
+  const { restaurantName } = useBranding();
   const [searchTerm, setSearchTerm] = useState("");
   const [, setLocation] = useLocation();
 
@@ -64,17 +66,17 @@ export default function OwnerDashboardPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "received": return "bg-blue-100 text-blue-800";
-      case "preparing": return "bg-yellow-100 text-yellow-800";
-      case "ready": return "bg-green-100 text-green-800";
-      case "completed": return "bg-gray-100 text-gray-800";
+      case "received": return "bg-turquoise text-white shadow-md pulse-glow";
+      case "preparing": return "bg-sunset-orange text-white shadow-md pulse-glow";
+      case "ready": return "bg-lime-green text-white shadow-md";
+      case "completed": return "bg-royal-purple text-white shadow-md";
       default: return "bg-gray-100 text-gray-800";
     }
   };
 
   const renderOrderCard = (order: Order) => (
-    <Card key={order.id} className="mb-4">
-      <CardContent className="p-4">
+    <Card key={order.id} className="mb-4 hover-lift bg-white/90 backdrop-blur border-0 shadow-lg">
+      <CardContent className="p-6">
         <div className="flex justify-between items-start mb-2">
           <div>
             <h4 className="font-semibold">Order #{order.orderId}</h4>
@@ -120,7 +122,7 @@ export default function OwnerDashboardPage() {
               <Button
                 size="sm"
                 onClick={() => handleStatusChange(order.orderId, "preparing")}
-                className="bg-yellow-500 hover:bg-yellow-600"
+                className="bg-sunset-orange hover:bg-coral text-white shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Start Preparing
               </Button>
@@ -129,7 +131,7 @@ export default function OwnerDashboardPage() {
               <Button
                 size="sm"
                 onClick={() => handleStatusChange(order.orderId, "ready")}
-                className="bg-green-500 hover:bg-green-600"
+                className="bg-lime-green hover:bg-mexican-green text-white shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Mark Ready
               </Button>
@@ -138,7 +140,7 @@ export default function OwnerDashboardPage() {
               <Button
                 size="sm"
                 onClick={() => handleStatusChange(order.orderId, "completed")}
-                className="bg-gray-500 hover:bg-gray-600"
+                className="bg-royal-purple hover:bg-vibrant-pink text-white shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Complete
               </Button>
@@ -154,18 +156,18 @@ export default function OwnerDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-yellow-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="gradient-mexican shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-mexican-red rounded-full flex items-center justify-center">
-                <ChefHat className="h-5 w-5 text-white" />
+              <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-full flex items-center justify-center border-2 border-white/30">
+                <ChefHat className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold dark-gray">La Charreada</h1>
-                <p className="text-sm text-gray-500">Owner Dashboard</p>
+                <h1 className="text-xl font-bold text-white drop-shadow-sm">{restaurantName}</h1>
+                <p className="text-sm text-white/90">Owner Dashboard</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -175,7 +177,7 @@ export default function OwnerDashboardPage() {
                   sessionStorage.setItem("allowOwnerHomepage", "true");
                   setLocation("/");
                 }}
-                className="mr-2"
+                className="mr-2 bg-white/10 hover:bg-white/20 text-white border-white/30 hover:border-white/50 backdrop-blur"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
@@ -184,6 +186,7 @@ export default function OwnerDashboardPage() {
                 variant="outline"
                 onClick={handleLogout}
                 disabled={logoutMutation.isPending}
+                className="bg-white/10 hover:bg-white/20 text-white border-white/30 hover:border-white/50 backdrop-blur"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -196,20 +199,26 @@ export default function OwnerDashboardPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="menu">Menu Management</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-white/80 backdrop-blur shadow-lg border-0 p-1">
+            <TabsTrigger value="orders" className="data-[state=active]:gradient-sunset data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200 tab-hover">
+              <FileText className="h-4 w-4 mr-2" />
+              Orders
+            </TabsTrigger>
+            <TabsTrigger value="menu" className="data-[state=active]:gradient-tropical data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200 tab-hover">
+              <Menu className="h-4 w-4 mr-2" />
+              Menu Management
+            </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="orders" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
+          <TabsContent value="orders" className="space-y-6">
+            <Card className="bg-white/90 backdrop-blur border-0 shadow-xl">
+              <CardHeader className="gradient-sunset text-white rounded-t-lg">
+                <CardTitle className="flex items-center text-white">
                   <FileText className="h-5 w-5 mr-2" />
                   Orders Management
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="mb-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -217,7 +226,7 @@ export default function OwnerDashboardPage() {
                       placeholder="Search by phone number or order ID..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 border-2 border-orange-200 focus:border-coral focus:ring-coral/20 bg-white/80"
                     />
                   </div>
                 </div>

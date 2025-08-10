@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertOrderSchema, insertMenuItemSchema, insertCategorySchema } from "@shared/schema";
+import { insertOrderSchema, insertMenuItemSchema, insertCategorySchema, insertSettingSchema } from "@shared/schema";
 import Stripe from "stripe";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -15,6 +15,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_key', {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
+
+  // Test route to verify API is working
+  app.get("/api/test", (req, res) => {
+    res.json({ message: "API is working!", timestamp: new Date().toISOString() });
+  });
 
   // Category routes
   app.get("/api/categories", async (req, res) => {
@@ -242,14 +247,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Settings/Branding endpoints
+  app.get("/api/settings/:key", async (req, res) => {
+    try {
+      const setting = await storage.getSetting(req.params.key);
+      if (!setting) {
+        // Return default branding if not set
+        if (req.params.key === 'restaurant_name') {
+          return res.json({ key: 'restaurant_name', value: 'La Charreada' });
+        }
+        return res.status(404).json({ message: "Setting not found" });
+      }
+      res.json(setting);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/settings/:key", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    try {
+      const { value } = req.body;
+      if (!value) {
+        return res.status(400).json({ message: "Value is required" });
+      }
+      
+      const setting = await storage.updateSetting(req.params.key, value);
+      res.json(setting);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Order routes
   app.post("/api/orders", async (req, res) => {
     try {
       const orderData = insertOrderSchema.parse(req.body);
       const order = await storage.createOrder(orderData);
       
+      // Get restaurant name for SMS notification
+      const restaurantSetting = await storage.getSetting('restaurant_name');
+      const restaurantName = restaurantSetting?.value || 'La Charreada';
+      
       // Mock SMS notification
-      console.log(`SMS to ${order.phone}: Your La Charreada order ${order.orderId} has been received! Estimated pickup time: ${order.estimatedTime} minutes.`);
+      console.log(`SMS to ${order.phone}: Your ${restaurantName} order ${order.orderId} has been received! Estimated pickup time: ${order.estimatedTime} minutes.`);
       
       res.status(201).json(order);
     } catch (error: any) {
@@ -284,10 +328,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
       
+      // Get restaurant name for SMS notifications
+      const restaurantSetting = await storage.getSetting('restaurant_name');
+      const restaurantName = restaurantSetting?.value || 'La Charreada';
+      
       // Mock SMS notification for status updates
       const statusMessages = {
-        'started': `Your La Charreada order ${orderId} is being prepared! It will be ready in about ${order.estimatedTime} minutes.`,
-        'completed': `Your La Charreada order ${orderId} is ready for pickup! Thank you for choosing us!`
+        'started': `Your ${restaurantName} order ${orderId} is being prepared! It will be ready in about ${order.estimatedTime} minutes.`,
+        'completed': `Your ${restaurantName} order ${orderId} is ready for pickup! Thank you for choosing us!`
       };
       
       if (statusMessages[status as keyof typeof statusMessages]) {

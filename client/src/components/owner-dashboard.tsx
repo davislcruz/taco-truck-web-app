@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { X, Search, LogOut, Clock, Phone, FileText, Menu, ChefHat } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useBranding } from "@/hooks/use-branding";
 import { Order } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import MenuManagement from "@/components/menu-management";
@@ -20,6 +21,7 @@ interface OwnerDashboardProps {
 export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
   const { logoutMutation } = useAuth();
   const { toast } = useToast();
+  const { restaurantName } = useBranding();
   const [searchPhone, setSearchPhone] = useState("");
 
   const { data: orders = [], isLoading } = useQuery<Order[]>({
@@ -176,7 +178,7 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
               <ChefHat className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold dark-gray">La Charreada</h1>
+              <h1 className="text-xl font-bold dark-gray">{restaurantName}</h1>
               <p className="text-sm text-gray-500">Owner Dashboard</p>
             </div>
           </div>

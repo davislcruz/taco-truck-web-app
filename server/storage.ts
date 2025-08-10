@@ -1,4 +1,4 @@
-import { users, menuItems, orders, categories, type User, type InsertUser, type MenuItem, type InsertMenuItem, type Order, type InsertOrder, type Category, type InsertCategory } from "@shared/schema";
+import { users, menuItems, orders, categories, settings, type User, type InsertUser, type MenuItem, type InsertMenuItem, type Order, type InsertOrder, type Category, type InsertCategory, type Setting, type InsertSetting } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { scrypt, randomBytes } from "crypto";
@@ -38,6 +38,10 @@ export interface IStorage {
   getOrderByOrderId(orderId: string): Promise<Order | undefined>;
   updateOrderStatus(orderId: string, status: string): Promise<Order | undefined>;
   searchOrdersByPhone(phone: string): Promise<Order[]>;
+
+  // Settings methods
+  getSetting(key: string): Promise<Setting | undefined>;
+  updateSetting(key: string, value: string): Promise<Setting>;
 
   sessionStore: session.Store;
 }
@@ -872,6 +876,31 @@ export class DatabaseStorage implements IStorage {
 
   async searchOrdersByPhone(phone: string): Promise<Order[]> {
     return await db.select().from(orders).where(eq(orders.phone, phone));
+  }
+
+  async getSetting(key: string): Promise<Setting | undefined> {
+    const [setting] = await db.select().from(settings).where(eq(settings.key, key));
+    return setting || undefined;
+  }
+
+  async updateSetting(key: string, value: string): Promise<Setting> {
+    // Try to update first
+    const [updated] = await db
+      .update(settings)
+      .set({ value })
+      .where(eq(settings.key, key))
+      .returning();
+    
+    if (updated) {
+      return updated;
+    }
+    
+    // If no rows updated, insert new setting
+    const [created] = await db
+      .insert(settings)
+      .values({ key, value })
+      .returning();
+    return created;
   }
 }
 
