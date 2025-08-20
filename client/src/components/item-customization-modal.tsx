@@ -116,19 +116,19 @@ export default function ItemCustomizationModal({
   const totalPrice = calculatePrice();
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-4 pt-8">
-      <Card className="w-full max-w-2xl max-h-[calc(100vh-120px)] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+    <div className="fixed inset-0 z-50 bg-neutral/80 flex items-start justify-center p-4 pt-8">
+      <Card className="card bg-base-100 w-full max-w-2xl max-h-[calc(100vh-120px)] overflow-y-auto shadow-xl">
+        <div className="sticky top-0 bg-base-100 border-b border-base-200 px-6 py-4 flex justify-between items-center">
           <div>
-            <h3 className="text-xl font-bold dark-gray">{item.name}</h3>
-            <p className="text-sm text-gray-600">{item.translation}</p>
+            <h3 className="text-xl font-bold text-base-content">{item.name}</h3>
+            <p className="text-sm text-base-content/70">{item.translation}</p>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={onClose} className="btn btn-ghost btn-sm">
             <X className="h-4 w-4" />
           </Button>
         </div>
 
-        <CardContent className="p-6 space-y-6">
+        <CardContent className="card-body space-y-6">
           {/* Item Image and Description */}
           <div>
             <img 
@@ -136,26 +136,28 @@ export default function ItemCustomizationModal({
               alt={item.name}
               className="w-full h-48 object-cover rounded-lg mb-4"
             />
-            <p className="text-gray-600">{item.description}</p>
+            <p className="text-base-content/85 text-sm md:text-base leading-relaxed">{item.description}</p>
           </div>
 
           {/* Quantity Selector */}
           <div className="flex items-center justify-between">
-            <span className="font-semibold">Quantity</span>
+            <span className="font-semibold text-base-content">Quantity</span>
             <div className="flex items-center space-x-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 disabled={quantity <= 1}
+                className="btn btn-outline btn-sm"
               >
                 <Minus className="h-4 w-4" />
               </Button>
-              <span className="font-semibold w-8 text-center">{quantity}</span>
+              <span className="font-semibold w-8 text-center text-base-content">{quantity}</span>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setQuantity(quantity + 1)}
+                className="btn btn-outline btn-sm"
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -164,38 +166,58 @@ export default function ItemCustomizationModal({
 
           {/* Meat Selection */}
           {item.meats && item.meats.length > 0 && (
-            <div>
-              <h4 className="font-semibold mb-3">Choose your meat:</h4>
-              <RadioGroup value={selectedMeat} onValueChange={setSelectedMeat}>
-                {item.meats.map((meat) => (
+            <div className="form-control">
+              <h4 className="font-semibold mb-3 text-base-content">Choose your meat:</h4>
+              <div className="space-y-2">
+                {item.meats.map((meat: string) => (
                   <div key={meat} className="flex items-center space-x-2">
-                    <RadioGroupItem value={meat} id={meat} />
-                    <Label htmlFor={meat}>{meat}</Label>
+                    <input
+                      type="radio"
+                      id={meat}
+                      name="meat"
+                      value={meat}
+                      checked={selectedMeat === meat}
+                      onChange={() => setSelectedMeat(meat)}
+                      className="radio radio-primary"
+                    />
+                    <Label htmlFor={meat} className="label cursor-pointer">
+                      <span className="label-text">{meat}</span>
+                    </Label>
                   </div>
                 ))}
-              </RadioGroup>
+              </div>
             </div>
           )}
 
           {/* Size Selection */}
           {item.sizes && item.sizes.length > 0 && (
-            <div>
-              <h4 className="font-semibold mb-3">Choose size:</h4>
-              <RadioGroup value={selectedSize} onValueChange={setSelectedSize}>
-                {item.sizes.map((size) => (
+            <div className="form-control">
+              <h4 className="font-semibold mb-3 text-base-content">Choose size:</h4>
+              <div className="space-y-2">
+                {item.sizes.map((size: string) => (
                   <div key={size} className="flex items-center space-x-2">
-                    <RadioGroupItem value={size} id={size} />
-                    <Label htmlFor={size}>{size}</Label>
+                    <input
+                      type="radio"
+                      id={size}
+                      name="size"
+                      value={size}
+                      checked={selectedSize === size}
+                      onChange={() => setSelectedSize(size)}
+                      className="radio radio-primary"
+                    />
+                    <Label htmlFor={size} className="label cursor-pointer">
+                      <span className="label-text">{size}</span>
+                    </Label>
                   </div>
                 ))}
-              </RadioGroup>
+              </div>
             </div>
           )}
 
           {/* Ingredients Selection */}
           {ingredients.length > 0 && (
-            <div>
-              <h4 className="font-semibold mb-3">Customize your ingredients:</h4>
+            <div className="form-control">
+              <h4 className="font-semibold mb-3 text-base-content">Customize your ingredients:</h4>
               <div className="space-y-2">
                 {ingredients.map((ingredient) => {
                   const isSelected = selectedIngredients.includes(ingredient.id);
@@ -207,29 +229,28 @@ export default function ItemCustomizationModal({
                         <Checkbox
                           id={ingredient.id}
                           checked={isSelected}
-                          onCheckedChange={(checked) => 
-                            handleIngredientChange(ingredient.id, checked as boolean)
-                          }
+                          onChange={e => handleIngredientChange(ingredient.id, e.target.checked)}
+                          className="checkbox checkbox-primary"
                         />
                         <Label 
                           htmlFor={ingredient.id}
-                          className={isExtra ? "text-orange-600 font-medium" : ""}
+                          className={`label cursor-pointer ${isExtra ? "text-warning font-medium" : "text-base-content"}`}
                         >
-                          {ingredient.name}
+                          <span className="label-text">{ingredient.name}</span>
                         </Label>
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm">
                         {ingredient.isDefault ? (
-                          <span className="text-green-600">Free</span>
+                          <span className="text-success">Free</span>
                         ) : (
-                          <span className="text-orange-600">+${ingredient.price.toFixed(2)}</span>
+                          <span className="text-warning">+${ingredient.price.toFixed(2)}</span>
                         )}
                       </div>
                     </div>
                   );
                 })}
               </div>
-              <div className="mt-2 text-xs text-gray-500">
+              <div className="mt-2 text-xs text-base-content/60">
                 Default ingredients are free. Uncheck to remove them. Extra ingredients have additional charges.
               </div>
             </div>
@@ -237,25 +258,24 @@ export default function ItemCustomizationModal({
 
           {/* Fallback Ingredients Selection (for items without ingredient system) */}
           {ingredients.length === 0 && item.ingredients && item.ingredients.length > 0 && (
-            <div>
-              <h4 className="font-semibold mb-3">Select ingredients:</h4>
+            <div className="form-control">
+              <h4 className="font-semibold mb-3 text-base-content">Select ingredients:</h4>
               <div className="space-y-2">
-                {item.ingredients.map((ingredient) => {
+                {item.ingredients.map((ingredient: string) => {
                   const isExtra = ingredient.includes("(+$");
                   return (
                     <div key={ingredient} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={ingredient}
-                        checked={selectedIngredientsFallback.includes(ingredient)}
-                        onCheckedChange={(checked) => 
-                          handleIngredientFallbackChange(ingredient, checked as boolean)
-                        }
-                      />
+                        <Checkbox
+                          id={ingredient}
+                          checked={selectedIngredientsFallback.includes(ingredient)}
+                          onChange={e => handleIngredientFallbackChange(ingredient, e.target.checked)}
+                          className="checkbox checkbox-primary"
+                        />
                       <Label 
                         htmlFor={ingredient}
-                        className={isExtra ? "text-orange-600 font-medium" : ""}
+                        className={`label cursor-pointer ${isExtra ? "text-warning font-medium" : "text-base-content"}`}
                       >
-                        {ingredient}
+                        <span className="label-text">{ingredient}</span>
                       </Label>
                     </div>
                   );
@@ -269,7 +289,7 @@ export default function ItemCustomizationModal({
           {/* Add to Cart Button */}
           <Button
             onClick={handleAddToCart}
-            className="w-full bg-mexican-red hover:bg-red-600 text-white font-semibold py-4"
+            className="btn btn-primary w-full font-semibold py-4"
             size="lg"
           >
             Add to Cart - ${totalPrice.toFixed(2)}

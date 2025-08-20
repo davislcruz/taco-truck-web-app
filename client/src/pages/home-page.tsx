@@ -16,6 +16,7 @@ export interface CartItem extends MenuItem {
   selectedMeat?: string;
   selectedIngredients: string[];
   selectedSize?: string;
+  selectedToppings?: string[];
   quantity: number;
   totalPrice: number;
 }
@@ -100,32 +101,31 @@ export default function HomePage() {
   return (
     <>
       {/* Header */}
-      <header className="bg-white shadow-sm fixed top-0 w-full z-40 border-b border-gray-100">
+      <div className="bg-primary shadow-lg fixed top-0 w-full z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-mexican-red rounded-full flex items-center justify-center">
-                <ChefHat className="h-5 w-5 text-white" />
+              <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
+                <ChefHat className="h-6 w-6 text-accent-content" />
               </div>
               <div>
-                <h1 className="text-xl font-bold dark-gray">{restaurantName}</h1>
-                <p className="text-xs text-gray-500">Authentic Mexican Food Truck</p>
+                <h1 className="text-xl font-bold text-primary-content drop-shadow-sm">{restaurantName}</h1>
+                <p className="text-sm text-primary-content/90">Authentic Mexican Food Truck</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
               <Button
-                variant="ghost"
-                size="sm"
+                variant="outline"
                 onClick={handleOwnerAccess}
-                className="text-gray-600 hover:text-primary"
+                className="bg-primary-content/10 hover:bg-primary-content/20 text-primary-content border-primary-content/30 hover:border-primary-content/50 backdrop-blur"
               >
-                <User className="h-4 w-4" />
+                <User className="h-4 w-4 mr-2" />
+                Access
               </Button>
-
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Menu Section */}
       <MenuSection
@@ -155,54 +155,50 @@ export default function HomePage() {
 
 
 
-      {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl z-50">
-        <div className="flex items-center justify-around py-3 px-4 max-w-lg mx-auto">
-          <Button
-            variant="ghost"
+      {/* Bottom Navigation Bar - Phone dock style */}
+      <div className="fixed bottom-0 left-0 right-0 bg-neutral border-t border-base-200 shadow-lg z-50">
+        <div className="flex items-center justify-around py-3 px-4 max-w-md mx-auto">
+          <button
             onClick={scrollToMenu}
-            className="flex flex-col items-center justify-center py-3 px-4 min-w-[64px] text-gray-500 hover:text-mexican-red hover:bg-mexican-red/5 transition-all duration-200 rounded-xl"
+            className="flex flex-col items-center justify-center py-2 px-3 rounded-lg text-neutral-content hover:text-accent hover:bg-accent/10 transition-colors duration-200 min-w-[60px]"
           >
-            <Menu className="h-5 w-5 mb-1" />
+            <Menu className="h-6 w-6 mb-1" />
             <span className="text-xs font-medium">Menu</span>
-          </Button>
+          </button>
           
-          <Button
-            variant="ghost"
+          <button
             onClick={() => window.open('tel:+1234567890')}
-            className="flex flex-col items-center justify-center py-3 px-4 min-w-[64px] text-gray-500 hover:text-mexican-red hover:bg-mexican-red/5 transition-all duration-200 rounded-xl"
+            className="flex flex-col items-center justify-center py-2 px-3 rounded-lg text-neutral-content hover:text-accent hover:bg-accent/10 transition-colors duration-200 min-w-[60px]"
           >
-            <Phone className="h-5 w-5 mb-1" />
+            <Phone className="h-6 w-6 mb-1" />
             <span className="text-xs font-medium">Call</span>
-          </Button>
+          </button>
           
-          <Button
-            variant="ghost"
+          <button
             onClick={() => setIsCartOpen(true)}
-            className="relative flex flex-col items-center justify-center py-3 px-4 min-w-[64px] text-gray-500 hover:text-mexican-red hover:bg-mexican-red/5 transition-all duration-200 rounded-xl"
+            className="flex flex-col items-center justify-center py-2 px-3 rounded-lg text-neutral-content hover:text-accent hover:bg-accent/10 transition-colors duration-200 min-w-[60px] relative"
           >
-            <ShoppingCart className="h-5 w-5 mb-1" />
+            <ShoppingCart className="h-6 w-6 mb-1" />
             <span className="text-xs font-medium">Order</span>
             {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-mexican-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-sm">
+              <span className="absolute -top-1 -right-1 bg-primary text-primary-content text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                 {cartItemCount}
               </span>
             )}
-          </Button>
+          </button>
           
-          <Button
-            variant="ghost"
+          <button
             onClick={() => {
               const locationElement = document.querySelector('[data-location]');
               if (locationElement) {
                 locationElement.scrollIntoView({ behavior: 'smooth' });
               }
             }}
-            className="flex flex-col items-center justify-center py-3 px-4 min-w-[64px] text-gray-500 hover:text-mexican-red hover:bg-mexican-red/5 transition-all duration-200 rounded-xl"
+            className="flex flex-col items-center justify-center py-2 px-3 rounded-lg text-neutral-content hover:text-accent hover:bg-accent/10 transition-colors duration-200 min-w-[60px]"
           >
-            <MapPin className="h-5 w-5 mb-1" />
+            <MapPin className="h-6 w-6 mb-1" />
             <span className="text-xs font-medium">Location</span>
-          </Button>
+          </button>
         </div>
       </div>
     </>

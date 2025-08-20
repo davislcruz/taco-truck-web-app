@@ -5,6 +5,7 @@ import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
+import { storage } from "./storage";
 
 const viteLogger = createLogger();
 
@@ -23,7 +24,7 @@ export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
-    allowedHosts: true,
+    host: true,
   };
 
   const vite = await createViteServer({
@@ -65,6 +66,24 @@ export async function setupVite(app: Express, server: Server) {
 
       // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      
+      // Fetch current theme from database
+      let currentTheme = 'light'; // fallback
+      try {
+        const themeSetting = await storage.getSetting('app_theme');
+        if (themeSetting?.value) {
+          currentTheme = themeSetting.value;
+        }
+      } catch (error) {
+        console.log('Failed to fetch theme, using fallback:', error);
+      }
+      
+      // Inject theme into HTML template
+      template = template.replace(
+        'data-theme="light"',
+        `data-theme="${currentTheme}"`
+      );
+      
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,
@@ -89,8 +108,33 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+  // fall through to index.html if the file doesn't exist, with theme injection
+  app.use("*", async (_req, res) => {
+    try {
+      const indexPath = path.resolve(distPath, "index.html");
+      let template = await fs.promises.readFile(indexPath, "utf-8");
+      
+      // Fetch current theme from database
+      let currentTheme = 'light'; // fallback
+      try {
+        const themeSetting = await storage.getSetting('app_theme');
+        if (themeSetting?.value) {
+          currentTheme = themeSetting.value;
+        }
+      } catch (error) {
+        console.log('Failed to fetch theme for production, using fallback:', error);
+      }
+      
+      // Inject theme into HTML template
+      template = template.replace(
+        'data-theme="light"',
+        `data-theme="${currentTheme}"`
+      );
+      
+      res.status(200).set({ "Content-Type": "text/html" }).end(template);
+    } catch (error) {
+      console.error('Error serving index.html:', error);
+      res.sendFile(path.resolve(distPath, "index.html"));
+    }
   });
 }

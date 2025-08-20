@@ -51,13 +51,11 @@ const categoryFormSchema = z.object({
 
 type CategoryFormData = z.infer<typeof categoryFormSchema>;
 
-export function CategoryDialog() {
+export function CategoryDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
   const categoriesHook = useCategories();
   const {
     categories,
     categoriesLoading,
-    isCategoryDialogOpen,
-    setIsCategoryDialogOpen,
     categoryFormTab,
     setCategoryFormTab,
     categoryOrderList,
@@ -81,7 +79,7 @@ export function CategoryDialog() {
 
   // Load existing categories into the order list when dialog opens
   useEffect(() => {
-    if (isCategoryDialogOpen && categories.length > 0) {
+    if (open && categories.length > 0) {
       const sortedCategories = [...categories]
         .sort((a, b) => a.order - b.order)
         .map(cat => ({
@@ -91,7 +89,7 @@ export function CategoryDialog() {
         }));
       setCategoryOrderList(sortedCategories);
     }
-  }, [isCategoryDialogOpen, categories, setCategoryOrderList]);
+  }, [open, categories, setCategoryOrderList]);
 
   // Drag and drop functionality
   const sensors = useSensors(
@@ -132,18 +130,9 @@ export function CategoryDialog() {
     });
   };
 
+  if (!open) return null;
   return (
-    <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="default"
-          size="lg"
-          className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 shadow-lg"
-          onClick={() => setIsCategoryDialogOpen(true)}
-        >
-          + Create Category
-        </Button>
-      </DialogTrigger>
+    <Dialog>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create New Category</DialogTitle>
@@ -151,7 +140,6 @@ export function CategoryDialog() {
             Add a new menu category, set its icon, order, and ingredients.
           </DialogDescription>
         </DialogHeader>
-        
         <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-4">
           <div className="flex flex-1 gap-4">
             <div className="flex-1 flex flex-col">
@@ -160,20 +148,20 @@ export function CategoryDialog() {
             </div>
             <div className="flex flex-col w-32">
               <Label className="mb-1">Type</Label>
-              <Select value={categoryForm.watch("icon")} onValueChange={val => categoryForm.setValue("icon", val)}>
-                <SelectTrigger className="h-8 px-2 text-sm border rounded-md flex items-center w-full focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:border-black data-[state=open]:ring-2 data-[state=open]:ring-black data-[state=open]:ring-offset-2 data-[state=open]:border-black">
-                  <SelectValue placeholder="Select icon" />
+              <Select value={categoryForm.watch("icon")} onChange={e => categoryForm.setValue("icon", e.target.value)}>
+                <SelectTrigger className="h-8 px-2 text-sm border border-base-200 rounded-md flex items-center w-full focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:border-primary data-[state=open]:ring-2 data-[state=open]:ring-primary data-[state=open]:ring-offset-2 data-[state=open]:border-primary">
+                  <SelectValue>Select icon</SelectValue>
                 </SelectTrigger>
                 <SelectContent className="w-32">
                   <SelectItem value="utensils">
                     <div className="flex items-center gap-2">
-                      <Utensils className="h-5 w-5 text-green-700" />
+                      <Utensils className="h-5 w-5 text-success" />
                       <span className="text-sm">Food</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="glassWater">
                     <div className="flex items-center gap-2">
-                      <GlassWater className="h-5 w-5 text-green-700" />
+                      <GlassWater className="h-5 w-5 text-success" />
                       <span className="text-sm">Drink</span>
                     </div>
                   </SelectItem>
@@ -214,13 +202,13 @@ export function CategoryDialog() {
           )}
           
           <div className="flex justify-end gap-2 mt-4">
-            <Button type="button" variant="outline" onClick={handleCategoryDialogClose}>
+            <Button type="button" variant="outline" onClick={() => { handleCategoryDialogClose(); onOpenChange(false); }}>
               Cancel
             </Button>
             <Button 
               type="submit" 
               variant="default" 
-              className="bg-green-600 text-white"
+              className="btn btn-success"
               disabled={isCreatingCategory}
             >
               {isCreatingCategory ? "Creating..." : "Create"}
@@ -237,15 +225,13 @@ function CategoryOrderTab({ categoryOrderList, moveCategoryUp, moveCategoryDown,
   return (
     <div>
       <Label>Category Order</Label>
-      <p className="text-sm text-gray-600 mb-2">
-        Drag and drop or use arrows to reorder categories. This affects the display order on the menu.
-      </p>
+      <p className="text-sm text-base-content/70 mb-2">Drag and drop or use arrows to reorder categories. This affects the display order on the menu.</p>
       <DndContext 
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <div className="bg-gray-50 rounded-md border p-3 mt-1">
+        <div className="bg-base-200 rounded-md border-base-100 border p-3 mt-1">
           <SortableContext 
             items={categoryOrderList.map((cat: any) => cat.id)}
             strategy={verticalListSortingStrategy}
@@ -289,31 +275,31 @@ function SortableRow({ cat, idx, moveCategoryUp, moveCategoryDown, isFirst, isLa
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center justify-between p-3 bg-white rounded-md border transition-all ${
-        isDragging ? "shadow-lg z-10" : "hover:bg-gray-50"
-      } ${cat.isNew ? "border-blue-300 border-2 border-dashed bg-blue-50" : ""}`}
+      className={`flex items-center justify-between p-3 bg-base-100 rounded-md border border-base-100 transition-all ${
+        isDragging ? "shadow-lg z-10" : "hover:bg-base-200"
+      } ${cat.isNew ? "border-info border-2 border-dashed bg-info/10" : ""}`}
     >
       <div className="flex items-center gap-3">
         <div 
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-200 rounded"
+          className="cursor-grab active:cursor-grabbing p-1 hover:bg-base-300 rounded"
         >
-          <GripVertical className="h-4 w-4 text-gray-400" />
+          <GripVertical className="h-4 w-4 text-base-content/60" />
         </div>
-        <span className="w-8 text-center text-sm text-gray-500 font-semibold bg-gray-100 rounded px-2 py-1">
+        <span className="w-8 text-center text-sm text-base-content/60 font-semibold bg-base-200 rounded px-2 py-1">
           {idx + 1}
         </span>
         <div className="flex items-center gap-2">
           {cat.icon === "utensils" ? (
-            <Utensils className="h-5 w-5 text-green-700" />
+            <Utensils className="h-5 w-5 text-success" />
           ) : cat.icon === "glassWater" ? (
-            <GlassWater className="h-5 w-5 text-green-700" />
+            <GlassWater className="h-5 w-5 text-success" />
           ) : null}
-          <span className={`font-medium ${cat.isNew ? "text-blue-700" : "text-gray-900"}`}>
+          <span className={`font-medium ${cat.isNew ? "text-info" : "text-base-content"}`}>
             {cat.name}
             {cat.isNew && (
-              <span className="ml-2 text-xs bg-blue-600 text-white rounded px-2 py-1 font-semibold">NEW</span>
+              <span className="ml-2 text-xs bg-info text-info-content rounded px-2 py-1 font-semibold">NEW</span>
             )}
           </span>
         </div>
@@ -356,7 +342,7 @@ function CategoryIngredientsTab({
   removeIngredient 
 }: any) {
   return (
-    <div className="bg-gray-50 rounded-md border p-4 mt-1">
+    <div className="bg-base-200 rounded-md border-base-100 border p-4 mt-1">
       <Label>Default Ingredients & Extras</Label>
       <form
         className="flex flex-col gap-2 mt-2"
@@ -390,17 +376,17 @@ function CategoryIngredientsTab({
             />
             Default
           </label>
-          <Button type="submit" size="sm" className="bg-blue-600 text-white">Add</Button>
+          <Button type="submit" size="sm" className="btn btn-info">Add</Button>
         </div>
       </form>
       
       <div className="mt-4">
         {categoryIngredients.length === 0 ? (
-          <div className="text-gray-400 text-sm">No ingredients added yet.</div>
+          <div className="text-base-content/60 text-sm">No ingredients added yet.</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-gray-500">
+              <tr className="text-left text-base-content/70">
                 <th>Name</th>
                 <th>Price</th>
                 <th>Type</th>
@@ -421,7 +407,7 @@ function CategoryIngredientsTab({
                       className="p-1"
                       onClick={() => removeIngredient(ing.id)}
                     >
-                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <Trash2 className="h-4 w-4 text-error" />
                     </Button>
                   </td>
                 </tr>

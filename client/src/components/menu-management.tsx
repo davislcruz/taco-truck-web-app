@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { CategoryDialog } from "./CategoryDialog";
 import { MenuItemCard } from "./MenuItemCard";
 import { useMenuItems } from "@/hooks/useMenuItems";
 import { useQuery } from "@tanstack/react-query";
-import { Category } from "@shared/schema";
+import { Category, MenuItem } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 
 /**
@@ -20,6 +20,8 @@ import { apiRequest } from "@/lib/queryClient";
  * - Easy testing and maintenance
  */
 export default function MenuManagement() {
+  // State for category dialog
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   // Get menu items data and actions from custom hook
   const {
     groupedItems,
@@ -105,7 +107,7 @@ export default function MenuManagement() {
       // TODO: Also exit edit mode for all items in this category
     } else {
       // Enter edit mode
-      items.forEach(item => {
+      items.forEach((item: MenuItem) => {
         handleEdit(item);
         // Also expand each item to show all fields
         toggleExpanded(item.id);
@@ -174,11 +176,19 @@ export default function MenuManagement() {
           <Button 
             onClick={handlePopulateDemo}
             variant="outline"
-            className="bg-yellow-50 hover:bg-yellow-100 border-yellow-300 text-yellow-700"
+            className="bg-warning/10 hover:bg-warning/20 border-warning text-warning"
           >
             🌮 Populate Demo Menu (21 items)
           </Button>
-          <CategoryDialog />
+          <Button
+            variant="default"
+            size="lg"
+            className="btn btn-success font-bold px-6 shadow"
+            onClick={() => setIsCategoryDialogOpen(true)}
+          >
+            + Create Category
+          </Button>
+          <CategoryDialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen} />
         </div>
         
         {/* Branding input */}
@@ -193,7 +203,7 @@ export default function MenuManagement() {
             onClick={handleUpdateBranding}
             variant="outline"
             disabled={!brandingName.trim()}
-            className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700"
+            className="bg-info/10 hover:bg-info/20 border-info text-info"
           >
             Update Branding
           </Button>
@@ -211,7 +221,7 @@ export default function MenuManagement() {
         return (
           <Card key={category} className="mb-6">
             {/* Header with category info and controls */}
-            <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <div className="px-4 py-3 bg-base-200 border-b border-base-100">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {categoryTempValues[`${category}-editing`] !== undefined ? (
@@ -227,14 +237,14 @@ export default function MenuManagement() {
                           }
                         }}
                         onBlur={() => handleSaveCategoryName(category, categoryTempValues[category] || category)}
-                        className="text-xl font-bold text-blue-600 bg-blue-50 border-2 border-dashed border-blue-300 rounded px-2 py-1 hover:bg-blue-100"
+                        className="text-xl font-bold text-info bg-info/10 border-2 border-dashed border-info rounded px-2 py-1 hover:bg-info/20"
                         autoFocus
                       />
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleSaveCategoryName(category, categoryTempValues[category] || category)}
-                        className="text-green-600 hover:text-green-700"
+                        className="text-success hover:text-success-focus"
                       >
                         ✓
                       </Button>
@@ -242,7 +252,7 @@ export default function MenuManagement() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleCancelCategoryEdit(category)}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-error hover:text-error-focus"
                       >
                         ✕
                       </Button>
@@ -256,15 +266,15 @@ export default function MenuManagement() {
                         }
                       }}
                       className={editingCategories[category] ? 
-                        'cursor-pointer px-2 py-1 rounded bg-blue-50 border-2 border-dashed border-blue-300 hover:bg-blue-100 transition-colors text-xl font-bold text-blue-600' : 
-                        'text-xl font-bold text-blue-600'
+                        'cursor-pointer px-2 py-1 rounded bg-info/10 border-2 border-dashed border-info hover:bg-info/20 transition-colors text-xl font-bold text-info' : 
+                        'text-xl font-bold text-info'
                       }
                       title={editingCategories[category] ? 'Click to edit category name' : ''}
                     >
                       {categoryData.translation || category}
                     </span>
                   )}
-                  <span className="text-sm text-gray-500 font-normal">
+                  <span className="text-sm text-base-content/60 font-normal">
                     ({items.length} items)
                   </span>
                 </div>
@@ -315,7 +325,7 @@ export default function MenuManagement() {
             {isCategoryExpanded && (
               <CardContent>
                 {items.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-base-content/60">
                     <p>No items in this category yet.</p>
                     <Button
                       variant="outline"
@@ -391,9 +401,9 @@ export default function MenuManagement() {
 
       {categories.length === 0 && (
         <div className="text-center py-12">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No categories yet</h3>
-          <p className="text-gray-500 mb-4">Create your first category to start building your menu.</p>
-          <CategoryDialog />
+          <h3 className="text-lg font-medium text-base-content mb-2">No categories yet</h3>
+          <p className="text-sm text-base-content/70 mb-4">Create your first category to start building your menu.</p>
+          {/* Removed extra CategoryDialog instance to fix lint error */}
         </div>
       )}
     </div>

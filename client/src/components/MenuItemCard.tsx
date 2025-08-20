@@ -113,7 +113,7 @@ export function MenuItemCard({
     const cursorClass = isEditMode ? "cursor-pointer" : "cursor-default";
     const blockClass = options.isBlock ? "block" : "";
     const editModeClasses = isEditMode 
-      ? "bg-blue-50 border-2 border-dashed border-blue-300 hover:bg-blue-100" 
+      ? "bg-info/10 border-2 border-dashed border-info hover:bg-info/20" 
       : "";
     
     return `${baseClasses} ${cursorClass} ${blockClass} ${editModeClasses} ${options.textSize || ""}`;
@@ -177,10 +177,10 @@ export function MenuItemCard({
   };
 
   return (
-    <Card className={`mb-4 transition-all duration-200 relative ${
+    <Card className={`card mb-4 transition-all duration-200 relative ${
       isEditMode 
-        ? "border-2 border-blue-400 shadow-lg bg-blue-50/20" 
-        : "border border-gray-200 hover:shadow-md"
+        ? "border-2 border-info shadow-lg bg-info/10" 
+        : "border border-base-200 hover:shadow-md bg-base-100"
     }`}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
@@ -197,18 +197,18 @@ export function MenuItemCard({
               {renderField('name', getDisplayValue('name'), { fieldLabel: 'name' })}
             </CardTitle>
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <Badge variant="outline" className="text-xs flex-shrink-0">
+              <Badge variant="outline" className="text-xs shrink-0">
                 {item.category}
               </Badge>
               {getDisplayValue('ingredients') && Array.isArray(getDisplayValue('ingredients')) && getDisplayValue('ingredients').length > 0 && (
                 <div className="flex-1 min-w-0">
-                  <span className="text-xs text-gray-500 truncate block">
+                  <span className="text-xs text-base-content/80 truncate block">
                     {getDisplayValue('ingredients').join(', ')}
                   </span>
                 </div>
               )}
               {isEditMode && (
-                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-300 flex-shrink-0">
+                <Badge variant="secondary" className="text-xs bg-info/20 text-info border-info shrink-0">
                   ✏️ Edit Mode
                 </Badge>
               )}
@@ -216,7 +216,7 @@ export function MenuItemCard({
           </div>
           
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-green-600">
+            <span className="font-semibold text-success">
               ${renderField('price', getDisplayValue('price'), { fieldLabel: 'price' })}
             </span>
             
@@ -229,8 +229,8 @@ export function MenuItemCard({
                     onClick={handleSaveClick}
                     className={`h-7 px-2 text-xs transition-all ${
                       isValidForSave 
-                        ? 'bg-green-50 hover:bg-green-100' 
-                        : 'bg-yellow-50 hover:bg-yellow-100 border-yellow-300'
+                        ? 'bg-success/10 hover:bg-success/20' 
+                        : 'bg-warning/10 hover:bg-warning/20 border-warning'
                     }`}
                   >
                     <Check className="h-3 w-3 mr-1" />
@@ -242,7 +242,7 @@ export function MenuItemCard({
                     onClick={handleCancelClick}
                     className={`h-7 px-2 text-xs transition-all ${
                       isNewItem && !hasBeenSaved 
-                        ? 'bg-yellow-50 hover:bg-yellow-100 border-yellow-300' 
+                        ? 'bg-warning/10 hover:bg-warning/20 border-warning' 
                         : ''
                     }`}
                   >
@@ -253,7 +253,7 @@ export function MenuItemCard({
                     variant="outline"
                     size="sm"
                     onClick={onDelete}
-                    className="h-7 px-2 text-xs text-red-500 hover:text-red-700 border-red-200 hover:bg-red-50"
+                    className="h-7 px-2 text-xs text-error hover:text-error-focus border-error/30 hover:bg-error/10"
                     title="Delete item"
                   >
                     <Trash2 className="h-3 w-3 mr-1" />
@@ -263,9 +263,9 @@ export function MenuItemCard({
                 
                 {/* Message for Save button */}
                 {showSaveMessage && (
-                  <div className="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-md border border-amber-200">
+                  <div className="text-xs text-warning bg-warning/10 px-3 py-2 rounded-md border border-warning/30">
                     <div className="flex items-center gap-2">
-                      <span className="text-amber-500">⚠️</span>
+                      <span className="text-warning">⚠️</span>
                       <span>Please fill out the required fields: <strong>Name</strong> and <strong>Price</strong></span>
                     </div>
                   </div>
@@ -273,9 +273,9 @@ export function MenuItemCard({
                 
                 {/* Message for Cancel button */}
                 {showCancelMessage && (
-                  <div className="text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-md border border-blue-200">
+                  <div className="text-xs text-info bg-info/10 px-3 py-2 rounded-md border border-info/30">
                     <div className="flex items-center gap-2">
-                      <span className="text-blue-500">💡</span>
+                      <span className="text-info">💡</span>
                       <span>Save your changes first, then you can cancel. Or use <strong>Delete</strong> to discard this card.</span>
                     </div>
                   </div>
@@ -311,12 +311,12 @@ export function MenuItemCard({
           onClick={onToggleExpanded}
           className={`px-4 py-2 cursor-pointer transition-colors ${
             isEditMode 
-              ? "bg-blue-50 border-t-2 border-dashed border-blue-300 hover:bg-blue-100"
-              : "bg-gray-50 border-t border-gray-100 hover:bg-gray-100"
+              ? "bg-info/10 border-t-2 border-dashed border-info hover:bg-info/20"
+              : "bg-base-200 border-t border-base-100 hover:bg-base-300"
           }`}
         >
           <div className={`flex items-center justify-center gap-2 text-sm ${
-            isEditMode ? "text-blue-700" : "text-gray-600"
+            isEditMode ? "text-info" : "text-base-content/90"
           }`}>
             <Eye className="h-4 w-4" />
             <span>Click to view description, ingredients, sizes, and more details</span>
@@ -329,9 +329,9 @@ export function MenuItemCard({
         <CardContent className="pt-0">
           <div className="flex gap-4">
             {/* Left side - Image */}
-            <div className="flex-shrink-0 w-48">
+            <div className="shrink-0 w-48">
               <div>
-                <label className="text-sm font-medium text-gray-600">Image</label>
+                <label className="text-sm font-medium text-base-content/80">Image</label>
                 <div className="mt-1">
                   {renderField('image', getDisplayValue('image'), { 
                     isBlock: true, 
@@ -345,7 +345,7 @@ export function MenuItemCard({
                         alt={item.name || 'Menu item'} 
                         className={`w-full h-32 object-cover rounded-lg border transition-all ${
                           isEditMode 
-                            ? 'cursor-pointer hover:opacity-75 hover:border-blue-300' 
+                            ? 'cursor-pointer hover:opacity-75 hover:border-info' 
                             : ''
                         }`}
                         onClick={() => isEditMode && handleInlineEdit('image', getDisplayValue('image'))}
@@ -363,7 +363,7 @@ export function MenuItemCard({
             {/* Right side - All other fields */}
             <div className="flex-1 space-y-3">
               <div>
-                <label className="text-sm font-medium text-gray-600">Translation</label>
+                <label className="text-sm font-medium text-base-content/80">Translation</label>
                 <div className="mt-1">
                   {renderField('translation', getDisplayValue('translation'), { 
                     isBlock: true, 
@@ -373,7 +373,7 @@ export function MenuItemCard({
               </div>
               
               <div>
-                <label className="text-sm font-medium text-gray-600">Description</label>
+                <label className="text-sm font-medium text-base-content/80">Description</label>
                 <div className="mt-1">
                   {renderField('description', getDisplayValue('description'), { 
                     isTextarea: true, 
@@ -385,7 +385,7 @@ export function MenuItemCard({
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Meats</label>
+                  <label className="text-sm font-medium text-base-content/80">Meats</label>
                   <div className="mt-1">
                     {renderField('meats', 
                       Array.isArray(item.meats) ? item.meats.join(', ') : item.meats || '', 
@@ -400,7 +400,7 @@ export function MenuItemCard({
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Sizes</label>
+                  <label className="text-sm font-medium text-base-content/80">Sizes</label>
                   <div className="mt-1">
                     {renderField('sizes', 
                       Array.isArray(item.sizes) ? item.sizes.join(', ') : item.sizes || '', 
@@ -423,12 +423,12 @@ export function MenuItemCard({
             onClick={onToggleExpanded}
             className={`-mx-6 -mb-6 mt-4 px-4 py-2 cursor-pointer transition-colors ${
               isEditMode 
-                ? "bg-blue-50 border-t-2 border-dashed border-blue-300 hover:bg-blue-100"
-                : "bg-gray-50 border-t border-gray-100 hover:bg-gray-100"
+                ? "bg-info/10 border-t-2 border-dashed border-info hover:bg-info/20"
+                : "bg-base-200 border-t border-base-100 hover:bg-base-300"
             }`}
           >
             <div className={`flex items-center justify-center gap-2 text-sm ${
-              isEditMode ? "text-blue-700" : "text-gray-600"
+              isEditMode ? "text-info" : "text-base-content/90"
             }`}>
               <EyeOff className="h-4 w-4" />
               <span>Click to collapse details</span>

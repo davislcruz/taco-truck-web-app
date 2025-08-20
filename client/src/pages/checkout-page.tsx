@@ -145,25 +145,27 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-base-300">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Button
-              variant="ghost"
-              onClick={() => setLocation("/")}
-              className="flex items-center space-x-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Menu</span>
-            </Button>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-mexican-red rounded-full flex items-center justify-center">
-                <ChefHat className="h-4 w-4 text-white" />
+      <header className="navbar bg-base-200 shadow border-b border-base-100">
+        <div className="navbar-start">
+          <Button
+            variant="ghost"
+            onClick={() => setLocation("/")}
+            className="btn btn-ghost flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Menu</span>
+          </Button>
+        </div>
+        <div className="navbar-end">
+          <div className="flex items-center space-x-3">
+            <div className="avatar">
+              <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                <ChefHat className="h-4 w-4 text-accent-content" />
               </div>
-              <span className="font-bold dark-gray">{restaurantName}</span>
             </div>
+            <span className="font-bold text-base-content">{restaurantName}</span>
           </div>
         </div>
       </header>
@@ -172,38 +174,38 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Order Summary */}
           <div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+            <Card className="card bg-base-100 shadow-xl">
+              <CardHeader className="card-body pb-4">
+                <CardTitle className="card-title text-base-content">Order Summary</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="card-body pt-0 space-y-4">
                 {mockCart.map((item) => (
                   <div key={item.id} className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h4 className="font-medium">{item.name}</h4>
-                      <p className="text-sm text-gray-500">{item.translation}</p>
+                      <h4 className="font-medium text-base-content">{item.name}</h4>
+                      <p className="text-sm text-base-content/70">{item.translation}</p>
                       {item.selectedMeat && (
-                        <p className="text-xs text-gray-400">Meat: {item.selectedMeat}</p>
+                        <p className="text-xs text-base-content/60">Meat: {item.selectedMeat}</p>
                       )}
                       {item.selectedSize && (
-                        <p className="text-xs text-gray-400">Size: {item.selectedSize}</p>
+                        <p className="text-xs text-base-content/60">Size: {item.selectedSize}</p>
                       )}
                       {item.selectedIngredients && item.selectedIngredients.length > 0 && (
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-base-content/60">
                           Ingredients: {item.selectedIngredients.join(", ")}
                         </p>
                       )}
-                      <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                      <p className="text-sm text-base-content/70">Qty: {item.quantity}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="font-medium text-base-content">${(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   </div>
                 ))}
                 <Separator />
                 <div className="flex justify-between items-center text-lg font-bold">
-                  <span>Total:</span>
-                  <span className="mexican-red">${total.toFixed(2)}</span>
+                  <span className="text-base-content">Total:</span>
+                  <span className="text-primary">${total.toFixed(2)}</span>
                 </div>
               </CardContent>
             </Card>
@@ -211,39 +213,48 @@ export default function CheckoutPage() {
 
           {/* Checkout Form */}
           <div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+            <Card className="card bg-base-100 shadow-xl">
+              <CardHeader className="card-body pb-4">
+                <CardTitle className="card-title text-base-content flex items-center space-x-2">
                   <CreditCard className="h-5 w-5" />
                   <span>Checkout</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="card-body pt-0">
                 <Elements stripe={stripePromise} options={{ clientSecret }}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div>
-                      <Label htmlFor="phone">Phone Number *</Label>
+                    <div className="form-control w-full">
+                      <Label htmlFor="phone" className="label">
+                        <span className="label-text">Phone Number *</span>
+                      </Label>
                       <Input
                         id="phone"
                         {...form.register("phone")}
                         placeholder="(555) 123-4567"
-                        className="mt-1"
+                        className="input input-bordered w-full"
                       />
-                      <p className="text-xs text-gray-500 mt-1">We'll text you order updates</p>
+                      <div className="label">
+                        <span className="label-text-alt text-base-content/60">We'll text you order updates</span>
+                      </div>
                       {form.formState.errors.phone && (
-                        <p className="text-sm text-red-600 mt-1">
-                          {form.formState.errors.phone.message}
-                        </p>
+                        <div className="label">
+                          <span className="label-text-alt text-error">
+                            {form.formState.errors.phone.message}
+                          </span>
+                        </div>
                       )}
                     </div>
 
-                    <div>
-                      <Label htmlFor="instructions">Special Instructions (Optional)</Label>
+                    <div className="form-control w-full">
+                      <Label htmlFor="instructions" className="label">
+                        <span className="label-text">Special Instructions (Optional)</span>
+                      </Label>
+                      <p className="text-xs text-base-content/70 mb-2">Share any <strong className="text-base-content">special requests</strong>, dietary restrictions, or preferences for your order.</p>
                       <Textarea
                         id="instructions"
                         {...form.register("instructions")}
-                        placeholder="Any special requests or dietary restrictions?"
-                        className="mt-1"
+                        placeholder="Example: Extra spicy, no onions, gluten-free options..."
+                        className="textarea textarea-bordered w-full"
                         rows={3}
                       />
                     </div>
@@ -251,49 +262,61 @@ export default function CheckoutPage() {
                     <Separator />
 
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Payment Information</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-base-content">Payment Information</h3>
                       <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="cardNumber">Card Number *</Label>
+                        <div className="form-control w-full">
+                          <Label htmlFor="cardNumber" className="label">
+                            <span className="label-text">Card Number *</span>
+                          </Label>
                           <Input
                             id="cardNumber"
                             {...form.register("cardNumber")}
                             placeholder="1234 5678 9012 3456"
-                            className="mt-1"
+                            className="input input-bordered w-full"
                           />
                           {form.formState.errors.cardNumber && (
-                            <p className="text-sm text-red-600 mt-1">
-                              {form.formState.errors.cardNumber.message}
-                            </p>
+                            <div className="label">
+                              <span className="label-text-alt text-error">
+                                {form.formState.errors.cardNumber.message}
+                              </span>
+                            </div>
                           )}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="expiry">Expiry *</Label>
+                          <div className="form-control w-full">
+                            <Label htmlFor="expiry" className="label">
+                              <span className="label-text">Expiry *</span>
+                            </Label>
                             <Input
                               id="expiry"
                               {...form.register("expiry")}
                               placeholder="MM/YY"
-                              className="mt-1"
+                              className="input input-bordered w-full"
                             />
                             {form.formState.errors.expiry && (
-                              <p className="text-sm text-red-600 mt-1">
-                                {form.formState.errors.expiry.message}
-                              </p>
+                              <div className="label">
+                                <span className="label-text-alt text-error">
+                                  {form.formState.errors.expiry.message}
+                                </span>
+                              </div>
                             )}
                           </div>
-                          <div>
-                            <Label htmlFor="cvv">CVV *</Label>
+                          <div className="form-control w-full">
+                            <Label htmlFor="cvv" className="label">
+                              <span className="label-text">CVV *</span>
+                            </Label>
                             <Input
                               id="cvv"
                               {...form.register("cvv")}
                               placeholder="123"
-                              className="mt-1"
+                              className="input input-bordered w-full"
                             />
                             {form.formState.errors.cvv && (
-                              <p className="text-sm text-red-600 mt-1">
-                                {form.formState.errors.cvv.message}
-                              </p>
+                              <div className="label">
+                                <span className="label-text-alt text-error">
+                                  {form.formState.errors.cvv.message}
+                                </span>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -302,7 +325,7 @@ export default function CheckoutPage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-mexican-green hover:bg-green-600 text-white font-semibold py-4"
+                      className="btn btn-success w-full font-semibold py-4"
                       disabled={isProcessing}
                     >
                       {isProcessing && (

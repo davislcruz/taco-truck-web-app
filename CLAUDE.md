@@ -68,3 +68,39 @@ docker run --name postgres-taco \
 - `client/src/lib/menu-data.ts` - Mock data and utilities
 - `server/auth.ts` - Authentication logic with Passport.js
 - `server/db.ts` - Database connection setup
+
+## DaisyUI Theme System
+
+This application includes a comprehensive DaisyUI theme selector with accurate theme previews.
+
+### Theme Preview Implementation
+- **File**: `client/src/components/daisyui-theme-selector.tsx`
+- **Purpose**: Allows users to preview and select from all 35 official DaisyUI themes
+- **Key Feature**: Each theme preview card displays the actual colors of that specific theme
+
+### Dynamic Color Extraction System
+**Why we extract colors instead of hardcoding:**
+1. **Accuracy**: Ensures 100% accurate representation of official DaisyUI theme colors
+2. **Maintainability**: Automatically adapts if DaisyUI updates their theme colors
+3. **Consistency**: Eliminates discrepancies between preview and actual theme appearance
+4. **User Experience**: Users see exactly what each theme will look like before selecting
+
+**How color extraction works:**
+1. Creates temporary DOM elements with `data-theme` attribute for each theme
+2. Applies DaisyUI semantic classes (`bg-primary`, `text-primary-content`, etc.)
+3. Reads computed CSS styles to extract actual RGB color values
+4. Uses extracted colors for theme preview cards and internal preview elements
+
+### DaisyUI Semantic Color Usage
+**Important**: The implementation follows DaisyUI's semantic color system:
+- `base` + `base-content` for card backgrounds and text
+- `primary` + `primary-content` for header previews
+- `accent` + `accent-content` for button previews
+- `secondary` + `secondary-content` for section headers
+
+This ensures proper contrast and readability across all 35 themes, from light themes like "Light" and "Cupcake" to dark themes like "Dark", "Dracula", and "Night".
+
+### Theme Configuration
+- **CSS File**: `client/src/index.css` contains all 35 theme configurations
+- **Tailwind Config**: Uses Tailwind v4 syntax with DaisyUI plugin
+- **Theme Persistence**: Selected theme is saved to database via `/api/settings/app_theme`

@@ -119,7 +119,7 @@ export function MenuItemDialog({
                 placeholder="Tacos de Carne Asada"
               />
               {form.formState.errors.name && (
-                <p className="text-sm text-red-500 mt-1">{form.formState.errors.name.message}</p>
+                <p className="text-sm text-error mt-1">{form.formState.errors.name.message}</p>
               )}
             </div>
             
@@ -131,7 +131,7 @@ export function MenuItemDialog({
                 placeholder="Tacos de Carne Asada"
               />
               {form.formState.errors.translation && (
-                <p className="text-sm text-red-500 mt-1">{form.formState.errors.translation.message}</p>
+                <p className="text-sm text-error mt-1">{form.formState.errors.translation.message}</p>
               )}
             </div>
           </div>
@@ -152,7 +152,7 @@ export function MenuItemDialog({
                 </SelectContent>
               </Select>
               {form.formState.errors.category && (
-                <p className="text-sm text-red-500 mt-1">{form.formState.errors.category.message}</p>
+                <p className="text-sm text-error mt-1">{form.formState.errors.category.message}</p>
               )}
             </div>
             
@@ -167,7 +167,7 @@ export function MenuItemDialog({
                 placeholder="12.99"
               />
               {form.formState.errors.price && (
-                <p className="text-sm text-red-500 mt-1">{form.formState.errors.price.message}</p>
+                <p className="text-sm text-error mt-1">{form.formState.errors.price.message}</p>
               )}
             </div>
           </div>
@@ -199,7 +199,7 @@ export function MenuItemDialog({
                 {...form.register("meats")}
                 placeholder="carne asada, pollo, carnitas"
               />
-              <p className="text-xs text-gray-500 mt-1">Comma-separated list</p>
+              <p className="text-xs text-base-content/60 mt-1">Comma-separated list</p>
             </div>
             
             <div>
@@ -209,7 +209,7 @@ export function MenuItemDialog({
                 {...form.register("ingredients")}
                 placeholder="onions, cilantro, salsa"
               />
-              <p className="text-xs text-gray-500 mt-1">Comma-separated list</p>
+              <p className="text-xs text-base-content/60 mt-1">Comma-separated list</p>
             </div>
             
             <div>
@@ -219,7 +219,7 @@ export function MenuItemDialog({
                 {...form.register("sizes")}
                 placeholder="small, medium, large"
               />
-              <p className="text-xs text-gray-500 mt-1">Comma-separated list</p>
+              <p className="text-xs text-base-content/60 mt-1">Comma-separated list</p>
             </div>
           </div>
 
@@ -230,7 +230,7 @@ export function MenuItemDialog({
             <Button 
               type="submit" 
               disabled={isCreating}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="btn btn-success"
             >
               {isCreating ? "Creating..." : "Create Menu Item"}
             </Button>

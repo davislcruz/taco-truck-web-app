@@ -72,13 +72,13 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'received':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-info/20 text-info';
       case 'started':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warning/20 text-warning';
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success/20 text-success';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-base-200 text-base-content';
     }
   };
 
@@ -88,16 +88,16 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
   };
 
   const renderOrderCard = (order: Order) => (
-    <Card key={order.id} className="mb-4">
+    <Card key={order.id} className="mb-4 card bg-base-200 shadow-md">
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-3">
           <div>
             <h4 className="font-semibold text-lg">{order.orderId}</h4>
-            <div className="flex items-center space-x-2 text-sm text-gray-600 mt-1">
+            <div className="flex items-center space-x-2 text-sm text-base-content/70 mt-1">
               <Phone className="h-4 w-4" />
               <span>{order.phone}</span>
             </div>
-            <div className="flex items-center space-x-2 text-xs text-gray-400 mt-1">
+            <div className="flex items-center space-x-2 text-xs text-base-content/60 mt-1">
               <Clock className="h-3 w-3" />
               <span>{formatDate(order.timestamp)}</span>
             </div>
@@ -112,31 +112,31 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
             <div key={index} className="text-sm">
               <strong>{item.quantity}x {item.name}</strong>
               {item.selectedMeat && (
-                <span className="text-gray-500 ml-2">- {item.selectedMeat}</span>
+                <span className="text-base-content/70 ml-2">- {item.selectedMeat}</span>
               )}
               {item.selectedSize && (
-                <span className="text-gray-500 ml-2">({item.selectedSize})</span>
+                <span className="text-base-content/70 ml-2">({item.selectedSize})</span>
               )}
             </div>
           )) : (
-            <div className="text-sm text-gray-500">Order items unavailable</div>
+            <div className="text-sm text-base-content/70">Order items unavailable</div>
           )}
         </div>
 
         {order.instructions && (
           <div className="mb-3">
             <div className="flex items-center space-x-2 text-sm">
-              <FileText className="h-4 w-4 text-gray-400" />
+              <FileText className="h-4 w-4 text-base-content/60" />
               <strong>Notes:</strong>
             </div>
-            <p className="text-sm text-gray-600 mt-1 pl-6">{order.instructions}</p>
+            <p className="text-sm text-base-content/85 mt-1 pl-6 italic">{order.instructions}</p>
           </div>
         )}
 
         <Separator className="my-3" />
 
         <div className="flex justify-between items-center">
-          <span className="font-semibold text-lg mexican-red">
+          <span className="font-semibold text-lg text-primary">
             ${parseFloat(order.total).toFixed(2)}
           </span>
           
@@ -146,7 +146,7 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500"
+                  className="btn btn-warning"
                   onClick={() => handleStatusUpdate(order.orderId, 'started')}
                   disabled={updateStatusMutation.isPending}
                 >
@@ -155,7 +155,7 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
               )}
               <Button
                 size="sm"
-                className="bg-mexican-green hover:bg-green-600 text-white"
+                className="btn btn-success"
                 onClick={() => handleStatusUpdate(order.orderId, 'completed')}
                 disabled={updateStatusMutation.isPending}
               >
@@ -169,17 +169,17 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-white">
+    <div className="fixed inset-0 z-50 bg-base-100">
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b bg-gray-50">
+        <div className="flex items-center justify-between p-6 border-b border-base-100 bg-primary">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-mexican-red rounded-full flex items-center justify-center">
-              <ChefHat className="h-5 w-5 text-white" />
+            <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+              <ChefHat className="h-5 w-5 text-accent-content" />
             </div>
             <div>
-              <h1 className="text-xl font-bold dark-gray">{restaurantName}</h1>
-              <p className="text-sm text-gray-500">Owner Dashboard</p>
+              <h1 className="text-xl font-bold text-primary-content">{restaurantName}</h1>
+              <p className="text-sm text-primary-content/80">Owner Dashboard</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -198,9 +198,9 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
         </div>
 
         {/* Search */}
-        <div className="p-6 border-b">
+        <div className="p-6 border-b border-base-200 bg-neutral">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-content" />
             <Input
               placeholder="Search by phone number..."
               value={searchPhone}
@@ -228,7 +228,7 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Current Orders */}
                 <div>
-                  <h2 className="text-lg font-semibold mb-4 mexican-red flex items-center">
+                  <h2 className="text-lg font-semibold mb-4 text-secondary flex items-center">
                     <Clock className="h-5 w-5 mr-2" />
                     Current Orders ({currentOrders.length})
                   </h2>
@@ -237,7 +237,7 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
                       currentOrders.map(renderOrderCard)
                     ) : (
                       <div className="text-center py-8">
-                        <p className="text-gray-500">No current orders</p>
+                        <p className="text-base-content/70">No current orders</p>
                       </div>
                     )}
                   </div>
@@ -245,7 +245,7 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
 
                 {/* Completed Orders */}
                 <div>
-                  <h2 className="text-lg font-semibold mb-4 mexican-green flex items-center">
+                  <h2 className="text-lg font-semibold mb-4 text-secondary flex items-center">
                     <FileText className="h-5 w-5 mr-2" />
                     Recent Completed ({completedOrders.slice(0, 10).length})
                   </h2>
@@ -254,7 +254,7 @@ export default function OwnerDashboard({ onClose }: OwnerDashboardProps) {
                       completedOrders.slice(0, 10).map(renderOrderCard)
                     ) : (
                       <div className="text-center py-8">
-                        <p className="text-gray-500">No completed orders</p>
+                        <p className="text-base-content/70">No completed orders</p>
                       </div>
                     )}
                   </div>

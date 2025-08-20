@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { FC, ReactNode } from "react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface BrandingContextType {
@@ -11,7 +12,7 @@ const BrandingContext = createContext<BrandingContextType>({
   isLoading: true,
 });
 
-export const BrandingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const BrandingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [restaurantName, setRestaurantName] = useState("La Charreada");
   const [isLoading, setIsLoading] = useState(true);
 

@@ -60,58 +60,70 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-base-300 flex">
       {/* Left side - Login form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-mexican-red rounded-full flex items-center justify-center mx-auto mb-4">
-              <ChefHat className="h-8 w-8 text-white" />
+            <div className="avatar mb-4">
+              <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center">
+                <ChefHat className="h-8 w-8 text-accent-content" />
+              </div>
             </div>
-            <h1 className="text-2xl font-bold dark-gray">{restaurantName}</h1>
-            <p className="text-gray-600">Staff Access Portal</p>
+            <h1 className="text-2xl font-bold text-base-content">{restaurantName}</h1>
+            <p className="text-base-content/70">Staff Access Portal</p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Login</CardTitle>
-              <CardDescription>
+          <Card className="card bg-base-200 shadow-xl">
+            <CardHeader className="card-body pb-4">
+              <CardTitle className="card-title text-base-content">Login</CardTitle>
+              <CardDescription className="text-base-content/60">
                 Access your dashboard
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="card-body pt-0">
               <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
-                <div>
-                  <Label htmlFor="username">Username</Label>
+                <div className="form-control w-full">
+                  <Label htmlFor="username" className="label">
+                    <span className="label-text">Username</span>
+                  </Label>
                   <Input
                     id="username"
                     type="text"
                     placeholder="Enter your username"
+                    className="input input-bordered w-full"
                     {...loginForm.register("username")}
                   />
                   {loginForm.formState.errors.username && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {loginForm.formState.errors.username.message}
-                    </p>
+                    <div className="label">
+                      <span className="label-text-alt text-error">
+                        {loginForm.formState.errors.username.message}
+                      </span>
+                    </div>
                   )}
                 </div>
-                <div>
-                  <Label htmlFor="password">Password</Label>
+                <div className="form-control w-full">
+                  <Label htmlFor="password" className="label">
+                    <span className="label-text">Password</span>
+                  </Label>
                   <Input
                     id="password"
                     type="password"
                     placeholder="Enter your password"
+                    className="input input-bordered w-full"
                     {...loginForm.register("password")}
                   />
                   {loginForm.formState.errors.password && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {loginForm.formState.errors.password.message}
-                    </p>
+                    <div className="label">
+                      <span className="label-text-alt text-error">
+                        {loginForm.formState.errors.password.message}
+                      </span>
+                    </div>
                   )}
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full bg-mexican-red hover:bg-red-600"
+                  className="btn btn-primary w-full"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? (
@@ -130,26 +142,26 @@ export default function AuthPage() {
       </div>
 
       {/* Right side - Branding */}
-      <div className="hidden lg:flex lg:flex-1 bg-mexican-red relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-red-700" />
-        <div className="relative flex items-center justify-center text-center text-white p-12">
+      <div className="hidden lg:flex lg:flex-1 bg-primary relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-focus" />
+        <div className="relative flex items-center justify-center text-center text-primary-content p-12">
           <div className="max-w-md">
             <h2 className="text-4xl font-bold mb-6">
               Authentic Mexican Cuisine
             </h2>
-            <p className="text-xl mb-8 text-red-100">
+            <p className="text-xl mb-8 text-primary-content/80">
               Manage your restaurant with our comprehensive dashboard
             </p>
             <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-white/10 rounded-lg p-4">
+              <div className="card bg-base-100/10 p-4">
                 <div className="mb-2">
-                  <ClipboardList className="h-6 w-6 text-white" />
+                  <ClipboardList className="h-6 w-6 text-primary-content" />
                 </div>
                 <div className="font-semibold">Order Management</div>
               </div>
-              <div className="bg-white/10 rounded-lg p-4">
+              <div className="card bg-base-100/10 p-4">
                 <div className="mb-2">
-                  <Utensils className="h-6 w-6 text-white" />
+                  <Utensils className="h-6 w-6 text-primary-content" />
                 </div>
                 <div className="font-semibold">Menu Control</div>
               </div>

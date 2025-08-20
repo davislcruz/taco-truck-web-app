@@ -1,18 +1,16 @@
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 import {
   Toast,
   ToastClose,
   ToastDescription,
-  ToastProvider,
   ToastTitle,
-  ToastViewport,
-} from "@/components/ui/toast"
+} from "@/components/ui/toast";
 
 export function Toaster() {
-  const { toasts } = useToast()
+  const { toasts, dismiss } = useToast();
 
   return (
-    <ToastProvider>
+    <div className="toast toast-top toast-end z-50">
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
@@ -22,12 +20,12 @@ export function Toaster() {
                 <ToastDescription>{description}</ToastDescription>
               )}
             </div>
-            {action}
-            <ToastClose />
+            {/* Temporarily disable action to fix React 19 child rendering */}
+            {/* {action && action} */}
+            <ToastClose onClick={() => dismiss(id)} />
           </Toast>
-        )
+        );
       })}
-      <ToastViewport />
-    </ToastProvider>
-  )
+    </div>
+  );
 }

@@ -1,107 +1,62 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(20, 14.3%, 4.1%);
-  --muted: hsl(60, 4.8%, 95.9%);
-  --muted-foreground: hsl(25, 5.3%, 44.7%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(20, 14.3%, 4.1%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(20, 14.3%, 4.1%);
-  --border: hsl(20, 5.9%, 90%);
-  --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(0, 73%, 51%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(60, 4.8%, 95.9%);
-  --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(60, 4.8%, 95.9%);
-  --accent-foreground: hsl(24, 9.8%, 10%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
-  --radius: 0.5rem;
-  --mexican-red: hsl(0, 73%, 51%);
-  --mexican-green: hsl(123, 43%, 45%);
-  --warm-orange: hsl(32, 100%, 50%);
-  --dark-gray: hsl(0, 0%, 17%);
-  --vibrant-pink: hsl(330, 85%, 60%);
-  --bright-yellow: hsl(50, 100%, 65%);
-  --turquoise: hsl(180, 65%, 55%);
-  --coral: hsl(16, 100%, 66%);
-  --lime-green: hsl(75, 85%, 55%);
-  --sunset-orange: hsl(25, 100%, 60%);
-  --royal-purple: hsl(260, 80%, 65%);
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark, cupcake, bumblebee, emerald, corporate, synthwave, retro, cyberpunk, valentine, halloween, garden, forest, aqua, lofi, pastel, fantasy, wireframe, black, luxury, dracula, cmyk, autumn, business, acid, lemonade, night, coffee, winter, dim, nord, sunset, caramellatte, abyss, silk;
 }
-
-.dark {
-  --background: hsl(240, 10%, 3.9%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(240, 3.7%, 15.9%);
-  --muted-foreground: hsl(240, 5%, 64.9%);
-  --popover: hsl(240, 10%, 3.9%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(240, 10%, 3.9%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 3.7%, 15.9%);
-  --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(0, 73%, 51%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(240, 3.7%, 15.9%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(240, 3.7%, 15.9%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(240, 4.9%, 83.9%);
-  --radius: 0.5rem;
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply font-sans antialiased bg-background text-foreground;
-  }
-}
-
 @layer utilities {
-  .mexican-red {
-    color: hsl(0, 73%, 51%);
+  /* DaisyUI + Typography Integration */
+  .prose-daisyui {
+    color: hsl(var(--bc));
   }
   
-  .bg-mexican-red {
-    background-color: hsl(0, 73%, 51%);
+  .prose-daisyui h1,
+  .prose-daisyui h2,
+  .prose-daisyui h3,
+  .prose-daisyui h4 {
+    color: hsl(var(--bc));
   }
   
-  .mexican-green {
-    color: hsl(123, 43%, 45%);
+  .prose-daisyui strong {
+    color: hsl(var(--bc));
   }
   
-  .bg-mexican-green {
-    background-color: hsl(123, 43%, 45%);
+  /* DaisyUI theme integration for @tailwindcss/typography */
+  .prose {
+    --tw-prose-body: hsl(var(--bc) / 0.85);
+    --tw-prose-headings: hsl(var(--bc));
+    --tw-prose-links: hsl(var(--p));
+    --tw-prose-bold: hsl(var(--bc));
+    --tw-prose-counters: hsl(var(--bc) / 0.7);
+    --tw-prose-bullets: hsl(var(--bc) / 0.5);
+    --tw-prose-hr: hsl(var(--bc) / 0.2);
+    --tw-prose-quotes: hsl(var(--bc) / 0.9);
+    --tw-prose-quote-borders: hsl(var(--bc) / 0.2);
+    --tw-prose-captions: hsl(var(--bc) / 0.7);
+    --tw-prose-code: hsl(var(--bc));
+    --tw-prose-pre-code: hsl(var(--bc));
+    --tw-prose-pre-bg: hsl(var(--b1));
+    --tw-prose-th-borders: hsl(var(--bc) / 0.3);
+    --tw-prose-td-borders: hsl(var(--bc) / 0.2);
+    
+    /* Invert colors for dark themes */
+    --tw-prose-invert-body: hsl(var(--bc) / 0.85);
+    --tw-prose-invert-headings: hsl(var(--bc));
+    --tw-prose-invert-links: hsl(var(--p));
+    --tw-prose-invert-bold: hsl(var(--bc));
+    --tw-prose-invert-counters: hsl(var(--bc) / 0.7);
+    --tw-prose-invert-bullets: hsl(var(--bc) / 0.5);
+    --tw-prose-invert-hr: hsl(var(--bc) / 0.2);
+    --tw-prose-invert-quotes: hsl(var(--bc) / 0.9);
+    --tw-prose-invert-quote-borders: hsl(var(--bc) / 0.2);
+    --tw-prose-invert-captions: hsl(var(--bc) / 0.7);
+    --tw-prose-invert-code: hsl(var(--bc));
+    --tw-prose-invert-pre-code: hsl(var(--bc));
+    --tw-prose-invert-pre-bg: hsl(var(--b1));
+    --tw-prose-invert-th-borders: hsl(var(--bc) / 0.3);
+    --tw-prose-invert-td-borders: hsl(var(--bc) / 0.2);
   }
   
-  .warm-orange {
-    color: hsl(32, 100%, 50%);
-  }
-  
-  .bg-warm-orange {
-    background-color: hsl(32, 100%, 50%);
-  }
-  
-  .dark-gray {
-    color: hsl(0, 0%, 17%);
-  }
-  
-  .bg-dark-gray {
-    background-color: hsl(0, 0%, 17%);
-  }
-  
+  /* Utility classes for enhanced UX */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -109,46 +64,6 @@
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
-  }
-  
-  .bg-vibrant-pink {
-    background-color: hsl(330, 85%, 60%);
-  }
-  
-  .bg-bright-yellow {
-    background-color: hsl(50, 100%, 65%);
-  }
-  
-  .bg-turquoise {
-    background-color: hsl(180, 65%, 55%);
-  }
-  
-  .bg-coral {
-    background-color: hsl(16, 100%, 66%);
-  }
-  
-  .bg-lime-green {
-    background-color: hsl(75, 85%, 55%);
-  }
-  
-  .bg-sunset-orange {
-    background-color: hsl(25, 100%, 60%);
-  }
-  
-  .bg-royal-purple {
-    background-color: hsl(260, 80%, 65%);
-  }
-  
-  .gradient-mexican {
-    background: linear-gradient(135deg, hsl(0, 73%, 51%) 0%, hsl(25, 100%, 60%) 50%, hsl(330, 85%, 60%) 100%);
-  }
-  
-  .gradient-sunset {
-    background: linear-gradient(135deg, hsl(32, 100%, 50%) 0%, hsl(16, 100%, 66%) 100%);
-  }
-  
-  .gradient-tropical {
-    background: linear-gradient(135deg, hsl(180, 65%, 55%) 0%, hsl(75, 85%, 55%) 100%);
   }
   
   .hover-lift {
@@ -166,10 +81,10 @@
   
   @keyframes pulse-glow {
     from {
-      box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
     }
     to {
-      box-shadow: 0 0 30px rgba(255, 165, 0, 0.6);
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
     }
   }
   

@@ -1,4 +1,4 @@
-import * as React from "react"
+import { useState, useEffect } from "react"
 
 import type {
   ToastActionElement,
@@ -135,6 +135,12 @@ function dispatch(action: Action) {
   listeners.forEach((listener) => {
     listener(memoryState)
   })
+  // If toast is dismissed, schedule removal
+  if (action.type === "DISMISS_TOAST" && action.toastId) {
+    setTimeout(() => {
+      dispatch({ type: "REMOVE_TOAST", toastId: action.toastId })
+    }, 300); // 300ms for exit animation
+  }
 }
 
 type Toast = Omit<ToasterToast, "id">
@@ -154,10 +160,6 @@ function toast({ ...props }: Toast) {
     toast: {
       ...props,
       id,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss()
-      },
     },
   })
 
@@ -169,9 +171,9 @@ function toast({ ...props }: Toast) {
 }
 
 function useToast() {
-  const [state, setState] = React.useState<State>(memoryState)
+  const [state, setState] = useState<State>(memoryState)
 
-  React.useEffect(() => {
+  useEffect(() => {
     listeners.push(setState)
     return () => {
       const index = listeners.indexOf(setState)
