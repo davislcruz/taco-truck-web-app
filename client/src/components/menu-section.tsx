@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from 'embla-carousel-react';
+import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +53,7 @@ function CategoryCarousel({ category, filteredItems, onItemSelect }: CategoryCar
       '(min-width: 992px)': { slidesToScroll: 2 },
       '(min-width: 1460px)': { slidesToScroll: 3 }
     }
-  });
+  }, [WheelGesturesPlugin()]);
   
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
   const [nextBtnDisabled, setNextBtnDisabled] = useState(false);
@@ -218,7 +219,7 @@ function CategoryCarousel({ category, filteredItems, onItemSelect }: CategoryCar
                 </div>
                 
                 {/* Menu Item Card */}
-                <Card className="card bg-base-200 shadow-md hover:shadow-lg transition-shadow h-48 flex flex-col">
+                <Card className="card bg-base-200 shadow-md hover:shadow-lg transition-shadow h-auto sm:h-48 flex flex-col">
                   {renderCardContent(item)}
                 </Card>
               </div>
