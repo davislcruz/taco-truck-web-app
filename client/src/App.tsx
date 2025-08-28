@@ -6,7 +6,8 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { BrandingProvider } from "@/hooks/use-branding";
 import { DaisyUIThemeProvider } from "@/hooks/use-daisyui-theme";
 import { Router, Route, Switch } from "wouter";
-import HomePage from "@/pages/home-page";
+import WelcomeHomePage from "@/pages/welcome-home-page";
+import MenuPage from "@/pages/menu-page";
 import AuthPage from "@/pages/auth-page";
 import CheckoutPage from "@/pages/checkout-page";
 import OwnerDashboardPage from "@/pages/owner-dashboard-page";
@@ -16,7 +17,8 @@ function AppRouter() {
   return (
     <Router>
       <Switch>
-        <Route path="/" component={HomePage} />
+        <Route path="/" component={WelcomeHomePage} />
+        <Route path="/menu" component={MenuPage} />
         <Route path="/auth" component={AuthPage} />
         <Route path="/checkout" component={CheckoutPage} />
         <Route path="/dashboard" component={OwnerDashboardPage} />

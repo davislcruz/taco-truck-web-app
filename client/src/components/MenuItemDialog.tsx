@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -102,8 +102,8 @@ export function MenuItemDialog({
     onSubmit(processedData);
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+  return isOpen ? (
+    <Dialog>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create New Menu Item</DialogTitle>
@@ -139,17 +139,16 @@ export function MenuItemDialog({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="category">Category</Label>
-              <Select value={form.watch("category")} onValueChange={val => form.setValue("category", val)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.name}>
-                      {category.translation}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
+              <Select 
+                {...form.register("category")} 
+                value={form.watch("category")}
+              >
+                <option value="">Select category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.name}>
+                    {category.translation}
+                  </option>
+                ))}
               </Select>
               {form.formState.errors.category && (
                 <p className="text-sm text-error mt-1">{form.formState.errors.category.message}</p>
@@ -238,5 +237,5 @@ export function MenuItemDialog({
         </form>
       </DialogContent>
     </Dialog>
-  );
+  ) : null;
 }

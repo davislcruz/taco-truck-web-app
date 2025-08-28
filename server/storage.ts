@@ -51,6 +51,7 @@ export class MemStorage implements IStorage {
   private categories: Map<number, Category>;
   private menuItems: Map<number, MenuItem>;
   private orders: Map<number, Order>;
+  private settings: Map<string, Setting>;
   private currentUserId: number;
   private currentCategoryId: number;
   private currentMenuItemId: number;
@@ -62,6 +63,7 @@ export class MemStorage implements IStorage {
     this.categories = new Map();
     this.menuItems = new Map();
     this.orders = new Map();
+    this.settings = new Map();
     this.currentUserId = 1;
     this.currentCategoryId = 1;
     this.currentMenuItemId = 1;
@@ -79,11 +81,11 @@ export class MemStorage implements IStorage {
 
   private initializeCategories() {
     const defaultCategories: Omit<Category, 'id'>[] = [
-      { name: "tacos", translation: "Tacos", icon: "utensils", order: 1 },
-      { name: "burritos", translation: "Burritos", icon: "utensils", order: 2 },
-      { name: "tortas", translation: "Tortas", icon: "utensils", order: 3 },
-      { name: "semitas", translation: "Semitas", icon: "utensils", order: 4 },
-      { name: "drinks", translation: "Bebidas", icon: "glass-water", order: 5 },
+      { name: "tacos", translation: "Tacos", icon: "utensils", order: 1, ingredients: [] },
+      { name: "burritos", translation: "Burritos", icon: "utensils", order: 2, ingredients: [] },
+      { name: "tortas", translation: "Tortas", icon: "utensils", order: 3, ingredients: [] },
+      { name: "semitas", translation: "Semitas", icon: "utensils", order: 4, ingredients: [] },
+      { name: "drinks", translation: "Bebidas", icon: "glass-water", order: 5, ingredients: [] },
     ];
 
     defaultCategories.forEach((categoryData, index) => {
@@ -226,8 +228,6 @@ export class MemStorage implements IStorage {
           price: "0.00",
           description: "Add description here",
           image: "",
-          availability: true,
-          customizable: true,
           meats: [],
           ingredients: [],
           sizes: []
@@ -266,7 +266,12 @@ export class MemStorage implements IStorage {
 
   async createCategory(data: InsertCategory): Promise<Category> {
     const id = this.currentCategoryId++;
-    const category: Category = { ...data, id, order: data.order || 0 };
+    const category: Category = { 
+      ...data, 
+      id, 
+      order: data.order || 0,
+      ingredients: data.ingredients || []
+    };
     this.categories.set(id, category);
     return category;
   }
@@ -389,6 +394,16 @@ export class MemStorage implements IStorage {
       (order) => order.phone.includes(phone)
     );
   }
+
+  async getSetting(key: string): Promise<Setting | undefined> {
+    return this.settings.get(key);
+  }
+
+  async updateSetting(key: string, value: string): Promise<Setting> {
+    const setting: Setting = { id: this.settings.size + 1, key, value };
+    this.settings.set(key, setting);
+    return setting;
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -440,8 +455,6 @@ export class DatabaseStorage implements IStorage {
           price: "12.99",
           description: "Three soft corn tortillas with slow-cooked pulled pork",
           image: "https://images.unsplash.com/photo-1624300629298-e9de39c13be5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Carnitas", "Al Pastor", "Carne Asada", "Pollo"],
           ingredients: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime"],
           sizes: []
@@ -453,8 +466,6 @@ export class DatabaseStorage implements IStorage {
           price: "13.99",
           description: "Three soft corn tortillas with marinated pork, pineapple, and onions",
           image: "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Al Pastor", "Carne Asada", "Carnitas", "Pollo"],
           ingredients: ["Cebolla (Onions)", "Cilantro", "Piña (Pineapple)", "Salsa Verde", "Salsa Roja", "Lime"],
           sizes: []
@@ -466,8 +477,6 @@ export class DatabaseStorage implements IStorage {
           price: "14.99",
           description: "Three soft flour tortillas with grilled tilapia and cabbage slaw",
           image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Pescado (Fish)", "Camarón (Shrimp)"],
           ingredients: ["Cabbage Slaw", "Pico de Gallo", "Crema", "Lime", "Chipotle Mayo"],
           sizes: []
@@ -479,8 +488,6 @@ export class DatabaseStorage implements IStorage {
           price: "13.49",
           description: "Three soft corn tortillas with spicy Mexican sausage",
           image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Chorizo", "Al Pastor", "Carnitas"],
           ingredients: ["Cebolla (Onions)", "Cilantro", "Salsa Verde", "Salsa Roja", "Lime", "Queso Fresco"],
           sizes: []
@@ -494,8 +501,6 @@ export class DatabaseStorage implements IStorage {
           price: "11.99",
           description: "Large flour tortilla with seasoned chicken, rice, and beans",
           image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Pollo", "Carnitas", "Carne Asada", "Al Pastor"],
           ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Tomatoes"],
           sizes: []
@@ -507,8 +512,6 @@ export class DatabaseStorage implements IStorage {
           price: "13.99",
           description: "Large flour tortilla with marinated grilled beef, rice, beans, and fresh ingredients",
           image: "https://images.unsplash.com/photo-1566740933430-b5e70b06d2d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Carne Asada", "Al Pastor", "Carnitas", "Pollo"],
           ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Pico de Gallo"],
           sizes: []
@@ -520,8 +523,6 @@ export class DatabaseStorage implements IStorage {
           price: "12.99",
           description: "Large flour tortilla with slow-cooked pulled pork and traditional sides",
           image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Carnitas", "Al Pastor", "Carne Asada", "Pollo"],
           ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Cilantro", "Onions"],
           sizes: []
@@ -533,8 +534,6 @@ export class DatabaseStorage implements IStorage {
           price: "10.99",
           description: "Large flour tortilla packed with rice, beans, vegetables, and cheese",
           image: "https://images.unsplash.com/photo-1574343635717-1348761c0d64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: [],
           ingredients: ["Rice", "Black Beans", "Pinto Beans", "Cheese", "Sour Cream (+$1)", "Guacamole (+$2)", "Lettuce", "Tomatoes", "Bell Peppers", "Onions"],
           sizes: []
@@ -548,8 +547,6 @@ export class DatabaseStorage implements IStorage {
           price: "10.99",
           description: "Traditional Mexican sandwich drowned in spicy red sauce",
           image: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Carnitas", "Pollo", "Carne Asada"],
           ingredients: ["Beans", "Pickled Onions", "Avocado", "Lettuce", "Tomato", "Spicy Red Sauce"],
           sizes: []
@@ -561,8 +558,6 @@ export class DatabaseStorage implements IStorage {
           price: "12.99",
           description: "Mexican sandwich with breaded and fried steak on fresh bolillo bread",
           image: "https://images.unsplash.com/photo-1619740455993-8c2b8078c3cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Milanesa (Breaded Steak)", "Carnitas", "Pollo"],
           ingredients: ["Beans", "Avocado", "Lettuce", "Tomato", "Pickled Jalapeños", "Mayo", "Oaxaca Cheese"],
           sizes: []
@@ -574,8 +569,6 @@ export class DatabaseStorage implements IStorage {
           price: "11.99",
           description: "Mexican sandwich with seasoned grilled chicken and fresh toppings",
           image: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Pollo", "Carnitas", "Al Pastor"],
           ingredients: ["Beans", "Avocado", "Lettuce", "Tomato", "Pickled Onions", "Mayo", "Chipotle Mayo (+$0.50)"],
           sizes: []
@@ -587,8 +580,6 @@ export class DatabaseStorage implements IStorage {
           price: "14.99",
           description: "Loaded Mexican sandwich with multiple meats and all the fixings",
           image: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Carnitas", "Chorizo", "Milanesa", "Ham"],
           ingredients: ["Beans", "Avocado", "Lettuce", "Tomato", "Pickled Jalapeños", "Mayo", "Oaxaca Cheese", "Chipotle Mayo"],
           sizes: []
@@ -602,8 +593,6 @@ export class DatabaseStorage implements IStorage {
           price: "9.99",
           description: "Mexican-style sandwich with your choice of meat and ingredients",
           image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Pollo", "Carnitas", "Al Pastor"],
           ingredients: ["Beans", "Avocado", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo"],
           sizes: []
@@ -615,8 +604,6 @@ export class DatabaseStorage implements IStorage {
           price: "10.99",
           description: "Mexican-style sandwich with marinated pork and pineapple",
           image: "https://images.unsplash.com/photo-1615870216519-2f9fa2adf101?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Al Pastor", "Carnitas", "Pollo"],
           ingredients: ["Beans", "Avocado", "Pineapple", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo"],
           sizes: []
@@ -628,8 +615,6 @@ export class DatabaseStorage implements IStorage {
           price: "10.49",
           description: "Mexican-style sandwich with slow-cooked pulled pork",
           image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Carnitas", "Al Pastor", "Pollo"],
           ingredients: ["Beans", "Avocado", "Pickled Onions", "Lettuce", "Tomato", "Mayo", "Salsa Verde"],
           sizes: []
@@ -641,8 +626,6 @@ export class DatabaseStorage implements IStorage {
           price: "10.99",
           description: "Mexican-style sandwich with spicy chorizo sausage",
           image: "https://images.unsplash.com/photo-1608039755401-742074f0548d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: ["Chorizo", "Al Pastor", "Carnitas"],
           ingredients: ["Beans", "Avocado", "Pickled Jalapeños", "Lettuce", "Tomato", "Mayo", "Queso Fresco"],
           sizes: []
@@ -656,8 +639,6 @@ export class DatabaseStorage implements IStorage {
           price: "3.99",
           description: "Refreshing hibiscus flower drink",
           image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: [],
           ingredients: [],
           sizes: ["Small", "Medium", "Large"]
@@ -669,8 +650,6 @@ export class DatabaseStorage implements IStorage {
           price: "4.49",
           description: "Sweet and tangy tamarind flavored refreshing drink",
           image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: [],
           ingredients: [],
           sizes: ["Small", "Medium", "Large"]
@@ -682,8 +661,6 @@ export class DatabaseStorage implements IStorage {
           price: "4.99",
           description: "Creamy rice and cinnamon beverage, a Mexican favorite",
           image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: [],
           ingredients: [],
           sizes: ["Small", "Medium", "Large"]
@@ -695,8 +672,6 @@ export class DatabaseStorage implements IStorage {
           price: "3.49",
           description: "Authentic Mexican Coca-Cola made with cane sugar in glass bottles",
           image: "https://images.unsplash.com/photo-1561758033-48d52648ae8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: [],
           ingredients: [],
           sizes: ["Bottle"]
@@ -708,8 +683,6 @@ export class DatabaseStorage implements IStorage {
           price: "4.29",
           description: "Fresh squeezed lime water with a touch of sweetness",
           image: "https://images.unsplash.com/photo-1571068316344-75bc76f77890?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-          availability: true,
-          customizable: true,
           meats: [],
           ingredients: [],
           sizes: ["Small", "Medium", "Large"]
@@ -741,8 +714,6 @@ export class DatabaseStorage implements IStorage {
           price: "0.00",
           description: "Add description here",
           image: "",
-          availability: true,
-          customizable: true,
           meats: [],
           ingredients: [],
           sizes: []

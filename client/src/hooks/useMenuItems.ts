@@ -185,7 +185,7 @@ export function useMenuItems() {
       if (originalItem) {
         // Merge changes with original item to ensure all required fields are present
         const updatedItem = { ...originalItem, ...changes };
-        updateMenuItemMutation.mutate({ id: itemId, ...updatedItem });
+        updateMenuItemMutation.mutate({ ...updatedItem, id: itemId });
       }
     } else {
       // No changes to save, just exit edit mode

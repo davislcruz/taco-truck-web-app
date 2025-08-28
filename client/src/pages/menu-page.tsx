@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingCart, ShieldX, Menu, Phone, MapPin, Home, ChefHat, User } from "lucide-react";
+import { Loader2, ShoppingCart, Menu, Phone, MapPin, Home, ChefHat, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useBranding } from "@/hooks/use-branding";
 import { MenuItem } from "@shared/schema";
@@ -21,27 +21,13 @@ export interface CartItem extends MenuItem {
   totalPrice: number;
 }
 
-export default function HomePage() {
+export default function MenuPage() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const { restaurantName } = useBranding();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-
-  // Only redirect owners to dashboard on initial login, not when they explicitly visit homepage
-  useEffect(() => {
-    if (user && user.role === "owner" && !sessionStorage.getItem("allowOwnerHomepage")) {
-      setLocation("/dashboard");
-    }
-  }, [user, setLocation]);
-
-  // Clear the flag when component unmounts
-  useEffect(() => {
-    return () => {
-      sessionStorage.removeItem("allowOwnerHomepage");
-    };
-  }, []);
 
   const { data: menuItems, isLoading } = useQuery<MenuItem[]>({
     queryKey: ["/api/menu"],
@@ -165,13 +151,11 @@ export default function HomePage() {
         total={cartTotal}
       />
 
-
-
-      {/* Bottom Navigation Bar - Phone dock style */}
+      {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-neutral border-t border-base-200 shadow-lg z-50">
         <div className="flex items-center justify-around py-3 px-4 max-w-md mx-auto">
           <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => setLocation('/')}
             className="flex flex-col items-center justify-center py-2 px-3 rounded-lg text-neutral-content hover:text-accent hover:bg-accent/10 transition-colors duration-200 min-w-[60px]"
           >
             <Home className="h-6 w-6 mb-1" />
@@ -180,7 +164,7 @@ export default function HomePage() {
           
           <button
             onClick={scrollToMenu}
-            className="flex flex-col items-center justify-center py-2 px-3 rounded-lg text-neutral-content hover:text-accent hover:bg-accent/10 transition-colors duration-200 min-w-[60px]"
+            className="flex flex-col items-center justify-center py-2 px-3 rounded-lg text-accent bg-accent/10 transition-colors duration-200 min-w-[60px]"
           >
             <Menu className="h-6 w-6 mb-1" />
             <span className="text-xs font-medium">Menu</span>
