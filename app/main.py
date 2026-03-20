@@ -603,45 +603,97 @@ async def seed_database(db: AsyncSession = Depends(get_db)):
             await db.commit()
             results.append("✅ Created admin user (admin / admin123)")
         
-        # Check if categories exist
+        # Ensure core categories exist
         result = await db.execute(select(Category))
         existing_cats = result.scalars().all()
-        
+
         if existing_cats:
             results.append(f"✅ Categories already exist ({len(existing_cats)} found)")
         else:
-            # Create categories
-            categories = [
+            base_categories = [
                 Category(name="Tacos", name_es="Tacos", display_order=1),
                 Category(name="Burritos", name_es="Burritos", display_order=2),
                 Category(name="Tortas", name_es="Tortas", display_order=3),
                 Category(name="Drinks", name_es="Bebidas", display_order=4),
             ]
-            for cat in categories:
+            for cat in base_categories:
                 db.add(cat)
             await db.commit()
             results.append("✅ Created 4 categories")
-            
-            # Refresh to get IDs
-            for cat in categories:
-                await db.refresh(cat)
-            
-            # Create menu items
-            items = [
-                MenuItem(category_id=categories[0].id, name="Carne Asada Taco", name_es="Taco de Carne Asada", price=3.50),
-                MenuItem(category_id=categories[0].id, name="Carnitas Taco", name_es="Taco de Carnitas", price=3.50),
-                MenuItem(category_id=categories[0].id, name="Chicken Taco", name_es="Taco de Pollo", price=3.25),
-                MenuItem(category_id=categories[0].id, name="Al Pastor Taco", name_es="Taco al Pastor", price=3.50),
-                MenuItem(category_id=categories[1].id, name="Carne Asada Burrito", name_es="Burrito de Carne Asada", price=9.99),
-                MenuItem(category_id=categories[1].id, name="Chicken Burrito", name_es="Burrito de Pollo", price=9.50),
-                MenuItem(category_id=categories[2].id, name="Carne Asada Torta", name_es="Torta de Carne Asada", price=8.99),
-                MenuItem(category_id=categories[3].id, name="Horchata", name_es="Horchata", price=3.00),
-                MenuItem(category_id=categories[3].id, name="Mexican Coke", name_es="Coca Mexicana", price=2.50),
-            ]
-            for item in items:
-                db.add(item)
+
+        # Reload categories and map by name
+        result = await db.execute(select(Category).order_by(Category.display_order))
+        categories = result.scalars().all()
+        category_map = {c.name.lower(): c for c in categories}
+
+        sample_items_by_category = {
+            "tacos": [
+                ("Carne Asada Taco", "Taco de Carne Asada", 3.50, "Grilled steak, onion, cilantro"),
+                ("Carnitas Taco", "Taco de Carnitas", 3.50, "Slow-cooked pork, salsa verde"),
+                ("Chicken Taco", "Taco de Pollo", 3.25, "Marinated chicken, fresh pico"),
+                ("Al Pastor Taco", "Taco al Pastor", 3.50, "Pork, pineapple, achiote"),
+                ("Barbacoa Taco", "Taco de Barbacoa", 3.75, "Tender beef, guajillo broth"),
+                ("Birria Taco", "Taco de Birria", 4.25, "Quesabirria with consomé"),
+                ("Fish Taco", "Taco de Pescado", 3.95, "Crispy fish, lime crema"),
+                ("Shrimp Taco", "Taco de Camarón", 4.25, "Garlic shrimp, slaw"),
+            ],
+            "burritos": [
+                ("Carne Asada Burrito", "Burrito de Carne Asada", 9.99, "Steak, beans, rice, salsa"),
+                ("Chicken Burrito", "Burrito de Pollo", 9.50, "Chicken, beans, rice, crema"),
+                ("Al Pastor Burrito", "Burrito al Pastor", 9.95, "Pork, pineapple, rice"),
+                ("Veggie Burrito", "Burrito Vegetariano", 8.95, "Fajita veggies, guac"),
+                ("Chile Verde Burrito", "Burrito Chile Verde", 10.25, "Pork in green chile sauce"),
+                ("Birria Burrito", "Burrito de Birria", 10.75, "Birria beef, cheese"),
+            ],
+            "tortas": [
+                ("Carne Asada Torta", "Torta de Carne Asada", 8.99, "Telera roll, steak, avocado"),
+                ("Milanesa Torta", "Torta de Milanesa", 8.95, "Breaded chicken cutlet"),
+                ("Cubana Torta", "Torta Cubana", 10.50, "Mixed meats, jalapeño"),
+                ("Al Pastor Torta", "Torta al Pastor", 9.25, "Pastor, beans, lettuce"),
+                ("Veggie Torta", "Torta Vegetariana", 8.50, "Grilled veggies, cheese"),
+            ],
+            "drinks": [
+                ("Horchata", "Horchata", 3.00, "Rice-cinnamon agua fresca"),
+                ("Mexican Coke", "Coca Mexicana", 2.50, "Glass bottle"),
+                ("Jamaica", "Agua de Jamaica", 3.00, "Hibiscus agua fresca"),
+                ("Tamarindo", "Agua de Tamarindo", 3.00, "Tamarind agua fresca"),
+                ("Lime Agua Fresca", "Agua de Limón", 3.00, "Fresh lime drink"),
+                ("Jarritos Mandarin", "Jarritos Mandarina", 2.75, "Mandarin soda"),
+            ],
+        }
+
+        created_count = 0
+        for cat_key, items in sample_items_by_category.items():
+            category = category_map.get(cat_key)
+            if not category:
+                continue
+
+            item_result = await db.execute(select(MenuItem).where(MenuItem.category_id == category.id))
+            existing_names = {i.name for i in item_result.scalars().all()}
+
+            display_order = 1
+            for name, name_es, price, desc in items:
+                if name in existing_names:
+                    continue
+                db.add(
+                    MenuItem(
+                        category_id=category.id,
+                        name=name,
+                        name_es=name_es,
+                        price=price,
+                        description=desc,
+                        display_order=display_order,
+                        is_available=True,
+                    )
+                )
+                display_order += 1
+                created_count += 1
+
+        if created_count > 0:
             await db.commit()
-            results.append("✅ Created 9 menu items")
+            results.append(f"✅ Added {created_count} new menu items")
+        else:
+            results.append("✅ Menu already has rich sample items")
         
         return f"""<!DOCTYPE html>
 <html>

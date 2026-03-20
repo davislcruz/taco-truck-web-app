@@ -27,36 +27,39 @@
         {% endif %}
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for item in items_by_category[category.id] %}
-        <div class="menu-card transition-all duration-300 overflow-hidden group">
-            <!-- Item Image or Placeholder -->
-            <div class="h-40 bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center text-6xl">
-                {% if item.image_url %}
-                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="w-full h-full object-cover">
-                {% else %}
-                🌮
-                {% endif %}
-            </div>
-            
-            <div class="p-4">
-                <div class="flex justify-between items-start mb-2">
-                    <h3 class="font-bold text-lg text-gray-800">{{ item.name }}</h3>
-                    <span class="price-sticker text-lg">{{ item.price | currency }}</span>
+    <div class="carousel-shell">
+        <button class="carousel-btn left" type="button" onclick="scrollCarousel('carousel-{{ category.id }}', -1)">‹</button>
+        <div id="carousel-{{ category.id }}" class="menu-carousel">
+            {% for item in items_by_category[category.id] %}
+            <article class="menu-card carousel-card transition-all duration-300 overflow-hidden group">
+                <div class="h-40 bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center text-6xl">
+                    {% if item.image_url %}
+                    <img src="{{ item.image_url }}" alt="{{ item.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                    🌮
+                    {% endif %}
                 </div>
-                
-                {% if item.description %}
-                <p class="text-gray-600 text-sm mb-4">{{ item.description }}</p>
-                {% endif %}
-                
-                <button 
-                    onclick="addToCart({{ item.id }}, '{{ item.name }}', {{ item.price }})"
-                    class="w-full poster-btn py-2 rounded-lg font-medium transition">
-                    Add to Cart
-                </button>
-            </div>
+
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2 gap-2">
+                        <h3 class="font-bold text-lg text-gray-800 leading-tight">{{ item.name }}</h3>
+                        <span class="price-sticker text-sm">{{ item.price | currency }}</span>
+                    </div>
+
+                    {% if item.description %}
+                    <p class="text-gray-600 text-sm mb-4">{{ item.description }}</p>
+                    {% endif %}
+
+                    <button
+                        onclick="addToCart({{ item.id }}, '{{ item.name }}', {{ item.price }})"
+                        class="w-full poster-btn py-2 rounded-lg font-medium transition">
+                        Add to Cart
+                    </button>
+                </div>
+            </article>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <button class="carousel-btn right" type="button" onclick="scrollCarousel('carousel-{{ category.id }}', 1)">›</button>
     </div>
 </section>
 {% endfor %}
@@ -75,14 +78,21 @@
         Cart.add(itemId, name, price);
         showToast(`${name} added to cart! 🌮`);
     }
-    
+
+    function scrollCarousel(id, direction) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const step = Math.max(280, Math.floor(el.clientWidth * 0.75));
+        el.scrollBy({ left: direction * step, behavior: 'smooth' });
+    }
+
     function showToast(message) {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
-        toast.className = 'bg-taco-orange text-white px-4 py-3 rounded-lg shadow-lg mb-2 animate-pulse';
+        toast.className = 'bg-taco-orange text-white px-4 py-3 rounded-lg shadow-lg mb-2';
         toast.textContent = message;
         container.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.remove();
         }, 2000);
