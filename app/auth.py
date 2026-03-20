@@ -3,24 +3,65 @@ Authentication utilities
 """
 from datetime import datetime, timedelta
 from typing import Optional
-from passlib.context import CryptContext
+import base64
+import hashlib
+import hmac
+import secrets
+
 from jose import JWTError, jwt
 
 from app.config import SECRET_KEY, SESSION_EXPIRE_DAYS
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# =============================================================================
+# PASSWORD HASHING (PBKDF2-HMAC-SHA256)
+# Format: pbkdf2_sha256$iterations$salt_b64$hash_b64
+# =============================================================================
+
+PBKDF2_ITERATIONS = 210_000
 
 
 def hash_password(password: str) -> str:
-    """Hash a password"""
-    return pwd_context.hash(password)
+    """Hash a password using PBKDF2-HMAC-SHA256."""
+    salt = secrets.token_bytes(16)
+    dk = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt,
+        PBKDF2_ITERATIONS,
+        dklen=32,
+    )
+    salt_b64 = base64.b64encode(salt).decode("ascii")
+    hash_b64 = base64.b64encode(dk).decode("ascii")
+    return f"pbkdf2_sha256${PBKDF2_ITERATIONS}${salt_b64}${hash_b64}"
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against a hash"""
-    return pwd_context.verify(plain_password, hashed_password)
+def verify_password(plain_password: str, stored_hash: str) -> bool:
+    """Verify a plain password against stored PBKDF2 hash."""
+    try:
+        algorithm, iterations_str, salt_b64, hash_b64 = stored_hash.split("$", 3)
+        if algorithm != "pbkdf2_sha256":
+            return False
 
+        iterations = int(iterations_str)
+        salt = base64.b64decode(salt_b64.encode("ascii"))
+        expected = base64.b64decode(hash_b64.encode("ascii"))
+
+        computed = hashlib.pbkdf2_hmac(
+            "sha256",
+            plain_password.encode("utf-8"),
+            salt,
+            iterations,
+            dklen=len(expected),
+        )
+        return hmac.compare_digest(computed, expected)
+    except Exception:
+        return False
+
+
+# =============================================================================
+# SESSION TOKENS
+# =============================================================================
 
 def create_session_token(user_id: int, role: str) -> str:
     """Create a session JWT token"""
