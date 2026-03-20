@@ -1,141 +1,135 @@
-/* Taco Truck - Mexican poster inspired theme */
+/* Mature, appetizing Mexican-inspired theme */
 
 :root {
-    --bg-yellow: #f9c646;
-    --bg-cream: #fff7dc;
-    --teal: #00a5b5;
-    --magenta: #b32663;
-    --purple: #6b1d5b;
-    --orange: #f97316;
-    --red: #dc2626;
-    --lime: #b8d335;
-    --ink: #2b1b1b;
+    --paper: #f6f1e7;
+    --surface: #fffaf0;
+    --surface-alt: #efe4d1;
+    --ink: #2b2118;
+    --muted: #6a5847;
+
+    --brand-primary: #8f2d1f;   /* chile */
+    --brand-secondary: #556b2f; /* avocado */
+    --brand-accent: #c18b2f;    /* warm gold */
+
+    --line: #d8c9b2;
+    --shadow: 0 10px 22px rgba(43, 33, 24, 0.10);
+    --radius: 14px;
 }
 
-html {
-    scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
     color: var(--ink);
     background:
-        radial-gradient(circle at 10% 20%, rgba(0,165,181,.18), transparent 30%),
-        radial-gradient(circle at 85% 10%, rgba(179,38,99,.18), transparent 35%),
-        radial-gradient(circle at 30% 90%, rgba(184,211,53,.14), transparent 30%),
-        linear-gradient(135deg, var(--bg-cream), #ffeeb2);
+        radial-gradient(circle at 20% 10%, rgba(193, 139, 47, 0.10), transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(143, 45, 31, 0.06), transparent 35%),
+        var(--paper);
     font-family: "Nunito", system-ui, sans-serif;
 }
 
 h1, h2, h3, .display-font {
-    font-family: "Bungee", "Impact", sans-serif;
-    letter-spacing: .5px;
+    font-family: "Archivo Black", "Nunito", sans-serif;
+    letter-spacing: 0.2px;
 }
 
 .poster-shell {
-    border: 8px solid var(--teal);
+    border: 1px solid var(--line);
     border-radius: 18px;
-    box-shadow: 0 20px 35px rgba(43, 27, 27, .18);
-    background: rgba(255, 255, 255, .72);
-    backdrop-filter: blur(1px);
+    box-shadow: 0 20px 35px rgba(43, 27, 27, .10);
+    background: rgba(255, 255, 255, 0.90);
 }
 
-.papel-border {
-    position: relative;
-}
-
+/* Subtle decorative strip */
+.papel-border { position: relative; }
 .papel-border::before,
 .papel-border::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
-    height: 12px;
-    background-image: repeating-linear-gradient(
-        90deg,
-        var(--magenta) 0 14px,
-        var(--bg-yellow) 14px 28px,
-        var(--teal) 28px 42px,
-        var(--orange) 42px 56px
-    );
-    z-index: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #8f2d1f, #c18b2f, #556b2f);
+    opacity: 0.45;
 }
-
 .papel-border::before { top: 0; }
 .papel-border::after { bottom: 0; }
 
-.section-title {
-    display: inline-block;
-    background: var(--purple);
-    color: #ffd95e;
-    padding: .35rem .9rem;
-    border-radius: 10px;
-    transform: rotate(-2deg);
-    box-shadow: 0 6px 0 rgba(107, 29, 91, .35);
+.nav-viva {
+    background: linear-gradient(90deg, #7a261a, #8f2d1f);
 }
 
-.price-sticker {
-    background: var(--red);
-    color: #fff;
-    font-weight: 900;
-    padding: .3rem .65rem;
-    border-radius: 999px;
-    box-shadow: 0 4px 0 rgba(120, 17, 17, .3);
+.section-title {
+    display: inline-block;
+    color: var(--brand-primary);
+    border-bottom: 3px solid var(--brand-accent);
+    padding-bottom: 0.15rem;
+}
+
+.category-section {
+    border-radius: 14px;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+}
+
+.category-section.alt {
+    background: var(--surface-alt);
 }
 
 .menu-card {
-    background: linear-gradient(180deg, #fff 0%, #fff7e7 100%);
-    border: 2px solid #f5ce66;
-    border-radius: 16px;
-    box-shadow: 0 10px 18px rgba(49, 25, 22, .1);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
     overflow: hidden;
 }
 
 .menu-card:hover {
-    transform: translateY(-3px) rotate(-.4deg);
-    box-shadow: 0 14px 26px rgba(49, 25, 22, .18);
-    transition: all .2s ease;
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(43, 33, 24, 0.14);
+    transition: all .18s ease;
+}
+
+.price-sticker {
+    background: rgba(143, 45, 31, 0.10);
+    color: var(--brand-primary);
+    font-weight: 800;
+    padding: .28rem .62rem;
+    border-radius: 999px;
+    border: 1px solid rgba(143, 45, 31, 0.24);
 }
 
 .poster-btn {
-    background: linear-gradient(135deg, var(--orange), #fb923c);
+    background: linear-gradient(135deg, var(--brand-primary), #a53a2a);
     color: #fff;
-    font-weight: 800;
+    font-weight: 700;
     border-radius: 10px;
-    box-shadow: 0 5px 0 rgba(165, 75, 16, .35);
-    transition: transform .12s ease, box-shadow .12s ease;
+    box-shadow: 0 4px 10px rgba(143, 45, 31, 0.30);
+    transition: transform .12s ease, filter .12s ease;
 }
-
-.poster-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 7px 0 rgba(165, 75, 16, .35);
-}
-
-.poster-btn:active,
-button:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 rgba(165, 75, 16, .35);
-}
-
-.nav-viva {
-    background:
-        linear-gradient(90deg, rgba(0,165,181,.95), rgba(0,165,181,.95)),
-        repeating-linear-gradient(
-            90deg,
-            rgba(255,255,255,.16) 0 12px,
-            rgba(255,255,255,0) 12px 24px
-        );
-}
+.poster-btn:hover { filter: brightness(1.04); transform: translateY(-1px); }
+.poster-btn:active, button:active { transform: translateY(1px); }
 
 .admin-panel {
-    border: 2px solid #f2c24b;
+    border: 1px solid var(--line);
     border-radius: 14px;
-    background: #fff9ea;
+    background: #fffdf7;
 }
 
-#toast-container > div {
-    animation: slideIn .3s ease-out;
+.ribbon-header {
+    padding: .75rem 1rem;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(193,139,47,.12), rgba(143,45,31,.10));
+    border: 1px solid rgba(143,45,31,.15);
 }
 
+/* Tone down noisy elements */
+.confetti-strip,
+.burst {
+    display: none;
+}
+
+#toast-container > div { animation: slideIn .25s ease-out; }
 @keyframes slideIn {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
@@ -143,55 +137,10 @@ button:active {
 
 input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: var(--orange);
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px rgba(143, 45, 31, 0.15);
 }
 
 footer {
-    background:
-        linear-gradient(90deg, rgba(179,38,99,.97), rgba(107,29,91,.97));
-}
-
-.ribbon-header {
-    position: relative;
-    padding: .5rem 1rem;
-    border-radius: 12px;
-    background: linear-gradient(90deg, rgba(255,239,176,.55), rgba(255,224,142,.7));
-    border: 2px dashed rgba(179,38,99,.4);
-}
-
-.confetti-strip {
-    height: 16px;
-    border-radius: 999px;
-    background:
-      repeating-linear-gradient(90deg,
-        #ef4444 0 10px,
-        #f59e0b 10px 20px,
-        #84cc16 20px 30px,
-        #06b6d4 30px 40px,
-        #a855f7 40px 50px);
-    box-shadow: inset 0 -3px 0 rgba(0,0,0,.12);
-}
-
-.fiesta-card {
-    position: relative;
-    overflow: hidden;
-}
-
-.fiesta-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 90% 12%, rgba(255,255,255,.35), transparent 24%);
-    pointer-events: none;
-}
-
-.burst {
-    display: inline-block;
-    background: var(--red);
-    color: #fff;
-    font-weight: 900;
-    padding: .45rem .8rem;
-    clip-path: polygon(50% 0%, 61% 13%, 78% 5%, 83% 22%, 100% 23%, 91% 39%, 100% 50%, 91% 61%, 100% 77%, 83% 78%, 78% 95%, 61% 87%, 50% 100%, 39% 87%, 22% 95%, 17% 78%, 0% 77%, 9% 61%, 0% 50%, 9% 39%, 0% 23%, 17% 22%, 22% 5%, 39% 13%);
-    box-shadow: 0 6px 0 rgba(120, 17, 17, .35);
+    background: linear-gradient(90deg, #5f1e15, #7a261a);
 }
