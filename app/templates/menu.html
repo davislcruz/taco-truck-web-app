@@ -20,12 +20,17 @@
 <!-- Menu Sections -->
 {% for category in categories %}
 <section id="cat-{{ category.id }}" class="mb-8 category-section {% if loop.index0 % 2 == 1 %}alt{% endif %}">
-    <div class="pb-2 mb-6">
-        <h2 class="text-2xl font-bold text-gray-800 section-title">{{ category.name }}</h2>
+    <header class="menu-section-header mb-6">
+        <div class="menu-section-title-row">
+            <h2 class="text-2xl font-bold text-gray-800 section-title">{{ category.name }}</h2>
+            <span class="section-count">{{ items_by_category[category.id] | length }} items</span>
+        </div>
         {% if category.description %}
-        <p class="text-gray-600">{{ category.description }}</p>
+        <p class="menu-section-subtitle">{{ category.description }}</p>
+        {% else %}
+        <p class="menu-section-subtitle">Freshly prepared with authentic flavors.</p>
         {% endif %}
-    </div>
+    </header>
     
     <div class="carousel-shell">
         <button class="carousel-btn left" type="button" onclick="scrollCarousel('carousel-{{ category.id }}', -1)">‹</button>
