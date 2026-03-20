@@ -5,7 +5,7 @@ FastAPI + Jinja2 + HTMX + Tailwind (CDN)
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, Cookie, Response
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, HTMLResponse
@@ -48,11 +48,9 @@ templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 # TEMPLATE HELPERS
 # =============================================================================
 
-def get_current_user(
-    request: Request,
-    session_token: Optional[str] = Cookie(None)
-) -> Optional[dict]:
+def get_current_user(request: Request) -> Optional[dict]:
     """Get current user from session cookie"""
+    session_token = request.cookies.get("session_token")
     if not session_token:
         return None
     
