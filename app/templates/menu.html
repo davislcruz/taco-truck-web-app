@@ -39,7 +39,7 @@
             <article class="menu-card carousel-card transition-all duration-300 overflow-hidden group">
                 <div class="h-40 bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center text-6xl">
                     {% if item.image_url %}
-                    <img src="{{ item.image_url }}" alt="{{ item.name }}" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='/static/images/menu/default.svg';" class="w-full h-full object-cover">
+                    <img src="{{ item.image_url }}" alt="{{ item.name }}" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='/static/images/menu/default.jpg';" class="w-full h-full object-cover">
                     {% else %}
                     <span class="text-4xl text-gray-300">Food</span>
                     {% endif %}

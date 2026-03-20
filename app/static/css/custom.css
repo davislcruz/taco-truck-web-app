@@ -6,6 +6,8 @@
     --surface-alt: #efe4d1;
     --ink: #2b2118;
     --muted: #6a5847;
+    --font-body: "Avenir Next", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-heading: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 
     --brand-primary: #8f2d1f;   /* chile */
     --brand-secondary: #556b2f; /* avocado */
@@ -24,13 +26,13 @@ body {
         radial-gradient(circle at 20% 10%, rgba(193, 139, 47, 0.10), transparent 40%),
         radial-gradient(circle at 85% 80%, rgba(143, 45, 31, 0.06), transparent 35%),
         var(--paper);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-body);
     font-size: 16px;
     line-height: 1.6;
 }
 
 h1, h2, h3, .display-font {
-    font-family: "Segoe UI", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-heading);
     letter-spacing: -0.01em;
     line-height: 1.15;
 }

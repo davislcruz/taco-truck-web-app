@@ -581,10 +581,10 @@ async def seed_images_only(db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=403, detail="Only available in debug mode")
 
     image_map = {
-        1: ["/static/images/menu/tacos.svg"],
-        2: ["/static/images/menu/burritos.svg"],
-        3: ["/static/images/menu/tortas.svg"],
-        4: ["/static/images/menu/drinks.svg"],
+        1: ["/static/images/menu/tacos.jpg"],
+        2: ["/static/images/menu/burritos.jpg"],
+        3: ["/static/images/menu/tortas.jpg"],
+        4: ["/static/images/menu/drinks.jpg"],
     }
 
     updated = 0
@@ -656,10 +656,10 @@ async def seed_database(db: AsyncSession = Depends(get_db)):
         category_map = {c.name.lower(): c for c in categories}
 
         sample_images = {
-            "tacos": ["/static/images/menu/tacos.svg"],
-            "burritos": ["/static/images/menu/burritos.svg"],
-            "tortas": ["/static/images/menu/tortas.svg"],
-            "drinks": ["/static/images/menu/drinks.svg"],
+            "tacos": ["/static/images/menu/tacos.jpg"],
+            "burritos": ["/static/images/menu/burritos.jpg"],
+            "tortas": ["/static/images/menu/tortas.jpg"],
+            "drinks": ["/static/images/menu/drinks.jpg"],
         }
 
         sample_items_by_category = {
