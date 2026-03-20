@@ -10,18 +10,19 @@
 
 <!-- Filters -->
 <div class="bg-white rounded-xl shadow-md p-4 mb-6">
-    <form class="flex flex-wrap gap-4 items-center">
-        <input type="text" name="search" placeholder="Search by phone..."
+    <form method="GET" action="/admin/orders" class="flex flex-wrap gap-4 items-center">
+        <input type="text" name="search" value="{{ search or '' }}" placeholder="Search by phone..."
             class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-taco-orange">
         
         <select name="status" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-taco-orange">
-            <option value="">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="preparing">Preparing</option>
-            <option value="ready">Ready</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="" {% if not status_filter %}selected{% endif %}>All Statuses</option>
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+            <option value="preparing" {% if status_filter == 'preparing' %}selected{% endif %}>Preparing</option>
+            <option value="ready" {% if status_filter == 'ready' %}selected{% endif %}>Ready</option>
+            <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+            <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+
         </select>
         
         <button type="submit" class="bg-taco-orange text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition">
@@ -70,7 +71,11 @@
                         {{ order.created_at.strftime('%m/%d %I:%M %p') }}
                     </td>
                     <td class="px-6 py-4">
-                        <a href="/order/{{ order.id }}" class="text-taco-orange hover:underline">View</a>
+                        <a href="/admin/orders/{{ order.id }}" class="text-taco-orange hover:underline mr-3">View</a>
+                        <form action="/admin/orders/{{ order.id }}/status" method="POST" class="inline">
+                            <input type="hidden" name="status" value="completed">
+                            <button class="text-green-600 hover:underline" type="submit">Complete</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}
