@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ app_name }}{% endblock %}</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -30,14 +34,15 @@
     
     {% block head %}{% endblock %}
 </head>
-<body class="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+<body class="min-h-screen">
+    <div class="max-w-6xl mx-auto mt-4 mb-4 poster-shell papel-border">
     
     <!-- Navigation -->
-    <nav class="bg-taco-orange shadow-lg sticky top-0 z-50">
+    <nav class="nav-viva shadow-lg sticky top-0 z-50 rounded-t-xl">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
-                <a href="/menu" class="flex items-center space-x-2 text-white font-bold text-xl">
+                <a href="/menu" class="flex items-center space-x-2 text-white font-bold text-xl display-font">
                     <span class="text-3xl">🌮</span>
                     <span>Taco Truck</span>
                 </a>
@@ -49,12 +54,12 @@
                     {% if is_admin %}
                     <a href="/admin" class="text-white hover:text-yellow-200 transition">Dashboard</a>
                     <a href="/admin/orders" class="text-white hover:text-yellow-200 transition">Orders</a>
-                    <a href="/logout" class="bg-white text-taco-orange px-3 py-1 rounded-lg font-medium hover:bg-yellow-100 transition">Logout</a>
+                    <a href="/logout" class="poster-btn px-3 py-1 rounded-lg">Logout</a>
                     {% else %}
                     <a href="/cart" class="text-white hover:text-yellow-200 transition flex items-center">
                         🛒 <span id="cart-count" class="ml-1 bg-taco-red text-white text-xs rounded-full px-2 py-0.5">0</span>
                     </a>
-                    <a href="/login" class="bg-white text-taco-orange px-3 py-1 rounded-lg font-medium hover:bg-yellow-100 transition">Admin</a>
+                    <a href="/login" class="poster-btn px-3 py-1 rounded-lg">Admin</a>
                     {% endif %}
                 </div>
             </div>
@@ -84,7 +89,7 @@
     </main>
     
     <!-- Footer -->
-    <footer class="bg-taco-orange text-white py-6 mt-auto">
+    <footer class="text-white py-6 mt-auto rounded-b-xl">
         <div class="max-w-6xl mx-auto px-4 text-center">
             <p class="text-lg">🌮 Taco Truck 🌮</p>
             <p class="text-sm opacity-75">Authentic Mexican Food</p>
@@ -98,5 +103,6 @@
     <script src="/static/js/cart.js"></script>
     
     {% block scripts %}{% endblock %}
+    </div>
 </body>
 </html>

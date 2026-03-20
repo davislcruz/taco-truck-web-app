@@ -1,87 +1,153 @@
-/* Custom styles for Taco Truck */
+/* Taco Truck - Mexican poster inspired theme */
 
-/* Smooth scrolling */
+:root {
+    --bg-yellow: #f9c646;
+    --bg-cream: #fff7dc;
+    --teal: #00a5b5;
+    --magenta: #b32663;
+    --purple: #6b1d5b;
+    --orange: #f97316;
+    --red: #dc2626;
+    --lime: #b8d335;
+    --ink: #2b1b1b;
+}
+
 html {
     scroll-behavior: smooth;
 }
 
-/* Toast animation */
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+body {
+    color: var(--ink);
+    background:
+        radial-gradient(circle at 10% 20%, rgba(0,165,181,.18), transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(179,38,99,.18), transparent 35%),
+        radial-gradient(circle at 30% 90%, rgba(184,211,53,.14), transparent 30%),
+        linear-gradient(135deg, var(--bg-cream), #ffeeb2);
+    font-family: "Nunito", system-ui, sans-serif;
+}
+
+h1, h2, h3, .display-font {
+    font-family: "Bungee", "Impact", sans-serif;
+    letter-spacing: .5px;
+}
+
+.poster-shell {
+    border: 8px solid var(--teal);
+    border-radius: 18px;
+    box-shadow: 0 20px 35px rgba(43, 27, 27, .18);
+    background: rgba(255, 255, 255, .72);
+    backdrop-filter: blur(1px);
+}
+
+.papel-border {
+    position: relative;
+}
+
+.papel-border::before,
+.papel-border::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 12px;
+    background-image: repeating-linear-gradient(
+        90deg,
+        var(--magenta) 0 14px,
+        var(--bg-yellow) 14px 28px,
+        var(--teal) 28px 42px,
+        var(--orange) 42px 56px
+    );
+    z-index: 0;
+}
+
+.papel-border::before { top: 0; }
+.papel-border::after { bottom: 0; }
+
+.section-title {
+    display: inline-block;
+    background: var(--purple);
+    color: #ffd95e;
+    padding: .35rem .9rem;
+    border-radius: 10px;
+    transform: rotate(-2deg);
+    box-shadow: 0 6px 0 rgba(107, 29, 91, .35);
+}
+
+.price-sticker {
+    background: var(--red);
+    color: #fff;
+    font-weight: 900;
+    padding: .3rem .65rem;
+    border-radius: 999px;
+    box-shadow: 0 4px 0 rgba(120, 17, 17, .3);
+}
+
+.menu-card {
+    background: linear-gradient(180deg, #fff 0%, #fff7e7 100%);
+    border: 2px solid #f5ce66;
+    border-radius: 16px;
+    box-shadow: 0 10px 18px rgba(49, 25, 22, .1);
+    overflow: hidden;
+}
+
+.menu-card:hover {
+    transform: translateY(-3px) rotate(-.4deg);
+    box-shadow: 0 14px 26px rgba(49, 25, 22, .18);
+    transition: all .2s ease;
+}
+
+.poster-btn {
+    background: linear-gradient(135deg, var(--orange), #fb923c);
+    color: #fff;
+    font-weight: 800;
+    border-radius: 10px;
+    box-shadow: 0 5px 0 rgba(165, 75, 16, .35);
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.poster-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 0 rgba(165, 75, 16, .35);
+}
+
+.poster-btn:active,
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(165, 75, 16, .35);
+}
+
+.nav-viva {
+    background:
+        linear-gradient(90deg, rgba(0,165,181,.95), rgba(0,165,181,.95)),
+        repeating-linear-gradient(
+            90deg,
+            rgba(255,255,255,.16) 0 12px,
+            rgba(255,255,255,0) 12px 24px
+        );
+}
+
+.admin-panel {
+    border: 2px solid #f2c24b;
+    border-radius: 14px;
+    background: #fff9ea;
 }
 
 #toast-container > div {
-    animation: slideIn 0.3s ease-out;
+    animation: slideIn .3s ease-out;
 }
 
-/* Button press effect */
-button:active {
-    transform: scale(0.98);
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
-/* Card hover effect */
-.card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-/* Status badge pulse */
-.status-pulse {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.7;
-    }
-}
-
-/* Form input focus ring */
 input:focus, textarea:focus, select:focus {
     outline: none;
-    ring: 2px;
-    ring-color: #f97316;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
 }
 
-/* Loading spinner */
-.spinner {
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #f97316;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Mobile menu */
-@media (max-width: 640px) {
-    nav .nav-links {
-        display: none;
-    }
-    
-    nav .nav-links.mobile-open {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: #f97316;
-        padding: 1rem;
-    }
+footer {
+    background:
+        linear-gradient(90deg, rgba(179,38,99,.97), rgba(107,29,91,.97));
 }

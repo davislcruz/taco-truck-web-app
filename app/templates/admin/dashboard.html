@@ -4,18 +4,18 @@
 
 {% block content %}
 <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-800">📊 Dashboard</h1>
+    <h1 class="text-3xl font-bold text-gray-800 section-title">📊 Dashboard</h1>
     <p class="text-gray-600">Manage your taco truck orders</p>
 </div>
 
 <!-- Quick Stats -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-md p-6">
+    <div class="admin-panel shadow-md p-6">
         <div class="text-4xl mb-2">⏳</div>
         <div class="text-3xl font-bold text-yellow-600">{{ active_orders | length }}</div>
         <div class="text-gray-600">Active Orders</div>
     </div>
-    <div class="bg-white rounded-xl shadow-md p-6">
+    <div class="admin-panel shadow-md p-6">
         <div class="text-4xl mb-2">✅</div>
         <div class="text-3xl font-bold text-green-600">0</div>
         <div class="text-gray-600">Completed Today</div>
@@ -81,19 +81,19 @@
 
 <!-- Quick Actions -->
 <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-    <a href="/admin/menu" class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition group">
+    <a href="/admin/menu" class="admin-panel shadow-md p-6 hover:shadow-lg transition group">
         <div class="text-3xl mb-2 group-hover:scale-110 transition">📋</div>
         <h3 class="font-bold text-gray-800">Manage Menu</h3>
         <p class="text-gray-600 text-sm">Add, edit, or remove items</p>
     </a>
     
-    <a href="/admin/orders" class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition group">
+    <a href="/admin/orders" class="admin-panel shadow-md p-6 hover:shadow-lg transition group">
         <div class="text-3xl mb-2 group-hover:scale-110 transition">📦</div>
         <h3 class="font-bold text-gray-800">All Orders</h3>
         <p class="text-gray-600 text-sm">View order history</p>
     </a>
     
-    <a href="/admin/settings" class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition group">
+    <a href="/admin/settings" class="admin-panel shadow-md p-6 hover:shadow-lg transition group">
         <div class="text-3xl mb-2 group-hover:scale-110 transition">⚙️</div>
         <h3 class="font-bold text-gray-800">Settings</h3>
         <p class="text-gray-600 text-sm">Configure your truck</p>
