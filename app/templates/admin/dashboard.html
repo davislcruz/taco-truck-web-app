@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800">📊 Dashboard</h1>
+    <p class="text-gray-600">Manage your taco truck orders</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="text-4xl mb-2">⏳</div>
+        <div class="text-3xl font-bold text-yellow-600">{{ active_orders | length }}</div>
+        <div class="text-gray-600">Active Orders</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="text-4xl mb-2">✅</div>
+        <div class="text-3xl font-bold text-green-600">0</div>
+        <div class="text-gray-600">Completed Today</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="text-4xl mb-2">💰</div>
+        <div class="text-3xl font-bold text-taco-orange">$0</div>
+        <div class="text-gray-600">Today's Revenue</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="text-4xl mb-2">📈</div>
+        <div class="text-3xl font-bold text-blue-600">0</div>
+        <div class="text-gray-600">Avg. Order Value</div>
+    </div>
+</div>
+
+<!-- Active Orders -->
+<div class="bg-white rounded-xl shadow-md p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold text-gray-800">🔥 Active Orders</h2>
+        <a href="/admin/orders" class="text-taco-orange hover:underline">View All →</a>
+    </div>
+    
+    {% if active_orders %}
+    <div class="space-y-4">
+        {% for order in active_orders %}
+        <div class="border border-gray-200 rounded-lg p-4 flex justify-between items-center hover:shadow-md transition">
+            <div>
+                <div class="flex items-center space-x-3">
+                    <span class="font-bold text-gray-800">#{{ order.id }}</span>
+                    <span class="text-gray-600">{{ order.customer_name }}</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                    {{ order.customer_phone }} • {{ order.created_at.strftime('%I:%M %p') }}
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <span class="font-bold text-taco-orange">${{ "%.2f"|format(order.total) }}</span>
+                
+                <form action="/admin/orders/{{ order.id }}/status" method="POST" class="flex items-center space-x-2">
+                    <select name="status" onchange="this.form.submit()"
+                        class="border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-taco-orange">
+                        <option value="pending" {% if order.status.value == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="confirmed" {% if order.status.value == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                        <option value="preparing" {% if order.status.value == 'preparing' %}selected{% endif %}>Preparing</option>
+                        <option value="ready" {% if order.status.value == 'ready' %}selected{% endif %}>Ready!</option>
+                        <option value="completed" {% if order.status.value == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="cancelled" {% if order.status.value == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-8 text-gray-500">
+        <p class="text-4xl mb-2">🌮</p>
+        <p>No active orders right now. Time to promote those tacos!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Quick Actions -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <a href="/admin/menu" class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition group">
+        <div class="text-3xl mb-2 group-hover:scale-110 transition">📋</div>
+        <h3 class="font-bold text-gray-800">Manage Menu</h3>
+        <p class="text-gray-600 text-sm">Add, edit, or remove items</p>
+    </a>
+    
+    <a href="/admin/orders" class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition group">
+        <div class="text-3xl mb-2 group-hover:scale-110 transition">📦</div>
+        <h3 class="font-bold text-gray-800">All Orders</h3>
+        <p class="text-gray-600 text-sm">View order history</p>
+    </a>
+    
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="text-3xl mb-2">⚙️</div>
+        <h3 class="font-bold text-gray-800">Settings</h3>
+        <p class="text-gray-600 text-sm">Configure your truck</p>
+    </div>
+</div>
+{% endblock %}

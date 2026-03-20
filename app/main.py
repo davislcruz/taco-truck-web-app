@@ -1,0 +1,404 @@
+"""
+Taco Truck Web App - Main Application
+FastAPI + Jinja2 + HTMX + Tailwind (CDN)
+"""
+from contextlib import asynccontextmanager
+from pathlib import Path
+
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, Cookie, Response
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse, HTMLResponse
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Optional
+
+from app.config import APP_NAME, DEBUG
+from app.database import init_db, get_db
+from app.models import User, UserRole, Category, MenuItem, Order, OrderStatus
+from app.auth import verify_password, create_session_token, decode_session_token
+
+# Lifespan context manager
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await init_db()
+    print("🌮 Taco Truck database initialized!")
+    yield
+    # Shutdown
+    pass
+
+
+# Create app
+app = FastAPI(title=APP_NAME, lifespan=lifespan, debug=DEBUG)
+
+# Paths
+BASE_DIR = Path(__file__).resolve().parent
+TEMPLATES_DIR = BASE_DIR / "templates"
+STATIC_DIR = BASE_DIR / "static"
+
+# Mount static files
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+# Templates
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+
+
+# =============================================================================
+# TEMPLATE HELPERS
+# =============================================================================
+
+def get_current_user(
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+) -> Optional[dict]:
+    """Get current user from session cookie"""
+    if not session_token:
+        return None
+    
+    payload = decode_session_token(session_token)
+    if not payload:
+        return None
+    
+    return {
+        "id": int(payload["sub"]),
+        "role": payload["role"]
+    }
+
+
+def is_admin(user: Optional[dict]) -> bool:
+    """Check if user is admin"""
+    return user and user.get("role") == UserRole.ADMIN.value
+
+
+# =============================================================================
+# TEMPLATE FILTERS
+# =============================================================================
+
+def currency(value):
+    """Format as currency"""
+    return f"${value:.2f}"
+
+templates.env.filters["currency"] = currency
+
+
+# =============================================================================
+# CONTEXT PROCESSOR
+# =============================================================================
+
+async def get_template_context(request: Request) -> dict:
+    """Get common template context"""
+    user = get_current_user(request)
+    return {
+        "request": request,
+        "app_name": APP_NAME,
+        "current_user": user,
+        "is_admin": is_admin(user)
+    }
+
+
+# =============================================================================
+# ROUTES - Pages
+# =============================================================================
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    """Home page - redirect to menu"""
+    return RedirectResponse(url="/menu")
+
+
+@app.get("/menu", response_class=HTMLResponse)
+async def menu_page(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """Menu page - show all categories and items"""
+    # Get categories with items
+    result = await db.execute(
+        select(Category)
+        .where(Category.is_active == True)
+        .order_by(Category.display_order)
+    )
+    categories = result.scalars().all()
+    
+    # Get menu items for each category
+    items_by_category = {}
+    for cat in categories:
+        result = await db.execute(
+            select(MenuItem)
+            .where(MenuItem.category_id == cat.id, MenuItem.is_available == True)
+            .order_by(MenuItem.display_order)
+        )
+        items_by_category[cat.id] = result.scalars().all()
+    
+    ctx = await get_template_context(request)
+    return templates.TemplateResponse(
+        "menu.html",
+        {**ctx, "categories": categories, "items_by_category": items_by_category}
+    )
+
+
+@app.get("/cart", response_class=HTMLResponse)
+async def cart_page(request: Request):
+    """Cart page"""
+    ctx = await get_template_context(request)
+    return templates.TemplateResponse("cart.html", ctx)
+
+
+@app.get("/order/{order_id}", response_class=HTMLResponse)
+async def order_status_page(
+    request: Request,
+    order_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """Order status/tracking page"""
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    order = result.scalar_one_or_none()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    ctx = await get_template_context(request)
+    return templates.TemplateResponse("order_status.html", {**ctx, "order": order})
+
+
+# =============================================================================
+# ROUTES - Auth
+# =============================================================================
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    """Login page"""
+    ctx = await get_template_context(request)
+    return templates.TemplateResponse("login.html", ctx)
+
+
+@app.post("/login")
+async def login(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+    db: AsyncSession = Depends(get_db)
+):
+    """Process login"""
+    result = await db.execute(
+        select(User).where(User.username == username)
+    )
+    user = result.scalar_one_or_none()
+    
+    if not user or not verify_password(password, user.password_hash):
+        ctx = await get_template_context(request)
+        return templates.TemplateResponse(
+            "login.html",
+            {**ctx, "error": "Invalid username or password"}
+        )
+    
+    if not user.is_active:
+        ctx = await get_template_context(request)
+        return templates.TemplateResponse(
+            "login.html",
+            {**ctx, "error": "Account is disabled"}
+        )
+    
+    # Create session
+    token = create_session_token(user.id, user.role.value)
+    
+    response = RedirectResponse(url="/admin", status_code=302)
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        httponly=True,
+        max_age=60 * 60 * 24 * 7,  # 7 days
+        samesite="lax"
+    )
+    return response
+
+
+@app.get("/logout")
+async def logout():
+    """Logout"""
+    response = RedirectResponse(url="/menu", status_code=302)
+    response.delete_cookie("session_token")
+    return response
+
+
+# =============================================================================
+# ROUTES - Admin
+# =============================================================================
+
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_dashboard(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """Admin dashboard"""
+    user = get_current_user(request)
+    if not is_admin(user):
+        return RedirectResponse(url="/login", status_code=302)
+    
+    # Get orders
+    result = await db.execute(
+        select(Order)
+        .where(Order.status != OrderStatus.COMPLETED)
+        .where(Order.status != OrderStatus.CANCELLED)
+        .order_by(Order.created_at.desc())
+    )
+    active_orders = result.scalars().all()
+    
+    ctx = await get_template_context(request)
+    return templates.TemplateResponse(
+        "admin/dashboard.html",
+        {**ctx, "active_orders": active_orders}
+    )
+
+
+@app.get("/admin/menu", response_class=HTMLResponse)
+async def admin_menu(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """Admin menu management"""
+    user = get_current_user(request)
+    if not is_admin(user):
+        return RedirectResponse(url="/login", status_code=302)
+    
+    # Get categories with items
+    result = await db.execute(
+        select(Category).order_by(Category.display_order)
+    )
+    categories = result.scalars().all()
+    
+    ctx = await get_template_context(request)
+    return templates.TemplateResponse(
+        "admin/menu.html",
+        {**ctx, "categories": categories}
+    )
+
+
+@app.get("/admin/orders", response_class=HTMLResponse)
+async def admin_orders(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """Admin orders list"""
+    user = get_current_user(request)
+    if not is_admin(user):
+        return RedirectResponse(url="/login", status_code=302)
+    
+    result = await db.execute(
+        select(Order).order_by(Order.created_at.desc()).limit(50)
+    )
+    orders = result.scalars().all()
+    
+    ctx = await get_template_context(request)
+    return templates.TemplateResponse(
+        "admin/orders.html",
+        {**ctx, "orders": orders}
+    )
+
+
+# =============================================================================
+# ROUTES - API (for HTMX)
+# =============================================================================
+
+@app.post("/api/cart/add", response_class=HTMLResponse)
+async def add_to_cart(
+    request: Request,
+    item_id: int = Form(...),
+    quantity: int = Form(default=1),
+    db: AsyncSession = Depends(get_db)
+):
+    """Add item to cart (returns cart partial)"""
+    result = await db.execute(select(MenuItem).where(MenuItem.id == item_id))
+    item = result.scalar_one_or_none()
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    ctx = await get_template_context(request)
+    return templates.TemplateResponse(
+        "partials/cart_item.html",
+        {**ctx, "item": item, "quantity": quantity}
+    )
+
+
+@app.put("/api/orders/{order_id}/status")
+async def update_order_status(
+    order_id: int,
+    status: str = Form(...),
+    db: AsyncSession = Depends(get_db)
+):
+    """Update order status"""
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    order = result.scalar_one_or_none()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    try:
+        order.status = OrderStatus(status)
+        await db.commit()
+        return {"success": True, "status": status}
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid status")
+
+
+# =============================================================================
+# DEV ROUTE - Seed database
+# =============================================================================
+
+@app.post("/dev/seed")
+async def seed_database(db: AsyncSession = Depends(get_db)):
+    """Seed database with sample data (dev only)"""
+    if not DEBUG:
+        raise HTTPException(status_code=403, detail="Only available in debug mode")
+    
+    from app.auth import hash_password
+    
+    # Create admin user
+    admin = User(
+        username="admin",
+        password_hash=hash_password("admin123"),
+        role=UserRole.ADMIN
+    )
+    db.add(admin)
+    
+    # Create categories
+    categories = [
+        Category(name="Tacos", name_es="Tacos", display_order=1),
+        Category(name="Burritos", name_es="Burritos", display_order=2),
+        Category(name="Tortas", name_es="Tortas", display_order=3),
+        Category(name="Drinks", name_es="Bebidas", display_order=4),
+    ]
+    for cat in categories:
+        db.add(cat)
+    
+    await db.commit()
+    
+    # Refresh to get IDs
+    for cat in categories:
+        await db.refresh(cat)
+    
+    # Create menu items
+    items = [
+        MenuItem(category_id=categories[0].id, name="Carne Asada Taco", name_es="Taco de Carne Asada", price=3.50),
+        MenuItem(category_id=categories[0].id, name="Carnitas Taco", name_es="Taco de Carnitas", price=3.50),
+        MenuItem(category_id=categories[0].id, name="Chicken Taco", name_es="Taco de Pollo", price=3.25),
+        MenuItem(category_id=categories[0].id, name="Al Pastor Taco", name_es="Taco al Pastor", price=3.50),
+        MenuItem(category_id=categories[1].id, name="Carne Asada Burrito", name_es="Burrito de Carne Asada", price=9.99),
+        MenuItem(category_id=categories[1].id, name="Chicken Burrito", name_es="Burrito de Pollo", price=9.50),
+        MenuItem(category_id=categories[2].id, name="Carne Asada Torta", name_es="Torta de Carne Asada", price=8.99),
+        MenuItem(category_id=categories[3].id, name="Horchata", name_es="Horchata", price=3.00),
+        MenuItem(category_id=categories[3].id, name="Mexican Coke", name_es="Coca Mexicana", price=2.50),
+    ]
+    for item in items:
+        db.add(item)
+    
+    await db.commit()
+    
+    return {"success": True, "message": "Database seeded!"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
