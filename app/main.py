@@ -574,6 +574,52 @@ async def update_order_status(
 # DEV ROUTE - Seed database
 # =============================================================================
 
+@app.get("/dev/seed-images", response_class=HTMLResponse)
+async def seed_images_only(db: AsyncSession = Depends(get_db)):
+    """Assign stock images to existing menu items without reseeding everything."""
+    if not DEBUG:
+        raise HTTPException(status_code=403, detail="Only available in debug mode")
+
+    image_map = {
+        1: [
+            "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1565299585323-38174c4a6df1?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1613514785940-daed07799d9b?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1601924638867-3ec2b10f4e97?auto=format&fit=crop&w=1200&q=80"
+        ],
+        2: [
+            "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=1200&q=80"
+        ],
+        3: [
+            "https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1553909489-cd47e0907980?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?auto=format&fit=crop&w=1200&q=80"
+        ],
+        4: [
+            "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1200&q=80"
+        ],
+    }
+
+    updated = 0
+    for category_id, pool in image_map.items():
+        result = await db.execute(select(MenuItem).where(MenuItem.category_id == category_id).order_by(MenuItem.id))
+        items = result.scalars().all()
+        for idx, item in enumerate(items):
+            if item.image_url:
+                continue
+            item.image_url = pool[idx % len(pool)]
+            updated += 1
+
+    if updated:
+        await db.commit()
+
+    return f"<h1>✅ Images updated: {updated}</h1><p><a href='/menu'>Go to menu</a></p>"
+
+
 @app.get("/dev/seed", response_class=HTMLResponse)
 @app.post("/dev/seed", response_class=HTMLResponse)
 async def seed_database(db: AsyncSession = Depends(get_db)):
@@ -626,6 +672,30 @@ async def seed_database(db: AsyncSession = Depends(get_db)):
         categories = result.scalars().all()
         category_map = {c.name.lower(): c for c in categories}
 
+        sample_images = {
+            "tacos": [
+                "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1565299585323-38174c4a6df1?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1613514785940-daed07799d9b?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1601924638867-3ec2b10f4e97?auto=format&fit=crop&w=1200&q=80"
+            ],
+            "burritos": [
+                "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=1200&q=80"
+            ],
+            "tortas": [
+                "https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1553909489-cd47e0907980?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?auto=format&fit=crop&w=1200&q=80"
+            ],
+            "drinks": [
+                "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1200&q=80"
+            ],
+        }
+
         sample_items_by_category = {
             "tacos": [
                 ("Carne Asada Taco", "Taco de Carne Asada", 3.50, "Grilled steak, onion, cilantro"),
@@ -675,6 +745,8 @@ async def seed_database(db: AsyncSession = Depends(get_db)):
             for name, name_es, price, desc in items:
                 if name in existing_names:
                     continue
+                image_candidates = sample_images.get(cat_key, [])
+                image_url = image_candidates[(display_order - 1) % len(image_candidates)] if image_candidates else None
                 db.add(
                     MenuItem(
                         category_id=category.id,
@@ -682,6 +754,7 @@ async def seed_database(db: AsyncSession = Depends(get_db)):
                         name_es=name_es,
                         price=price,
                         description=desc,
+                        image_url=image_url,
                         display_order=display_order,
                         is_available=True,
                     )
@@ -694,6 +767,26 @@ async def seed_database(db: AsyncSession = Depends(get_db)):
             results.append(f"✅ Added {created_count} new menu items")
         else:
             results.append("✅ Menu already has rich sample items")
+
+        # Assign images to existing items that don't have one yet
+        image_updates = 0
+        for cat_key, image_pool in sample_images.items():
+            category = category_map.get(cat_key)
+            if not category or not image_pool:
+                continue
+            item_result = await db.execute(select(MenuItem).where(MenuItem.category_id == category.id).order_by(MenuItem.id))
+            existing_items = item_result.scalars().all()
+            for idx, item in enumerate(existing_items):
+                if item.image_url:
+                    continue
+                item.image_url = image_pool[idx % len(image_pool)]
+                image_updates += 1
+
+        if image_updates > 0:
+            await db.commit()
+            results.append(f"✅ Assigned stock images to {image_updates} items")
+        else:
+            results.append("✅ Stock images already assigned")
         
         return f"""<!DOCTYPE html>
 <html>
