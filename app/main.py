@@ -581,27 +581,10 @@ async def seed_images_only(db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=403, detail="Only available in debug mode")
 
     image_map = {
-        1: [
-            "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1565299585323-38174c4a6df1?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1613514785940-daed07799d9b?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1601924638867-3ec2b10f4e97?auto=format&fit=crop&w=1200&q=80"
-        ],
-        2: [
-            "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=1200&q=80"
-        ],
-        3: [
-            "https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1553909489-cd47e0907980?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?auto=format&fit=crop&w=1200&q=80"
-        ],
-        4: [
-            "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1200&q=80"
-        ],
+        1: ["/static/images/menu/tacos.svg"],
+        2: ["/static/images/menu/burritos.svg"],
+        3: ["/static/images/menu/tortas.svg"],
+        4: ["/static/images/menu/drinks.svg"],
     }
 
     updated = 0
@@ -673,27 +656,10 @@ async def seed_database(db: AsyncSession = Depends(get_db)):
         category_map = {c.name.lower(): c for c in categories}
 
         sample_images = {
-            "tacos": [
-                "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1565299585323-38174c4a6df1?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1613514785940-daed07799d9b?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1601924638867-3ec2b10f4e97?auto=format&fit=crop&w=1200&q=80"
-            ],
-            "burritos": [
-                "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=1200&q=80"
-            ],
-            "tortas": [
-                "https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1553909489-cd47e0907980?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?auto=format&fit=crop&w=1200&q=80"
-            ],
-            "drinks": [
-                "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1200&q=80"
-            ],
+            "tacos": ["/static/images/menu/tacos.svg"],
+            "burritos": ["/static/images/menu/burritos.svg"],
+            "tortas": ["/static/images/menu/tortas.svg"],
+            "drinks": ["/static/images/menu/drinks.svg"],
         }
 
         sample_items_by_category = {

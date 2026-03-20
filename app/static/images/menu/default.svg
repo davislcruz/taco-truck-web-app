@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#6a5847"/>
+  <text x="80" y="140" fill="#fff" font-size="64" font-family="Segoe UI, Arial" font-weight="700">Fresh Menu</text>
+  <text x="80" y="210" fill="#efe4d1" font-size="32" font-family="Segoe UI, Arial">Prepared daily</text>
+</svg>
