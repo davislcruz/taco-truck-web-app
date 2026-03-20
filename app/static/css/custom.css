@@ -151,3 +151,47 @@ footer {
     background:
         linear-gradient(90deg, rgba(179,38,99,.97), rgba(107,29,91,.97));
 }
+
+.ribbon-header {
+    position: relative;
+    padding: .5rem 1rem;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255,239,176,.55), rgba(255,224,142,.7));
+    border: 2px dashed rgba(179,38,99,.4);
+}
+
+.confetti-strip {
+    height: 16px;
+    border-radius: 999px;
+    background:
+      repeating-linear-gradient(90deg,
+        #ef4444 0 10px,
+        #f59e0b 10px 20px,
+        #84cc16 20px 30px,
+        #06b6d4 30px 40px,
+        #a855f7 40px 50px);
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.12);
+}
+
+.fiesta-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.fiesta-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 90% 12%, rgba(255,255,255,.35), transparent 24%);
+    pointer-events: none;
+}
+
+.burst {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-weight: 900;
+    padding: .45rem .8rem;
+    clip-path: polygon(50% 0%, 61% 13%, 78% 5%, 83% 22%, 100% 23%, 91% 39%, 100% 50%, 91% 61%, 100% 77%, 83% 78%, 78% 95%, 61% 87%, 50% 100%, 39% 87%, 22% 95%, 17% 78%, 0% 77%, 9% 61%, 0% 50%, 9% 39%, 0% 23%, 17% 22%, 22% 5%, 39% 13%);
+    box-shadow: 0 6px 0 rgba(120, 17, 17, .35);
+}

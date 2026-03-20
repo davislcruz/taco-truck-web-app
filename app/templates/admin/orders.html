@@ -3,13 +3,13 @@
 {% block title %}Orders - {{ app_name }}{% endblock %}
 
 {% block content %}
-<div class="mb-8">
+<div class="mb-8 ribbon-header">
     <h1 class="text-3xl font-bold text-gray-800 section-title">📦 Orders</h1>
     <p class="text-gray-600">View and manage all orders</p>
 </div>
 
 <!-- Filters -->
-<div class="admin-panel shadow-md p-4 mb-6">
+<div class="admin-panel fiesta-card shadow-md p-4 mb-6">
     <form method="GET" action="/admin/orders" class="flex flex-wrap gap-4 items-center">
         <input type="text" name="search" value="{{ search or '' }}" placeholder="Search by phone..."
             class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-taco-orange">
@@ -32,7 +32,7 @@
 </div>
 
 <!-- Orders Table -->
-<div class="admin-panel shadow-md overflow-hidden">
+<div class="admin-panel fiesta-card shadow-md overflow-hidden">
     {% if orders %}
     <div class="overflow-x-auto">
         <table class="w-full">

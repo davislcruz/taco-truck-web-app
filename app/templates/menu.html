@@ -3,9 +3,10 @@
 {% block title %}Menu - {{ app_name }}{% endblock %}
 
 {% block content %}
-<div class="mb-8 text-center">
+<div class="mb-8 text-center ribbon-header">
     <h1 class="text-4xl font-bold text-taco-orange mb-2 section-title">🌮 Our Menu 🌮</h1>
-    <p class="text-gray-600">Authentic Mexican flavors, made fresh daily</p>
+    <p class="text-gray-700 font-bold">Authentic Mexican flavors, made fresh daily</p>
+    <div class="mt-3"><span class="burst">HOT MENU</span></div>
 </div>
 
 <!-- Category Navigation -->
@@ -29,7 +30,7 @@
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for item in items_by_category[category.id] %}
-        <div class="menu-card transition-all duration-300 overflow-hidden group">
+        <div class="menu-card fiesta-card transition-all duration-300 overflow-hidden group">
             <!-- Item Image or Placeholder -->
             <div class="h-40 bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center text-6xl">
                 {% if item.image_url %}
