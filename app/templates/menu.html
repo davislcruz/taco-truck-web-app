@@ -3,9 +3,9 @@
 {% block title %}Menu - {{ app_name }}{% endblock %}
 
 {% block content %}
-<section class="menu-hero mb-6 text-center">
+<section class="menu-hero mb-4 text-center">
     <h1 class="text-4xl font-bold mb-1 section-title">Fresh Mexican Food</h1>
-    <p class="text-gray-700">Authentic favorites made daily for fast pickup.</p>
+    <p class="text-gray-700">Authentic favorites made daily. <span class="text-brand-primary font-semibold">Order for pickup.</span></p>
 </section>
 
 <!-- Category Navigation -->
@@ -109,5 +109,15 @@
             pill.classList.add('active');
         });
     });
+
+    // Sync mobile cart count
+    function updateMobileCartCount() {
+        const count = Cart.count();
+        const el = document.getElementById('mobile-cart-count');
+        if (el) el.textContent = count;
+    }
+    const observer = new MutationObserver(updateMobileCartCount);
+    const cartEl = document.getElementById('cart-count');
+    if (cartEl) observer.observe(cartEl, { childList: true });
 </script>
 {% endblock %}

@@ -46,17 +46,9 @@
                 <!-- Nav Links -->
                 <div class="flex items-center space-x-4">
                     <a href="/menu" class="text-white hover:text-yellow-200 transition">Menu</a>
-                    
-                    {% if is_admin %}
-                    <a href="/admin" class="text-white hover:text-yellow-200 transition">Dashboard</a>
-                    <a href="/admin/orders" class="text-white hover:text-yellow-200 transition">Orders</a>
-                    <a href="/logout" class="poster-btn px-3 py-1 rounded-lg">Logout</a>
-                    {% else %}
                     <a href="/cart" class="text-white hover:text-yellow-200 transition flex items-center">
                         Cart <span id="cart-count" class="ml-1 bg-taco-red text-white text-xs rounded-full px-2 py-0.5">0</span>
                     </a>
-                    <a href="/login" class="poster-btn px-3 py-1 rounded-lg">Admin</a>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -118,7 +110,6 @@
                     <ul class="text-sm space-y-2">
                         <li><a href="/menu" class="text-white/90 hover:text-white underline-offset-4 hover:underline">Menu</a></li>
                         <li><a href="/cart" class="text-white/90 hover:text-white underline-offset-4 hover:underline">Cart</a></li>
-                        <li><a href="/login" class="text-white/90 hover:text-white underline-offset-4 hover:underline">Business Login</a></li>
                     </ul>
                 </div>
             </div>
@@ -132,6 +123,12 @@
     
     <!-- Toast Notifications -->
     <div id="toast-container" class="fixed bottom-4 right-4 z-50"></div>
+
+    <!-- Mobile Sticky Cart Button -->
+    <a href="/cart" class="mobile-sticky-cart md:hidden">
+        <span>Cart</span>
+        <span id="mobile-cart-count" class="count-badge">0</span>
+    </a>
     
     <!-- Cart Store (localStorage based) -->
     <script src="/static/js/cart.js"></script>

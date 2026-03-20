@@ -69,16 +69,16 @@ h3 { font-size: clamp(1.25rem, 2.1vw, 1.8rem); font-weight: 600; }
 
 .menu-card {
     background: #fffdf8;
-    border: 1px solid #e8dbc6;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    border: 1px solid #e6dcbf;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(43, 33, 24, 0.08), 0 1px 3px rgba(43, 33, 24, 0.05);
     overflow: hidden;
 }
 
 .menu-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(43, 33, 24, 0.14);
-    transition: all .18s ease;
+    box-shadow: 0 10px 20px rgba(43, 33, 24, 0.12), 0 2px 5px rgba(43, 33, 24, 0.07);
+    transition: all .20s ease;
 }
 
 .price-sticker {
@@ -172,7 +172,7 @@ footer {
 
 .carousel-card {
     scroll-snap-align: start;
-    min-height: 320px;
+    min-height: 318px;
 }
 
 .carousel-btn {
@@ -234,6 +234,36 @@ footer {
     background: #7f2f22;
     color: #fff;
     border-color: #7f2f22;
+}
+
+/* Mobile sticky cart */
+.mobile-sticky-cart {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    background: #7f2f22;
+    color: #fff;
+    padding: .7rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: .95rem;
+    box-shadow: 0 6px 16px rgba(127, 47, 34, 0.42);
+}
+
+.mobile-sticky-cart .count-badge {
+    background: #b98a42;
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 700;
+    padding: .2rem .5rem;
+    border-radius: 999px;
+    min-width: 1.6rem;
+    text-align: center;
 }
 
 .menu-section-header {
