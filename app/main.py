@@ -345,8 +345,8 @@ async def update_order_status(
 # DEV ROUTE - Seed database
 # =============================================================================
 
-@app.get("/dev/seed")
-@app.post("/dev/seed")
+@app.get("/dev/seed", response_class=HTMLResponse)
+@app.post("/dev/seed", response_class=HTMLResponse)
 async def seed_database(db: AsyncSession = Depends(get_db)):
     """Seed database with sample data (dev only)"""
     if not DEBUG:
@@ -354,48 +354,87 @@ async def seed_database(db: AsyncSession = Depends(get_db)):
     
     from app.auth import hash_password
     
-    # Create admin user
-    admin = User(
-        username="admin",
-        password_hash=hash_password("admin123"),
-        role=UserRole.ADMIN
-    )
-    db.add(admin)
+    results = []
     
-    # Create categories
-    categories = [
-        Category(name="Tacos", name_es="Tacos", display_order=1),
-        Category(name="Burritos", name_es="Burritos", display_order=2),
-        Category(name="Tortas", name_es="Tortas", display_order=3),
-        Category(name="Drinks", name_es="Bebidas", display_order=4),
-    ]
-    for cat in categories:
-        db.add(cat)
-    
-    await db.commit()
-    
-    # Refresh to get IDs
-    for cat in categories:
-        await db.refresh(cat)
-    
-    # Create menu items
-    items = [
-        MenuItem(category_id=categories[0].id, name="Carne Asada Taco", name_es="Taco de Carne Asada", price=3.50),
-        MenuItem(category_id=categories[0].id, name="Carnitas Taco", name_es="Taco de Carnitas", price=3.50),
-        MenuItem(category_id=categories[0].id, name="Chicken Taco", name_es="Taco de Pollo", price=3.25),
-        MenuItem(category_id=categories[0].id, name="Al Pastor Taco", name_es="Taco al Pastor", price=3.50),
-        MenuItem(category_id=categories[1].id, name="Carne Asada Burrito", name_es="Burrito de Carne Asada", price=9.99),
-        MenuItem(category_id=categories[1].id, name="Chicken Burrito", name_es="Burrito de Pollo", price=9.50),
-        MenuItem(category_id=categories[2].id, name="Carne Asada Torta", name_es="Torta de Carne Asada", price=8.99),
-        MenuItem(category_id=categories[3].id, name="Horchata", name_es="Horchata", price=3.00),
-        MenuItem(category_id=categories[3].id, name="Mexican Coke", name_es="Coca Mexicana", price=2.50),
-    ]
-    for item in items:
-        db.add(item)
-    
-    await db.commit()
-    
-    return {"success": True, "message": "Database seeded!"}
+    try:
+        # Check if admin already exists
+        result = await db.execute(select(User).where(User.username == "admin"))
+        existing_admin = result.scalar_one_or_none()
+        
+        if existing_admin:
+            results.append("✅ Admin user already exists")
+        else:
+            # Create admin user
+            admin = User(
+                username="admin",
+                password_hash=hash_password("admin123"),
+                role=UserRole.ADMIN
+            )
+            db.add(admin)
+            await db.commit()
+            results.append("✅ Created admin user (admin / admin123)")
+        
+        # Check if categories exist
+        result = await db.execute(select(Category))
+        existing_cats = result.scalars().all()
+        
+        if existing_cats:
+            results.append(f"✅ Categories already exist ({len(existing_cats)} found)")
+        else:
+            # Create categories
+            categories = [
+                Category(name="Tacos", name_es="Tacos", display_order=1),
+                Category(name="Burritos", name_es="Burritos", display_order=2),
+                Category(name="Tortas", name_es="Tortas", display_order=3),
+                Category(name="Drinks", name_es="Bebidas", display_order=4),
+            ]
+            for cat in categories:
+                db.add(cat)
+            await db.commit()
+            results.append("✅ Created 4 categories")
+            
+            # Refresh to get IDs
+            for cat in categories:
+                await db.refresh(cat)
+            
+            # Create menu items
+            items = [
+                MenuItem(category_id=categories[0].id, name="Carne Asada Taco", name_es="Taco de Carne Asada", price=3.50),
+                MenuItem(category_id=categories[0].id, name="Carnitas Taco", name_es="Taco de Carnitas", price=3.50),
+                MenuItem(category_id=categories[0].id, name="Chicken Taco", name_es="Taco de Pollo", price=3.25),
+                MenuItem(category_id=categories[0].id, name="Al Pastor Taco", name_es="Taco al Pastor", price=3.50),
+                MenuItem(category_id=categories[1].id, name="Carne Asada Burrito", name_es="Burrito de Carne Asada", price=9.99),
+                MenuItem(category_id=categories[1].id, name="Chicken Burrito", name_es="Burrito de Pollo", price=9.50),
+                MenuItem(category_id=categories[2].id, name="Carne Asada Torta", name_es="Torta de Carne Asada", price=8.99),
+                MenuItem(category_id=categories[3].id, name="Horchata", name_es="Horchata", price=3.00),
+                MenuItem(category_id=categories[3].id, name="Mexican Coke", name_es="Coca Mexicana", price=2.50),
+            ]
+            for item in items:
+                db.add(item)
+            await db.commit()
+            results.append("✅ Created 9 menu items")
+        
+        return f"""<!DOCTYPE html>
+<html>
+<head><title>Seed Results</title>
+<style>body {{ font-family: system-ui; max-width: 600px; margin: 50px auto; padding: 20px; }}</style>
+</head>
+<body>
+<h1>🌮 Database Seed Results</h1>
+<pre>{chr(10).join(results)}</pre>
+<p><a href="/login">→ Go to Login</a></p>
+</body>
+</html>"""
+        
+    except Exception as e:
+        return f"""<!DOCTYPE html>
+<html>
+<head><title>Seed Error</title></head>
+<body>
+<h1>❌ Seed Failed</h1>
+<pre>{str(e)}</pre>
+</body>
+</html>"""
 
 
 if __name__ == "__main__":
