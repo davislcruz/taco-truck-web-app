@@ -345,6 +345,7 @@ async def update_order_status(
 # DEV ROUTE - Seed database
 # =============================================================================
 
+@app.get("/dev/seed")
 @app.post("/dev/seed")
 async def seed_database(db: AsyncSession = Depends(get_db)):
     """Seed database with sample data (dev only)"""
