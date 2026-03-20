@@ -3,23 +3,23 @@
 {% block title %}Menu - {{ app_name }}{% endblock %}
 
 {% block content %}
-<div class="mb-8 text-center ribbon-header">
-    <h1 class="text-4xl font-bold mb-2 section-title">Our Menu</h1>
-    <p class="text-gray-700">Authentic Mexican flavors, made fresh daily</p>
-</div>
+<section class="menu-hero mb-6 text-center">
+    <h1 class="text-4xl font-bold mb-1 section-title">Fresh Mexican Food</h1>
+    <p class="text-gray-700">Authentic favorites made daily for fast pickup.</p>
+</section>
 
 <!-- Category Navigation -->
-<div class="flex flex-wrap justify-center gap-2 mb-8">
+<nav class="category-bar mb-6" aria-label="Menu categories">
     {% for category in categories %}
-    <a href="#cat-{{ category.id }}" class="bg-white px-4 py-2 rounded-full shadow hover:shadow-md transition font-bold text-gray-700 hover:text-taco-orange border-2 border-yellow-300">
+    <a href="#cat-{{ category.id }}" class="cat-pill {% if loop.first %}active{% endif %}" data-cat-pill>
         {{ category.name }}
     </a>
     {% endfor %}
-</div>
+</nav>
 
 <!-- Menu Sections -->
 {% for category in categories %}
-<section id="cat-{{ category.id }}" class="mb-8 category-section {% if loop.index0 % 2 == 1 %}alt{% endif %}">
+<section id="cat-{{ category.id }}" class="mb-8 category-section">
     <header class="menu-section-header mb-6">
         <div class="menu-section-title-row">
             <h2 class="text-2xl font-bold text-gray-800 section-title">{{ category.name }}</h2>
@@ -102,5 +102,12 @@
             toast.remove();
         }, 2000);
     }
+
+    document.querySelectorAll('[data-cat-pill]').forEach((pill) => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('[data-cat-pill]').forEach((p) => p.classList.remove('active'));
+            pill.classList.add('active');
+        });
+    });
 </script>
 {% endblock %}

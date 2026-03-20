@@ -1,9 +1,9 @@
 /* Mature, appetizing Mexican-inspired theme */
 
 :root {
-    --paper: #f6f1e7;
-    --surface: #fffaf0;
-    --surface-alt: #efe4d1;
+    --paper: #f7f3eb;
+    --surface: #ffffff;
+    --surface-alt: #fdfaf4;
     --ink: #2b2118;
     --muted: #6a5847;
     --font-body: "Avenir Next", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -22,10 +22,7 @@ html { scroll-behavior: smooth; }
 
 body {
     color: var(--ink);
-    background:
-        radial-gradient(circle at 20% 10%, rgba(193, 139, 47, 0.10), transparent 40%),
-        radial-gradient(circle at 85% 80%, rgba(143, 45, 31, 0.06), transparent 35%),
-        var(--paper);
+    background: var(--paper);
     font-family: var(--font-body);
     font-size: 16px;
     line-height: 1.6;
@@ -42,29 +39,14 @@ h2 { font-size: clamp(1.6rem, 2.8vw, 2.35rem); font-weight: 600; }
 h3 { font-size: clamp(1.25rem, 2.1vw, 1.8rem); font-weight: 600; }
 
 .poster-shell {
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    box-shadow: 0 20px 35px rgba(43, 27, 27, .10);
-    background: rgba(255, 255, 255, 0.90);
+    border: 1px solid #eadfce;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(43, 27, 27, .06);
+    background: #fff;
 }
-
-/* Subtle decorative strip */
-.papel-border { position: relative; }
-.papel-border::before,
-.papel-border::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: linear-gradient(90deg, #8f2d1f, #c18b2f, #556b2f);
-    opacity: 0.45;
-}
-.papel-border::before { top: 0; }
-.papel-border::after { bottom: 0; }
 
 .nav-viva {
-    background: linear-gradient(90deg, #7a261a, #8f2d1f);
+    background: #8f2d1f;
 }
 
 .section-title {
@@ -74,14 +56,10 @@ h3 { font-size: clamp(1.25rem, 2.1vw, 1.8rem); font-weight: 600; }
 }
 
 .category-section {
-    border-radius: 14px;
+    border-radius: 12px;
     padding: 1rem;
-    border: 1px solid var(--line);
+    border: 1px solid #eee4d3;
     background: var(--surface);
-}
-
-.category-section.alt {
-    background: var(--surface-alt);
 }
 
 .menu-card {
@@ -217,13 +195,40 @@ footer {
     .menu-carousel { grid-auto-columns: minmax(240px, 85%); }
 }
 
-/* Color-theory accents */
-.category-section {
-    position: relative;
+/* Menu layout refinements */
+.menu-hero {
+    background: transparent;
+    padding: .3rem 0 .1rem;
 }
 
-.category-section::before {
-    content: none;
+.category-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .55rem;
+}
+
+.cat-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .45rem .9rem;
+    border-radius: 999px;
+    border: 1px solid #dfd4c2;
+    background: #fff;
+    color: #55483a;
+    font-weight: 600;
+    font-size: .9rem;
+}
+
+.cat-pill:hover {
+    border-color: #cbbda8;
+}
+
+.cat-pill.active {
+    background: #8f2d1f;
+    color: #fff;
+    border-color: #8f2d1f;
 }
 
 .menu-section-header {
@@ -247,7 +252,7 @@ footer {
 
 .section-count {
     font-size: .8rem;
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: inherit;
     font-weight: 600;
     letter-spacing: .01em;
     color: var(--brand-primary);
