@@ -4,8 +4,9 @@ FastAPI + Jinja2 + HTMX + Tailwind (CDN)
 """
 from contextlib import asynccontextmanager
 from pathlib import Path
+import io
 
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, Response
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, Response, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, HTMLResponse
@@ -17,6 +18,8 @@ from app.config import APP_NAME, DEBUG
 from app.database import init_db, get_db
 from app.models import User, UserRole, Category, MenuItem, Order, OrderStatus, OrderItem
 from app.auth import verify_password, create_session_token, decode_session_token
+
+from PIL import Image, ImageOps
 
 # Lifespan context manager
 @asynccontextmanager
@@ -136,11 +139,27 @@ async def menu_page(
             .order_by(MenuItem.display_order)
         )
         items_by_category[cat.id] = result.scalars().all()
-    
+
+    layout = (request.query_params.get("layout") or "").strip().lower()
+
+    category_hero_images = {
+        "tacos": "/static/images/menu/tacos.jpg",
+        "burritos": "/static/images/menu/burritos.jpg",
+        "tortas": "/static/images/menu/tortas.jpg",
+        "drinks": "/static/images/menu/drinks.jpg",
+    }
+
+    template_name = "menu_list.html" if layout == "list" else "menu.html"
+
     ctx = await get_template_context(request)
     return templates.TemplateResponse(
-        "menu.html",
-        {**ctx, "categories": categories, "items_by_category": items_by_category}
+        template_name,
+        {
+            **ctx,
+            "categories": categories,
+            "items_by_category": items_by_category,
+            "category_hero_images": category_hero_images,
+        }
     )
 
 
@@ -470,6 +489,7 @@ async def admin_edit_item_submit(
     price: float = Form(...),
     name_es: str = Form(default=""),
     description: str = Form(default=""),
+    image: UploadFile | None = File(default=None),
     db: AsyncSession = Depends(get_db)
 ):
     redirect = require_admin_or_redirect(request)
@@ -485,6 +505,34 @@ async def admin_edit_item_submit(
     item.price = price
     item.name_es = name_es.strip() or None
     item.description = description.strip() or None
+
+    # Optional image upload (real item photography)
+    if image and image.filename:
+        if not (image.content_type or "").startswith("image/"):
+            raise HTTPException(status_code=400, detail="Invalid file type")
+
+        data = await image.read()
+        max_bytes = 4 * 1024 * 1024  # 4MB
+        if len(data) > max_bytes:
+            raise HTTPException(status_code=400, detail="Image too large (max 4MB)")
+
+        try:
+            with Image.open(io.BytesIO(data)) as im:
+                im = ImageOps.exif_transpose(im).convert("RGB")
+                # Keep it crisp but not huge (production-ish default)
+                im = ImageOps.fit(im, (1200, 900), method=Image.Resampling.LANCZOS)
+
+                upload_dir = STATIC_DIR / "uploads" / "menu-items"
+                upload_dir.mkdir(parents=True, exist_ok=True)
+
+                out_name = f"item_{item_id}.jpg"
+                out_path = upload_dir / out_name
+                im.save(out_path, format="JPEG", quality=86, optimize=True, progressive=True)
+
+                item.image_url = f"/static/uploads/menu-items/{out_name}"
+        except Exception:
+            raise HTTPException(status_code=400, detail="Could not process image")
+
     await db.commit()
     return RedirectResponse(url="/admin/menu", status_code=302)
 

@@ -19,5 +19,5 @@ STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
 
 # App settings
-APP_NAME = "Taco Truck"
+APP_NAME = "Tacos del Norte"
 DEBUG = os.getenv("DEBUG", "true").lower() == "true"

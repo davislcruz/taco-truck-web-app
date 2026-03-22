@@ -3,68 +3,115 @@
 {% block title %}Menu - {{ app_name }}{% endblock %}
 
 {% block content %}
-<section class="menu-hero mb-4 text-center">
-    <h1 class="text-4xl font-bold mb-1 section-title">Fresh Mexican Food</h1>
-    <p class="text-gray-700">Authentic favorites made daily. <span class="text-brand-primary font-semibold">Order for pickup.</span></p>
+<section class="hero full-bleed flush-top mb-6" aria-labelledby="menu-hero-title">
+    <div class="hero-inner">
+        <div class="hero-copy">
+            <p class="hero-kicker">FRESHLY CRAFTED</p>
+
+            <h1 id="menu-hero-title" class="hero-title">
+                <span class="hero-title-line">Authentic</span>
+                <span class="hero-title-line hero-accent">street tacos</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                Bold flavors made for quick pickup and easy ordering.
+            </p>
+
+            <a class="hero-cta poster-btn" href="#menu-start">Order Pickup</a>
+        </div>
+    </div>
 </section>
 
-<!-- Category Navigation -->
-<nav class="category-bar mb-6" aria-label="Menu categories">
-    {% for category in categories %}
-    <a href="#cat-{{ category.id }}" class="cat-pill {% if loop.first %}active{% endif %}" data-cat-pill>
-        {{ category.name }}
-    </a>
-    {% endfor %}
-</nav>
-
 <!-- Menu Sections -->
+<div id="menu-start" aria-hidden="true"></div>
 {% for category in categories %}
-<section id="cat-{{ category.id }}" class="mb-8 category-section">
-    <header class="menu-section-header mb-6">
+<section id="cat-{{ category.id }}" class="menu-category mb-10" aria-label="{{ category.name }}">
+    <header class="menu-section-header menu-section-header--editorial">
+        <div class="menu-section-eyebrow">Menu</div>
+
         <div class="menu-section-title-row">
-            <h2 class="text-2xl font-bold text-gray-800 section-title">{{ category.name }}</h2>
+            <h2 class="menu-section-title">{{ category.name }}</h2>
             <span class="section-count">{{ items_by_category[category.id] | length }} items</span>
         </div>
+
+        {% set subtitle_map = {
+            'tacos': 'Street-style tacos served on warm corn tortillas',
+            'burritos': 'Stuffed burritos packed with bold flavor',
+            'tortas': 'Mexican sandwiches layered with fresh toppings',
+            'drinks': 'House favorites and classic Mexican beverages'
+        } %}
+
         {% if category.description %}
         <p class="menu-section-subtitle">{{ category.description }}</p>
         {% else %}
-        <p class="menu-section-subtitle">Freshly prepared with authentic flavors.</p>
+        <p class="menu-section-subtitle">{{ subtitle_map.get((category.name or '')|lower, 'Freshly prepared with authentic flavors.') }}</p>
         {% endif %}
     </header>
-    
-    <div class="carousel-shell">
-        <button class="carousel-btn left" type="button" onclick="scrollCarousel('carousel-{{ category.id }}', -1)">‹</button>
-        <div id="carousel-{{ category.id }}" class="menu-carousel">
+
+    <div class="carousel-shell carousel-shell--integrated">
+        <button
+            class="carousel-btn carousel-btn--overlay left"
+            type="button"
+            aria-label="Scroll {{ category.name }} left"
+            data-action="carousel-prev"
+            data-target="carousel-{{ category.id }}">
+            <span class="carousel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+        </button>
+
+        <div id="carousel-{{ category.id }}" class="menu-carousel" role="region" aria-label="{{ category.name }} items">
             {% for item in items_by_category[category.id] %}
-            <article class="menu-card carousel-card transition-all duration-300 overflow-hidden group">
-                <div class="h-40 bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center text-6xl">
-                    {% if item.image_url %}
-                    <img src="{{ item.image_url }}" alt="{{ item.name }}" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='/static/images/menu/default.jpg';" class="w-full h-full object-cover">
-                    {% else %}
-                    <span class="text-4xl text-gray-300">Food</span>
-                    {% endif %}
+            <article class="menu-card carousel-card menu-item-card">
+                <div class="menu-item-media">
+                    <img
+                        src="{{ item.image_url or '/static/images/menu/default.jpg' }}"
+                        alt="{{ item.name }}"
+                        loading="lazy"
+                        decoding="async"
+                        onerror="this.onerror=null;this.src='/static/images/menu/default.jpg';"
+                        class="menu-item-img"
+                    >
                 </div>
 
-                <div class="p-4">
-                    <div class="flex justify-between items-start mb-2 gap-2">
-                        <h3 class="font-bold text-lg text-gray-800 leading-tight">{{ item.name }}</h3>
-                        <span class="price-sticker text-sm">{{ item.price | currency }}</span>
+                <div class="menu-item-body">
+                    <div class="menu-item-top">
+                        <h3 class="menu-item-name">{{ item.name }}</h3>
+                        <span class="price-sticker menu-item-price">{{ item.price | currency }}</span>
                     </div>
 
-                    {% if item.description %}
-                    <p class="text-gray-600 text-sm mb-4">{{ item.description }}</p>
-                    {% endif %}
+                    <p class="menu-item-desc">
+                        {{ item.description or 'A customer favorite made fresh to order.' }}
+                    </p>
 
                     <button
-                        onclick="addToCart({{ item.id }}, '{{ item.name }}', {{ item.price }})"
-                        class="w-full poster-btn py-2 rounded-lg font-medium transition">
-                        Add to Cart
+                        type="button"
+                        class="menu-item-cta"
+                        data-action="add-to-cart"
+                        data-item-id="{{ item.id }}"
+                        data-item-name="{{ item.name }}"
+                        data-item-price="{{ item.price }}">
+                        Add
                     </button>
                 </div>
             </article>
             {% endfor %}
         </div>
-        <button class="carousel-btn right" type="button" onclick="scrollCarousel('carousel-{{ category.id }}', 1)">›</button>
+
+        <button
+            class="carousel-btn carousel-btn--overlay right"
+            type="button"
+            aria-label="Scroll {{ category.name }} right"
+            data-action="carousel-next"
+            data-target="carousel-{{ category.id }}">
+            <span class="carousel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+        </button>
     </div>
 </section>
 {% endfor %}
@@ -78,41 +125,12 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="/static/js/ui.js"></script>
+<script src="/static/js/menu.js"></script>
 <script>
-    function addToCart(itemId, name, price) {
-        Cart.add(itemId, name, price);
-        showToast(`${name} added to cart.`);
-    }
-
-    function scrollCarousel(id, direction) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const step = Math.max(280, Math.floor(el.clientWidth * 0.75));
-        el.scrollBy({ left: direction * step, behavior: 'smooth' });
-    }
-
-    function showToast(message) {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = 'bg-taco-orange text-white px-4 py-3 rounded-lg shadow-lg mb-2';
-        toast.textContent = message;
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 2000);
-    }
-
-    document.querySelectorAll('[data-cat-pill]').forEach((pill) => {
-        pill.addEventListener('click', () => {
-            document.querySelectorAll('[data-cat-pill]').forEach((p) => p.classList.remove('active'));
-            pill.classList.add('active');
-        });
-    });
-
-    // Sync mobile cart count
+    // Sync mobile cart count (menu page only)
     function updateMobileCartCount() {
-        const count = Cart.count();
+        const count = Cart.getCount();
         const el = document.getElementById('mobile-cart-count');
         if (el) el.textContent = count;
     }

@@ -5,11 +5,33 @@
 {% block content %}
 <div class="max-w-2xl mx-auto admin-panel fiesta-card shadow-md p-6">
     <h1 class="text-2xl font-bold text-gray-800 mb-4 section-title">✏️ Edit Menu Item</h1>
-    <form action="/admin/menu/{{ item.id }}/edit" method="POST" class="space-y-4">
+    <form action="/admin/menu/{{ item.id }}/edit" method="POST" enctype="multipart/form-data" class="space-y-4">
         <input name="name" required value="{{ item.name }}" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
         <input name="name_es" value="{{ item.name_es or '' }}" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
         <input name="price" required step="0.01" type="number" min="0" value="{{ item.price }}" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
         <textarea name="description" class="w-full border border-gray-300 rounded-lg px-3 py-2">{{ item.description or '' }}</textarea>
+
+        <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">Item photo</label>
+            {% if item.image_url %}
+            <img
+                src="{{ item.image_url }}"
+                alt="{{ item.name }}"
+                class="w-full max-w-sm rounded-xl border border-gray-200"
+                loading="lazy"
+                decoding="async"
+                onerror="this.onerror=null;this.style.display='none';"
+            >
+            {% endif %}
+            <input
+                type="file"
+                name="image"
+                accept="image/*"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
+            />
+            <p class="text-xs text-gray-500">Upload a JPG/PNG. This will replace the current image.</p>
+        </div>
+
         <button class="poster-btn px-4 py-2 rounded-lg" type="submit">Save</button>
         <a href="/admin/menu" class="ml-3 text-gray-600 hover:underline">Cancel</a>
     </form>

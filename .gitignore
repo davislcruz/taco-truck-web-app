@@ -34,6 +34,13 @@ Thumbs.db
 *.log
 logs/
 
+# Local dev server artifacts
+.server.pid
+.server.log
+
+# Uploaded/static user content
+app/static/uploads/
+
 # Testing
 .pytest_cache/
 .coverage

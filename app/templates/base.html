@@ -13,10 +13,12 @@
             theme: {
                 extend: {
                     colors: {
-                        'taco-orange': '#f97316',
-                        'taco-red': '#dc2626',
-                        'taco-yellow': '#fbbf24',
-                        'taco-green': '#16a34a',
+                        // Map Tailwind taco-* utilities to the site's earthy brand tokens
+                        // (keeps templates simple + stops color-system fighting)
+                        'taco-orange': '#7f2f22',  // brand primary (chile red)
+                        'taco-red': '#9a4937',     // darker/secondary red
+                        'taco-yellow': '#c29547',  // refined gold accent
+                        'taco-green': '#556b2f',   // earthy olive
                     }
                 }
             }
@@ -32,31 +34,51 @@
     {% block head %}{% endblock %}
 </head>
 <body class="min-h-screen">
-    <div class="max-w-6xl mx-auto my-3 poster-shell">
+    <div class="w-full poster-shell">
     
     <!-- Navigation -->
-    <nav class="nav-viva shadow-sm sticky top-0 z-50 rounded-t-xl">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between items-center h-14">
-                <!-- Logo -->
-                <a href="/menu" class="flex items-center space-x-2 text-white font-bold text-xl display-font">
-                    <span>Taco Truck</span>
+    <nav class="site-header sticky top-0 z-50" aria-label="Primary">
+        <div class="site-header__inner">
+            <!-- Left: brand + primary nav (typography-first) -->
+            <div class="site-header__left">
+                <a href="/menu" class="site-header__brand display-font" aria-label="{{ app_name }} home">
+                    <img
+                        class="site-header__logo"
+                        src="/static/images/logo/logo.png"
+                        alt="{{ app_name }} logo"
+                        width="72"
+                        height="72"
+                        loading="eager"
+                        decoding="async"
+                    >
+                    <span class="site-header__name">{{ app_name }}</span>
                 </a>
-                
-                <!-- Nav Links -->
-                <div class="flex items-center space-x-4">
-                    <a href="/menu" class="text-white hover:text-yellow-200 transition">Menu</a>
-                    <a href="/cart" class="text-white hover:text-yellow-200 transition flex items-center">
-                        Cart <span id="cart-count" class="ml-1 bg-taco-red text-white text-xs rounded-full px-2 py-0.5">0</span>
-                    </a>
+
+                <div class="site-header__nav" aria-label="Site">
+                    <a href="/menu" class="site-header__link">Menu</a>
                 </div>
+            </div>
+
+            <!-- Right: utility actions -->
+            <div class="site-header__right" aria-label="Utilities">
+                <a href="/cart" class="site-header__utility">
+                    <span class="site-header__utility-icon" aria-hidden="true">
+                        <svg class="bag-icon" width="44" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <defs>
+                                <path id="bag" d="M7 9a1 1 0 1 1-2 0V4a4 4 0 1 1 8 0v5a1 1 0 0 1-2 0V4a2 2 0 1 0-4 0v5zM2 7v19h14V7H2zm0-2h14a2 2 0 0 1 2 2v19a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
+                            </defs>
+                            <use fill="currentColor" fill-rule="nonzero" transform="translate(15 10)" href="#bag" xlink:href="#bag" />
+                        </svg>
+                    </span>
+                    <span id="cart-count" class="site-header__count">0</span>
+                </a>
             </div>
         </div>
     </nav>
     
     <!-- Flash Messages -->
     {% if error %}
-    <div class="max-w-6xl mx-auto px-4 mt-4">
+    <div class="w-full px-4 sm:px-6 lg:px-10 mt-4">
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
             {{ error }}
         </div>
@@ -72,16 +94,16 @@
     {% endif %}
     
     <!-- Main Content -->
-    <main class="max-w-5xl mx-auto px-4 py-5">
+    <main class="w-full px-6 sm:px-10 lg:px-16 xl:px-24 py-6">
         {% block content %}{% endblock %}
     </main>
     
     <!-- Footer -->
-    <footer class="text-white py-10 mt-auto rounded-b-xl">
-        <div class="max-w-6xl mx-auto px-4">
+    <footer class="text-white py-10 mt-auto">
+        <div class="w-full px-4 sm:px-6 lg:px-10">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-lg font-semibold mb-3">Taco Truck</h3>
+                    <h3 class="text-lg font-semibold mb-3">{{ app_name }}</h3>
                     <p class="text-sm text-white/80 leading-relaxed">
                         Authentic Mexican street food made fresh daily. Online ordering available for pickup.
                     </p>
@@ -109,7 +131,7 @@
                     <h4 class="text-sm uppercase tracking-wide text-white/70 mb-3">Quick Links</h4>
                     <ul class="text-sm space-y-2">
                         <li><a href="/menu" class="text-white/90 hover:text-white underline-offset-4 hover:underline">Menu</a></li>
-                        <li><a href="/cart" class="text-white/90 hover:text-white underline-offset-4 hover:underline">Cart</a></li>
+                        <li><a href="/cart" class="text-white/90 hover:text-white underline-offset-4 hover:underline">Bag</a></li>
                     </ul>
                 </div>
             </div>
@@ -122,11 +144,16 @@
     </footer>
     
     <!-- Toast Notifications -->
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50"></div>
+    <div
+        id="toast-container"
+        class="fixed bottom-4 right-4 z-50"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"></div>
 
-    <!-- Mobile Sticky Cart Button -->
+    <!-- Mobile Sticky Bag Button -->
     <a href="/cart" class="mobile-sticky-cart md:hidden">
-        <span>Cart</span>
+        <span>Bag</span>
         <span id="mobile-cart-count" class="count-badge">0</span>
     </a>
     

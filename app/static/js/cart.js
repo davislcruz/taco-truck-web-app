@@ -87,6 +87,13 @@ const Cart = {
     getCount() {
         return this.getItems().reduce((sum, item) => sum + item.quantity, 0);
     },
+
+    /**
+     * Backwards-compatible alias (some templates used Cart.count())
+     */
+    count() {
+        return this.getCount();
+    },
     
     /**
      * Update cart count badge in nav

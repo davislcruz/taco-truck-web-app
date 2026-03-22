@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Menu - {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="hero full-bleed flush-top mb-6" aria-labelledby="menu-hero-title">
+    <div class="hero-inner">
+        <div class="hero-copy">
+            <p class="hero-kicker">FRESHLY CRAFTED</p>
+
+            <h1 id="menu-hero-title" class="hero-title">
+                <span class="hero-title-line">Authentic</span>
+                <span class="hero-title-line hero-accent">street tacos</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                Bold flavors made for quick pickup and easy ordering.
+            </p>
+
+            <a class="hero-cta poster-btn" href="#menu-start">Order Pickup</a>
+        </div>
+    </div>
+</section>
+
+<div class="menu-layout-toggle">
+    <a class="menu-layout-toggle__link" href="/menu">Card carousel</a>
+    <span class="menu-layout-toggle__sep">/</span>
+    <span class="menu-layout-toggle__active">Editorial list</span>
+</div>
+
+<!-- Menu Sections -->
+<div id="menu-start" aria-hidden="true"></div>
+
+{% set subtitle_map = {
+    'tacos': 'Street-style tacos served on warm corn tortillas',
+    'burritos': 'Stuffed burritos packed with bold flavor',
+    'tortas': 'Mexican sandwiches layered with fresh toppings',
+    'drinks': 'House favorites and classic Mexican beverages'
+} %}
+
+{% for category in categories %}
+{% set key = (category.name or '')|lower %}
+<section id="cat-{{ category.id }}" class="menu-category-list mb-12" aria-label="{{ category.name }}">
+    <header class="menu-section-header menu-section-header--editorial">
+        <div class="menu-section-eyebrow">Menu</div>
+
+        <div class="menu-section-title-row">
+            <h2 class="menu-section-title">{{ category.name }}</h2>
+            <span class="section-count">{{ items_by_category[category.id] | length }} items</span>
+        </div>
+
+        {% if category.description %}
+        <p class="menu-section-subtitle">{{ category.description }}</p>
+        {% else %}
+        <p class="menu-section-subtitle">{{ subtitle_map.get(key, 'Freshly prepared with authentic flavors.') }}</p>
+        {% endif %}
+    </header>
+
+    <div class="category-hero">
+        <img
+            class="category-hero__img"
+            src="{{ category_hero_images.get(key, '/static/images/menu/default.jpg') }}"
+            alt="{{ category.name }}"
+            loading="lazy"
+            decoding="async"
+            onerror="this.onerror=null;this.src='/static/images/menu/default.jpg';"
+        >
+    </div>
+
+    <div class="menu-item-list" role="list">
+        {% for item in items_by_category[category.id] %}
+        <article class="menu-item-row" role="listitem">
+            <div class="menu-item-row__main">
+                <h3 class="menu-item-row__name">{{ item.name }}</h3>
+                <p class="menu-item-row__desc">{{ item.description or 'A customer favorite made fresh to order.' }}</p>
+            </div>
+
+            <div class="menu-item-row__meta">
+                <span class="price-sticker menu-item-row__price">{{ item.price | currency }}</span>
+                <button
+                    type="button"
+                    class="menu-item-row__cta"
+                    data-action="add-to-cart"
+                    data-item-id="{{ item.id }}"
+                    data-item-name="{{ item.name }}"
+                    data-item-price="{{ item.price }}">
+                    Add
+                </button>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endfor %}
+
+{% if not categories %}
+<div class="text-center py-12">
+    <p class="text-gray-500 text-lg">No menu items available yet. Check back soon.</p>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/ui.js"></script>
+<script src="/static/js/menu.js"></script>
+{% endblock %}
